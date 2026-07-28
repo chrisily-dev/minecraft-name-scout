@@ -13,6 +13,40 @@ from wordfreq import top_n_list, zipf_frequency
 MIN_LENGTH = 4
 MAX_LENGTH = 12
 POOL_LIMIT = 5_000
+STANDALONE_NAMES_PER_SPECIAL = 4
+
+# Preferred standalone words stay near the front of the pool even when their
+# dictionary frequency is lower than the automatic cutoff.
+CORE_STANDALONE_WORDS = (
+    "Tycoon",
+    "Sales",
+    "Installed",
+    "Open",
+    "Flee",
+    "Zombie",
+    "Gens",
+    "Prison",
+    "Mining",
+    "Farming",
+    "Dancer",
+    "Major",
+    "Mayor",
+    "Flat",
+    "Platform",
+    "Random",
+    "Kits",
+    "Skyblock",
+    "Survival",
+    "Nexus",
+    "Vortex",
+    "Haven",
+    "Realm",
+    "Empire",
+    "Legacy",
+    "Titan",
+    "Nova",
+    "Quest",
+)
 
 # These are style anchors, not a list of every name the bot can produce.
 ANCHORS = (
@@ -277,6 +311,7 @@ CURATED_COMPOUNDS = (
     "FableHaven",
     "FlameCove",
     "ForestVale",
+    "FrostHaven",
     "FrostPeak",
     "GalaxyForge",
     "GoldenVale",
@@ -584,6 +619,15 @@ def build_candidate_pool() -> list[Candidate]:
     """Build a ranked, deduplicated pool from common words and transformations."""
     candidates: dict[str, Candidate] = {}
     common_words = _common_words()
+    standalone_keys = {
+        name.casefold()
+        for name in (
+            *CORE_STANDALONE_WORDS,
+            *REFERENCE_WORDS,
+            *ARCHIVE_INSPIRATION,
+            *RECENT_ARCHIVE_INSPIRATION,
+        )
+    }
 
     for anchor in ANCHORS:
         frequency = max(zipf_frequency(anchor.lower(), "en"), 4.0)
@@ -596,6 +640,12 @@ def build_candidate_pool() -> list[Candidate]:
         )
 
     curated_groups = (
+        (
+            CORE_STANDALONE_WORDS,
+            10.5,
+            "Word",
+            "owner-preferred word",
+        ),
         (REQUESTED_NAMES, 11.0, "Requested example", "owner-provided example"),
         (REFERENCE_WORDS, 9.0, "Strong word", "reference screenshot"),
         (
@@ -677,6 +727,7 @@ def build_candidate_pool() -> list[Candidate]:
     # Strong standalone words such as Tycoon, Realm, Empire, and Nova.
     for word, frequency in common_words:
         display = _display_word(word)
+        standalone_keys.add(display.casefold())
         score = _base_score(display, frequency)
         if word in POWER_WORDS:
             score += 3.0
@@ -720,7 +771,36 @@ def build_candidate_pool() -> list[Candidate]:
         candidates.values(),
         key=lambda candidate: (-candidate.score, len(candidate.name), candidate.name.casefold()),
     )
-    return ranked[:POOL_LIMIT]
+    standalone = [
+        candidate
+        for candidate in ranked
+        if candidate.name.casefold() in standalone_keys
+    ]
+    special = [
+        candidate
+        for candidate in ranked
+        if candidate.name.casefold() not in standalone_keys
+    ]
+
+    # Interleave a small number of special names instead of letting suffix
+    # scoring crowd ordinary English words out of the first several thousand.
+    balanced: list[Candidate] = []
+    standalone_index = 0
+    special_index = 0
+    while len(balanced) < POOL_LIMIT and (
+        standalone_index < len(standalone) or special_index < len(special)
+    ):
+        for _ in range(STANDALONE_NAMES_PER_SPECIAL):
+            if standalone_index >= len(standalone) or len(balanced) >= POOL_LIMIT:
+                break
+            balanced.append(standalone[standalone_index])
+            standalone_index += 1
+
+        if special_index < len(special) and len(balanced) < POOL_LIMIT:
+            balanced.append(special[special_index])
+            special_index += 1
+
+    return balanced
 
 
 def select_candidate(run_number: int, pool: Iterable[Candidate] | None = None) -> Candidate:

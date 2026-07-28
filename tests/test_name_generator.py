@@ -22,6 +22,10 @@ def test_pool_contains_requested_style_and_no_obscure_shapes() -> None:
         "tycoon",
         "sales",
         "installed",
+        "open",
+        "flee",
+        "zombie",
+        "prison",
         "mining",
         "farming",
         "dancer",
@@ -84,6 +88,34 @@ def test_pool_contains_requested_style_and_no_obscure_shapes() -> None:
     assert len(pool) >= 4_000
     assert all(is_valid_name(candidate.name) for candidate in pool)
     assert len(names) == len(pool)
+
+
+def test_pool_is_mostly_standalone_words() -> None:
+    pool = build_candidate_pool()
+    limited_suffixes = (
+        "craft",
+        "gens",
+        "hub",
+        "kits",
+        "mc",
+        "mines",
+        "pvp",
+        "smp",
+    )
+
+    suffix_names = [
+        candidate
+        for candidate in pool
+        if any(candidate.name.casefold().endswith(suffix) for suffix in limited_suffixes)
+    ]
+    first_hundred_suffix_names = [
+        candidate
+        for candidate in pool[:100]
+        if any(candidate.name.casefold().endswith(suffix) for suffix in limited_suffixes)
+    ]
+
+    assert len(suffix_names) <= len(pool) // 5
+    assert len(first_hundred_suffix_names) <= 20
 
 
 def test_semantic_families_generate_more_than_the_examples() -> None:

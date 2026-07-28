@@ -6,12 +6,16 @@ names and reports every result with polished Discord embeds.
 ## What it does
 
 - Generates names automatically from common English dictionary vocabulary.
+- Keeps the pool roughly 80% standalone words and limits suffix-heavy names
+  such as `xGens`, `xKits`, `xPvP`, and `xCraft` to a smaller supporting share.
 - Adds Minecraft-style transformations such as `PvP`, `Kits`, `Gens`, `Craft`,
   `Box`, and `Sky`.
 - Scores names for commonness, brandability, length, and Minecraft relevance.
 - Includes styles such as `Tycoon`, `Sales`, `Installed`, `Mining`, `Farming`,
   `Dancer`, `Major`, `Mayor`, `Flat`, `Platform`, `RandomKits`, `BoxPvP`,
   `GenPvP`, and `Gens`.
+- Prioritizes straightforward words such as `Open`, `Flee`, `Zombie`, and
+  `Prison` alongside those examples.
 - Includes the requested shapes such as `WoolGens`, `GensFood`, `LoopGens`,
   `AcidGens`, `AdonisMine`, `NestMines`, `NylonGN`, `Gmini`, `FlagClash`,
   `Beans`, and `Valknet`.
