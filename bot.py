@@ -17,7 +17,7 @@ from name_generator import Candidate, build_candidate_pool, select_candidate
 
 DISCORD_COLOR = 0x57F287
 DISCORD_ERROR_COLOR = 0xED4245
-MINEHUT_DASHBOARD = "https://app.minehut.com/dashboard"
+MINEHUT_CREATE_URL = "https://dashboard.minehut.com/servers/create"
 MINEHUT_LOOKUP_URL = "https://api.minehut.com/server/{name}?byName=true"
 USER_AGENT = "MinecraftNameScout/3.0 (+GitHub Actions; paced availability checks)"
 DEFAULT_QUEUE_PATH = Path("data/retry_queue.json")
@@ -108,8 +108,9 @@ def select_check_target(
     now: datetime,
     *,
     excluded_names: set[str] | None = None,
+    allow_due_retry: bool = False,
 ) -> tuple[Candidate, bool]:
-    """Prefer the oldest due retry; otherwise select one new ranked candidate."""
+    """Select a new name, allowing a due retry only at the queue's bottom."""
     items = queue["items"]
     excluded = {name.casefold() for name in (excluded_names or set())}
     due_items = sorted(
@@ -123,7 +124,7 @@ def select_check_target(
         ),
         key=lambda item: (item["retry_after"], item["name"].casefold()),
     )
-    if due_items:
+    if allow_due_retry and due_items:
         item = due_items[0]
         return (
             Candidate(
@@ -145,6 +146,19 @@ def select_check_target(
         candidate = select_candidate(run_number + offset, pool)
         if candidate.name.casefold() not in queued_names:
             return candidate, False
+
+    # If every new name is queued, a due retry is the only useful fallback.
+    if due_items:
+        item = due_items[0]
+        return (
+            Candidate(
+                name=item["name"],
+                score=float(item["score"]),
+                style=item["style"],
+                source=item["source"],
+            ),
+            True,
+        )
 
     raise RuntimeError("Every generated candidate is already in the retry queue.")
 
@@ -223,11 +237,6 @@ def build_embed(
                 "inline": True,
             },
             {
-                "name": "Type",
-                "value": candidate.style,
-                "inline": True,
-            },
-            {
                 "name": "Result",
                 "value": availability.reason,
                 "inline": False,
@@ -239,7 +248,7 @@ def build_embed(
             },
             {
                 "name": "Minehut",
-                "value": f"[Open dashboard]({MINEHUT_DASHBOARD})",
+                "value": f"[Create server]({MINEHUT_CREATE_URL})",
                 "inline": False,
             },
         ],
@@ -397,6 +406,7 @@ def main() -> None:
                 dry_queue,
                 now,
                 excluded_names=checked_names,
+                allow_due_retry=slot == checks_per_run - 1,
             )
             checked_names.add(candidate.name.casefold())
             candidates.append(candidate)
@@ -435,6 +445,7 @@ def main() -> None:
             queue,
             now,
             excluded_names=checked_names,
+            allow_due_retry=slot == checks_per_run - 1,
         )
         checked_names.add(candidate.name.casefold())
         print(

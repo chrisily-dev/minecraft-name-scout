@@ -58,11 +58,16 @@ def test_unavailable_payload_uses_red_embed(candidate: Candidate) -> None:
         queue_status="Queued for one retry tomorrow.",
     )
     embed = payload["embeds"][0]
+    fields = {field["name"]: field["value"] for field in embed["fields"]}
 
     assert embed["title"] == "Taken: Tycoon"
     assert embed["color"] == DISCORD_ERROR_COLOR
     assert "already in use" in embed["description"]
-    assert embed["fields"][4]["value"] == "Queued for one retry tomorrow."
+    assert fields["Retry"] == "Queued for one retry tomorrow."
+    assert fields["Minehut"] == (
+        "[Create server](https://dashboard.minehut.com/servers/create)"
+    )
+    assert "Type" not in fields
 
 
 def test_webhook_copy_is_plain_and_has_no_long_dashes(
@@ -172,7 +177,7 @@ def test_new_unavailable_name_is_queued_for_tomorrow(
     )
 
 
-def test_due_retry_uses_the_single_check_slot(candidate: Candidate) -> None:
+def test_due_retry_waits_for_the_bottom_check_slot(candidate: Candidate) -> None:
     now = datetime(2026, 7, 29, 10, 1, tzinfo=timezone.utc)
     queue = {
         "version": 1,
@@ -190,9 +195,18 @@ def test_due_retry_uses_the_single_check_slot(candidate: Candidate) -> None:
     pool = [Candidate("Mining", 12.0, "Dictionary word", "common English")]
 
     selected, is_retry = select_check_target(10, pool, queue, now)
+    retry, is_retry_slot = select_check_target(
+        10,
+        pool,
+        queue,
+        now,
+        allow_due_retry=True,
+    )
 
-    assert selected == candidate
-    assert is_retry is True
+    assert selected.name == "Mining"
+    assert is_retry is False
+    assert retry == candidate
+    assert is_retry_slot is True
 
 
 def test_completed_retry_is_removed_from_queue(candidate: Candidate) -> None:
@@ -286,3 +300,63 @@ def test_main_sends_one_embed_for_each_of_twenty_unique_names(
     assert all(len(call.args[1]["embeds"]) == 1 for call in send.call_args_list)
     assert sleep.call_count == 19
     sleep.assert_called_with(13.0)
+
+
+def test_main_places_a_due_retry_in_the_final_slot(
+    candidate: Candidate,
+    monkeypatch,
+    tmp_path,
+) -> None:
+    queue_path = tmp_path / "retry_queue.json"
+    save_retry_queue(
+        queue_path,
+        {
+            "version": 1,
+            "items": [
+                {
+                    "name": candidate.name,
+                    "score": candidate.score,
+                    "style": candidate.style,
+                    "source": candidate.source,
+                    "first_checked_at": "2026-07-27T10:00:00+00:00",
+                    "retry_after": "2026-07-28T10:00:00+00:00",
+                }
+            ],
+        },
+    )
+    pool = [
+        Candidate("FreshOne", 10.0, "test", "test"),
+        Candidate("FreshTwo", 9.9, "test", "test"),
+        Candidate("FreshThree", 9.8, "test", "test"),
+    ]
+    check = Mock(
+        return_value=AvailabilityResult(True, "No registered server found.", 404)
+    )
+
+    monkeypatch.setattr("bot.build_candidate_pool", lambda: pool)
+    monkeypatch.setattr("bot.check_name_availability", check)
+    monkeypatch.setattr("bot.send_to_discord", Mock())
+    monkeypatch.setattr("bot.time.sleep", Mock())
+    monkeypatch.setenv(
+        "DISCORD_WEBHOOK",
+        "https://discord.com/api/webhooks/example/token",
+    )
+    monkeypatch.setenv("RETRY_QUEUE_PATH", str(queue_path))
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "bot.py",
+            "--run-number",
+            "1",
+            "--checks-per-run",
+            "3",
+            "--request-interval-seconds",
+            "13",
+        ],
+    )
+
+    main()
+
+    checked_names = [call.args[0] for call in check.call_args_list]
+    assert checked_names[:2] == ["FreshOne", "FreshTwo"]
+    assert checked_names[2] == "Tycoon"

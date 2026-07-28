@@ -81,7 +81,7 @@ def test_pool_contains_requested_style_and_no_obscure_shapes() -> None:
         "towerdefense",
     }
     assert expected <= names
-    assert len(pool) >= 500
+    assert len(pool) >= 4_000
     assert all(is_valid_name(candidate.name) for candidate in pool)
     assert len(names) == len(pool)
 
@@ -96,6 +96,11 @@ def test_semantic_families_generate_more_than_the_examples() -> None:
         "novamines",
         "riftclash",
         "valorpvp",
+        "frosthaven",
+        "pixelcove",
+        "stormgens",
+        "ironmines",
+        "emberpvp",
     } <= names
 
 

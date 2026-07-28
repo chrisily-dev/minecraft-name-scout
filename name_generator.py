@@ -12,7 +12,7 @@ from wordfreq import top_n_list, zipf_frequency
 
 MIN_LENGTH = 4
 MAX_LENGTH = 12
-POOL_LIMIT = 2_000
+POOL_LIMIT = 5_000
 
 # These are style anchors, not a list of every name the bot can produce.
 ANCHORS = (
@@ -191,6 +191,119 @@ PVP_STEMS = (
     "Valor",
     "Crown",
     "Blaze",
+)
+
+# Curated parts that produce natural two-part server names. Invalid results
+# over the 12-character limit are discarded by the normal name validator.
+BRAND_STEMS = (
+    "Amber",
+    "Arcane",
+    "Arctic",
+    "Ash",
+    "Aurora",
+    "Blaze",
+    "Bloom",
+    "Cinder",
+    "Cloud",
+    "Coral",
+    "Cosmic",
+    "Crimson",
+    "Crown",
+    "Crystal",
+    "Dawn",
+    "Dragon",
+    "Dusk",
+    "Echo",
+    "Ember",
+    "Fable",
+    "Flame",
+    "Forest",
+    "Frost",
+    "Galaxy",
+    "Glacier",
+    "Golden",
+    "Hollow",
+    "Iron",
+    "Jade",
+    "Lunar",
+    "Mystic",
+    "Neon",
+    "Nova",
+    "Oak",
+    "Obsidian",
+    "Pixel",
+    "Quartz",
+    "Raven",
+    "Rift",
+    "River",
+    "Ruby",
+    "Shadow",
+    "Silver",
+    "Solar",
+    "Storm",
+    "Titan",
+    "Valor",
+    "Velvet",
+    "Void",
+    "Wild",
+    "Winter",
+)
+
+BRAND_SUFFIXES = (
+    "Craft",
+    "Gens",
+    "Haven",
+    "Hub",
+    "Kits",
+    "MC",
+    "Mines",
+    "PvP",
+    "Realm",
+    "SMP",
+)
+
+CURATED_COMPOUNDS = (
+    "AshenVale",
+    "BlazePeak",
+    "BloomCove",
+    "CloudForge",
+    "CoralQuest",
+    "CrownVale",
+    "DawnHarbor",
+    "DragonCove",
+    "DuskForge",
+    "EchoValley",
+    "EmberPeak",
+    "FableHaven",
+    "FlameCove",
+    "ForestVale",
+    "FrostPeak",
+    "GalaxyForge",
+    "GoldenVale",
+    "HollowPeak",
+    "IronHaven",
+    "JadeHarbor",
+    "LunarVale",
+    "MysticCove",
+    "NeonForge",
+    "NovaHarbor",
+    "OakValley",
+    "PixelCove",
+    "QuartzPeak",
+    "RavenHaven",
+    "RiftValley",
+    "RiverForge",
+    "RubyHaven",
+    "ShadowCove",
+    "SilverPeak",
+    "SolarVale",
+    "StormHaven",
+    "TitanForge",
+    "ValorPeak",
+    "VelvetCove",
+    "VoidHarbor",
+    "WildHaven",
+    "WinterVale",
 )
 
 PREFIXES = (
@@ -503,6 +616,12 @@ def build_candidate_pool() -> list[Candidate]:
             "Minehut reference",
             "official notable-server directory",
         ),
+        (
+            CURATED_COMPOUNDS,
+            7.5,
+            "Server brand",
+            "curated compound bank",
+        ),
     )
     for names, weight, style, source in curated_groups:
         for name in names:
@@ -542,6 +661,18 @@ def build_candidate_pool() -> list[Candidate]:
                         style,
                         "semantic compound",
                     )
+
+    for stem in BRAND_STEMS:
+        frequency = max(zipf_frequency(stem.lower(), "en"), 4.0)
+        for suffix in BRAND_SUFFIXES:
+            compound = f"{stem}{suffix}"
+            _add_candidate(
+                candidates,
+                compound,
+                _base_score(compound, frequency, minecraft_weight=5.5),
+                "Server brand",
+                "curated brand parts",
+            )
 
     # Strong standalone words such as Tycoon, Realm, Empire, and Nova.
     for word, frequency in common_words:

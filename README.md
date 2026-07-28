@@ -17,6 +17,8 @@ names and reports every result with polished Discord embeds.
   `Beans`, and `Valknet`.
 - Builds additional generator, mining, kit, PvP, and clash compounds from
   semantic stem groups instead of requiring every possible name by hand.
+- Builds thousands of extra server-ready combinations from curated parts such
+  as `FrostHaven`, `PixelCove`, `StormGens`, `IronMines`, and `EmberPvP`.
 - Includes the strong reference words `Harbor`, `Ashen`, `Basalt`, `Cabin`,
   `Drift`, `Ember`, `Flint`, and `Grove`, plus selected historical Minehut
   references as availability candidates.
@@ -35,8 +37,10 @@ names and reports every result with polished Discord embeds.
 - Sends a green embed when a name appears available.
 - Sends a red embed when a name is unavailable and queues it for one retry the
   next day.
-- Gives due retries priority within the next batch. After that retry, the name is
-  removed so old unavailable names cannot permanently block new suggestions.
+- Checks new names first. At most one due retry can use the final slot in a
+  batch, keeping known unavailable names at the bottom of the queue.
+- Removes an unavailable name after its one retry so it cannot permanently
+  block new suggestions.
 
 ## Minehut API notice
 
@@ -57,9 +61,9 @@ official Minehut dashboard.
 
 The scheduled workflow runs every five minutes, which is GitHub Actions' shortest
 supported schedule interval. Each run selects 20 non-repeating names and spaces
-the checks 13 seconds apart. Due next-day retries take the earliest batch slots;
-remaining slots receive new ranked candidates. GitHub may delay scheduled
-workflows during periods of high load.
+the checks 13 seconds apart. The final slot may receive the oldest due retry,
+while the first 19 slots remain new names. GitHub may delay scheduled workflows
+during periods of high load.
 
 The workflow commits `data/retry_queue.json` after a successful notification so
 the queue survives between GitHub-hosted runners.
