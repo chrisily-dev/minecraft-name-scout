@@ -51,7 +51,7 @@ def check_name_availability(
     if response.status_code == 404:
         return AvailabilityResult(
             available=True,
-            reason="Minehut returned 404 (no registered server found).",
+            reason="No Minehut server was found with this name.",
             status_code=404,
         )
 
@@ -68,13 +68,13 @@ def check_name_availability(
     if not server:
         return AvailabilityResult(
             available=True,
-            reason="Minehut returned no registered server object.",
+            reason="No Minehut server was found with this name.",
             status_code=200,
         )
 
     return AvailabilityResult(
         available=False,
-        reason="A registered Minehut server already uses this name.",
+        reason="Minehut says this name is already registered.",
         status_code=200,
     )
 
@@ -170,14 +170,14 @@ def update_retry_queue(
     if availability.available:
         queue["items"] = items
         return (
-            "Removed from the retry queue after becoming available."
+            "Available on retry. Removed from the queue."
             if is_retry
             else "No retry needed."
         )
 
     if is_retry:
         queue["items"] = items
-        return "Next-day retry completed; the name was removed from the queue."
+        return "Retry finished. Removed from the queue."
 
     retry_after = now + RETRY_DELAY
     items.append(
@@ -192,7 +192,7 @@ def update_retry_queue(
     )
     queue["items"] = items
     unix_time = int(retry_after.timestamp())
-    return f"Queued for one retry <t:{unix_time}:R>."
+    return f"Checking again <t:{unix_time}:R>."
 
 
 def build_embed(
@@ -202,54 +202,51 @@ def build_embed(
     is_retry: bool = False,
     queue_status: str = "No retry needed.",
 ) -> dict[str, object]:
-    status_word = "available" if availability.available else "unavailable"
+    status_word = "Available" if availability.available else "Taken"
     return {
-        "title": (
-            "Available Minehut Server Name"
-            if availability.available
-            else "Minehut Server Name Unavailable"
-        ),
+        "title": f"{status_word}: {candidate.name}",
         "description": (
-            f"## `{candidate.name}`\n"
-            f"This ranked candidate is currently **{status_word}**."
+            f"`{candidate.name}` looks available on Minehut."
+            if availability.available
+            else f"`{candidate.name}` is already in use on Minehut."
         ),
         "color": DISCORD_COLOR if availability.available else DISCORD_ERROR_COLOR,
         "fields": [
+            {
+                "name": "Status",
+                "value": status_word,
+                "inline": True,
+            },
             {
                 "name": "Length",
                 "value": f"{len(candidate.name)} characters",
                 "inline": True,
             },
             {
-                "name": "Style",
+                "name": "Type",
                 "value": candidate.style,
                 "inline": True,
             },
             {
-                "name": "Desirability score",
-                "value": f"{candidate.score:.1f}",
-                "inline": True,
-            },
-            {
-                "name": "Availability check",
+                "name": "Result",
                 "value": availability.reason,
                 "inline": False,
             },
             {
-                "name": "Queue status",
+                "name": "Retry",
                 "value": queue_status,
                 "inline": False,
             },
             {
-                "name": "Claim or verify",
-                "value": f"[Open the Minehut dashboard]({MINEHUT_DASHBOARD})",
+                "name": "Minehut",
+                "value": f"[Open dashboard]({MINEHUT_DASHBOARD})",
                 "inline": False,
             },
         ],
         "footer": {
             "text": (
-                f"{'Retry' if is_retry else 'New candidate'} | "
-                "paced to at most 5 lookups/minute | 4-12 letters"
+                f"{'Retry' if is_retry else 'New name'} | "
+                "max 5 checks/min | 4-12 letters"
             )
         },
         "timestamp": datetime.now(timezone.utc).isoformat(),

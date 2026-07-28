@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock
 
@@ -40,7 +41,7 @@ def test_payload_uses_one_embed(
     assert "content" not in payload
     assert len(payload["embeds"]) == 1
     assert "`Tycoon`" in payload["embeds"][0]["description"]
-    assert payload["embeds"][0]["title"] == "Available Minehut Server Name"
+    assert payload["embeds"][0]["title"] == "Available: Tycoon"
     assert payload["allowed_mentions"] == {"parse": []}
 
 
@@ -58,10 +59,23 @@ def test_unavailable_payload_uses_red_embed(candidate: Candidate) -> None:
     )
     embed = payload["embeds"][0]
 
-    assert embed["title"] == "Minehut Server Name Unavailable"
+    assert embed["title"] == "Taken: Tycoon"
     assert embed["color"] == DISCORD_ERROR_COLOR
-    assert "currently **unavailable**" in embed["description"]
+    assert "already in use" in embed["description"]
     assert embed["fields"][4]["value"] == "Queued for one retry tomorrow."
+
+
+def test_webhook_copy_is_plain_and_has_no_long_dashes(
+    candidate: Candidate,
+    available: AvailabilityResult,
+) -> None:
+    payload_text = json.dumps(build_payload(candidate, available)).casefold()
+
+    assert "—" not in payload_text
+    assert "–" not in payload_text
+    assert "ranked candidate" not in payload_text
+    assert "desirability score" not in payload_text
+    assert "currently" not in payload_text
 
 
 def test_webhook_validation_rejects_missing_url(
@@ -150,7 +164,7 @@ def test_new_unavailable_name_is_queued_for_tomorrow(
     save_retry_queue(queue_path, queue)
     saved = load_retry_queue(queue_path)
 
-    assert "Queued for one retry" in status
+    assert "Checking again" in status
     assert len(saved["items"]) == 1
     assert saved["items"][0]["name"] == "Tycoon"
     assert datetime.fromisoformat(saved["items"][0]["retry_after"]) == (
@@ -206,7 +220,7 @@ def test_completed_retry_is_removed_from_queue(candidate: Candidate) -> None:
     )
 
     assert queue["items"] == []
-    assert "retry completed" in status.casefold()
+    assert "retry finished" in status.casefold()
 
 
 def test_rate_guard_enforces_the_moderator_limit() -> None:

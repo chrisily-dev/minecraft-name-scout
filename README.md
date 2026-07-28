@@ -23,12 +23,15 @@ names and reports every result with polished Discord embeds.
 - Retains recognizable inspiration from the supplied 2022 archive, including
   `Backseat`, `Formwork`, `Trackball`, `Bulwarks`, `Refocuses`, and `Skydives`,
   while rejecting hundreds of obscure dictionary curiosities.
+- Adds a tightly filtered set from the newer archive, including `Managed`,
+  `Ongoing`, `Deployed`, `Promptly`, `Compiled`, `Fixtures`, `Specialty`,
+  `Patents`, `Feasible`, `Valuation`, `Portraits`, and `Fulfilled`.
 - Rejects profanity, rare dictionary curiosities, awkward consonant clusters,
   symbols, and anything outside the 4-12 character limit.
 - Walks a ranked candidate pool without accidental random repeats.
 - Checks 20 unique names per workflow run, with 13 seconds between Minehut
   requests so the rate never exceeds five lookups per minute.
-- Sends one separate polished Discord embed message for every checked name.
+- Sends one separate Discord embed message for every checked name.
 - Sends a green embed when a name appears available.
 - Sends a red embed when a name is unavailable and queues it for one retry the
   next day.

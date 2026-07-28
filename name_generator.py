@@ -95,6 +95,39 @@ ARCHIVE_INSPIRATION = (
     "Caroms",
 )
 
+# Recognizable names retained from the newer supplied archive. The source
+# contained thousands of awkward or unsafe results, so only clean names remain.
+RECENT_ARCHIVE_INSPIRATION = (
+    "Measures",
+    "Managed",
+    "Ongoing",
+    "Notably",
+    "Deployed",
+    "Sooner",
+    "Heavier",
+    "Promptly",
+    "Steadily",
+    "Touches",
+    "Compiled",
+    "Fixtures",
+    "Tablets",
+    "Editorial",
+    "Leaning",
+    "Proudly",
+    "Statute",
+    "Specialty",
+    "Transfers",
+    "Patents",
+    "Embraced",
+    "Feasible",
+    "Valuation",
+    "Portraits",
+    "Fulfilled",
+    "Listeners",
+    "Modelling",
+    "Spurs",
+)
+
 # Historical references from the official Minehut Wiki's Notable Servers
 # directory. These are checked like any other candidate and are not assumed
 # to be available.
@@ -457,6 +490,12 @@ def build_candidate_pool() -> list[Candidate]:
             6.5,
             "Archive inspiration",
             "filtered owner archive",
+        ),
+        (
+            RECENT_ARCHIVE_INSPIRATION,
+            7.25,
+            "Archive pick",
+            "filtered newer owner archive",
         ),
         (
             NOTABLE_REFERENCES,
