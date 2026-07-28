@@ -5,15 +5,19 @@ from unittest.mock import Mock
 import pytest
 
 from bot import (
+    AVAILABLE_WEBHOOK_ENV,
     AvailabilityResult,
     DISCORD_ERROR_COLOR,
     MINEHUT_LOOKUP_URL,
+    TAKEN_WEBHOOK_ENV,
     build_payload,
     check_name_availability,
     load_retry_queue,
     main,
+    resolve_webhooks,
     save_retry_queue,
     select_check_target,
+    select_webhook,
     selection_number,
     send_to_discord,
     update_retry_queue,
@@ -113,6 +117,54 @@ def test_webhook_request_has_timeout(
         timeout=15,
     )
     response.raise_for_status.assert_called_once_with()
+
+
+AVAILABLE_URL = "https://discord.com/api/webhooks/example/available"
+TAKEN_URL = "https://discord.com/api/webhooks/example/taken"
+
+
+def test_each_availability_routes_to_its_own_channel(
+    available: AvailabilityResult,
+) -> None:
+    taken = AvailabilityResult(False, "Already registered.", 200)
+    routing = {
+        "available_webhook_url": AVAILABLE_URL,
+        "taken_webhook_url": TAKEN_URL,
+    }
+
+    assert select_webhook(available, **routing) == (
+        AVAILABLE_URL,
+        AVAILABLE_WEBHOOK_ENV,
+    )
+    assert select_webhook(taken, **routing) == (TAKEN_URL, TAKEN_WEBHOOK_ENV)
+
+
+def test_resolve_webhooks_reads_both_channels() -> None:
+    resolved = resolve_webhooks(
+        {
+            AVAILABLE_WEBHOOK_ENV: AVAILABLE_URL,
+            TAKEN_WEBHOOK_ENV: TAKEN_URL,
+        }
+    )
+
+    assert resolved == (AVAILABLE_URL, TAKEN_URL)
+
+
+def test_resolve_webhooks_falls_back_when_the_split_is_unset(capsys) -> None:
+    resolved = resolve_webhooks({AVAILABLE_WEBHOOK_ENV: AVAILABLE_URL})
+
+    assert resolved == (AVAILABLE_URL, AVAILABLE_URL)
+    assert TAKEN_WEBHOOK_ENV in capsys.readouterr().out
+
+
+def test_resolve_webhooks_rejects_a_malformed_taken_url() -> None:
+    with pytest.raises(ValueError, match=TAKEN_WEBHOOK_ENV):
+        resolve_webhooks(
+            {
+                AVAILABLE_WEBHOOK_ENV: AVAILABLE_URL,
+                TAKEN_WEBHOOK_ENV: "https://example.com/not-discord",
+            }
+        )
 
 
 def test_404_means_available_with_exactly_one_lookup() -> None:
@@ -360,3 +412,55 @@ def test_main_places_a_due_retry_in_the_final_slot(
     checked_names = [call.args[0] for call in check.call_args_list]
     assert checked_names[:2] == ["FreshOne", "FreshTwo"]
     assert checked_names[2] == "Tycoon"
+
+
+def test_main_sends_taken_names_to_the_second_webhook(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    pool = [
+        Candidate(f"Name{chr(65 + index)}", 10.0 - index / 100, "test", "test")
+        for index in range(8)
+    ]
+    check = Mock(
+        side_effect=[
+            AvailabilityResult(True, "No registered server found.", 404),
+            AvailabilityResult(False, "Already registered.", 200),
+            AvailabilityResult(True, "No registered server found.", 404),
+            AvailabilityResult(False, "Already registered.", 200),
+        ]
+    )
+    send = Mock()
+
+    monkeypatch.setattr("bot.build_candidate_pool", lambda: pool)
+    monkeypatch.setattr("bot.check_name_availability", check)
+    monkeypatch.setattr("bot.send_to_discord", send)
+    monkeypatch.setattr("bot.time.sleep", Mock())
+    monkeypatch.setenv(AVAILABLE_WEBHOOK_ENV, AVAILABLE_URL)
+    monkeypatch.setenv(TAKEN_WEBHOOK_ENV, TAKEN_URL)
+    monkeypatch.setenv("RETRY_QUEUE_PATH", str(tmp_path / "retry_queue.json"))
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "bot.py",
+            "--run-number",
+            "1",
+            "--checks-per-run",
+            "4",
+            "--request-interval-seconds",
+            "13",
+        ],
+    )
+
+    main()
+
+    used_urls = [call.args[0] for call in send.call_args_list]
+    titles = [call.args[1]["embeds"][0]["title"] for call in send.call_args_list]
+
+    assert used_urls == [AVAILABLE_URL, TAKEN_URL, AVAILABLE_URL, TAKEN_URL]
+    assert [title.split(":")[0] for title in titles] == [
+        "Available",
+        "Taken",
+        "Available",
+        "Taken",
+    ]

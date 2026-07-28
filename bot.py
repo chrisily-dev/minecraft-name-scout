@@ -17,6 +17,8 @@ from name_generator import Candidate, build_candidate_pool, select_candidate
 
 DISCORD_COLOR = 0x57F287
 DISCORD_ERROR_COLOR = 0xED4245
+AVAILABLE_WEBHOOK_ENV = "DISCORD_WEBHOOK"
+TAKEN_WEBHOOK_ENV = "DISCORD_WEBHOOK_TAKEN"
 MINEHUT_CREATE_URL = "https://dashboard.minehut.com/servers/create"
 MINEHUT_LOOKUP_URL = "https://api.minehut.com/server/{name}?byName=true"
 USER_AGENT = "MinecraftNameScout/3.0 (+GitHub Actions; paced availability checks)"
@@ -283,9 +285,42 @@ def build_payload(
     }
 
 
-def validate_webhook_url(webhook_url: str) -> None:
+def validate_webhook_url(
+    webhook_url: str,
+    *,
+    env_name: str = AVAILABLE_WEBHOOK_ENV,
+) -> None:
     if not webhook_url.startswith("https://discord.com/api/webhooks/"):
-        raise ValueError("DISCORD_WEBHOOK is missing or is not a Discord webhook URL.")
+        raise ValueError(f"{env_name} is missing or is not a Discord webhook URL.")
+
+
+def select_webhook(
+    availability: AvailabilityResult,
+    *,
+    available_webhook_url: str,
+    taken_webhook_url: str,
+) -> tuple[str, str]:
+    """Route available and taken names to their own Discord channels."""
+    if availability.available:
+        return available_webhook_url, AVAILABLE_WEBHOOK_ENV
+    return taken_webhook_url, TAKEN_WEBHOOK_ENV
+
+
+def resolve_webhooks(environ: dict[str, str]) -> tuple[str, str]:
+    """Read both webhooks, falling back to one channel when the split is unset."""
+    available_webhook_url = environ.get(AVAILABLE_WEBHOOK_ENV, "")
+    validate_webhook_url(available_webhook_url, env_name=AVAILABLE_WEBHOOK_ENV)
+
+    taken_webhook_url = environ.get(TAKEN_WEBHOOK_ENV, "")
+    if not taken_webhook_url:
+        print(
+            f"WARNING: {TAKEN_WEBHOOK_ENV} is not set, so taken names still go to "
+            f"the {AVAILABLE_WEBHOOK_ENV} channel. Set the secret to split them."
+        )
+        return available_webhook_url, available_webhook_url
+
+    validate_webhook_url(taken_webhook_url, env_name=TAKEN_WEBHOOK_ENV)
+    return available_webhook_url, taken_webhook_url
 
 
 def send_to_discord(
@@ -293,8 +328,9 @@ def send_to_discord(
     payload: dict[str, object],
     *,
     session: requests.Session | None = None,
+    env_name: str = AVAILABLE_WEBHOOK_ENV,
 ) -> None:
-    validate_webhook_url(webhook_url)
+    validate_webhook_url(webhook_url, env_name=env_name)
 
     client = session or requests.Session()
     response = client.post(webhook_url, json=payload, timeout=15)
@@ -434,8 +470,7 @@ def main() -> None:
 
     queue_path = Path(os.environ.get("RETRY_QUEUE_PATH", DEFAULT_QUEUE_PATH))
     queue = load_retry_queue(queue_path)
-    webhook_url = os.environ.get("DISCORD_WEBHOOK", "")
-    validate_webhook_url(webhook_url)
+    available_webhook_url, taken_webhook_url = resolve_webhooks(dict(os.environ))
 
     for slot in range(checks_per_run):
         now = datetime.now(timezone.utc)
@@ -468,9 +503,15 @@ def main() -> None:
             is_retry=is_retry,
             queue_status=queue_status,
         )
-        send_to_discord(webhook_url, payload)
+        webhook_url, webhook_env = select_webhook(
+            availability,
+            available_webhook_url=available_webhook_url,
+            taken_webhook_url=taken_webhook_url,
+        )
+        send_to_discord(webhook_url, payload, env_name=webhook_env)
         save_retry_queue(queue_path, queue)
-        print(f"Sent the {candidate.name} result embed to Discord.")
+        channel = "available" if availability.available else "taken"
+        print(f"Sent the {candidate.name} result embed to the {channel} channel.")
 
         is_last_check = slot == checks_per_run - 1
         if not is_last_check:
