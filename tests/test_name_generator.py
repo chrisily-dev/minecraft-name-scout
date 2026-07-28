@@ -1,5 +1,6 @@
 from name_generator import (
     Candidate,
+    _base_score,
     build_candidate_pool,
     is_valid_name,
     select_candidate,
@@ -24,6 +25,7 @@ def test_pool_contains_requested_style_and_no_obscure_shapes() -> None:
         "installed",
         "open",
         "flee",
+        "loud",
         "zombie",
         "prison",
         "mining",
@@ -116,6 +118,27 @@ def test_pool_is_mostly_standalone_words() -> None:
 
     assert len(suffix_names) <= len(pool) // 5
     assert len(first_hundred_suffix_names) <= 20
+
+
+def test_recognizable_short_words_receive_priority() -> None:
+    pool = build_candidate_pool()
+    positions = {
+        candidate.name.casefold(): index
+        for index, candidate in enumerate(pool, start=1)
+    }
+    short_names = [
+        candidate
+        for candidate in pool[:100]
+        if 4 <= len(candidate.name) <= 6
+    ]
+
+    assert positions["loud"] <= 500
+    assert len(short_names) >= 50
+    assert min(
+        _base_score("Loud", 4.53),
+        _base_score("Cloud", 4.53),
+        _base_score("Planet", 4.53),
+    ) > _base_score("Example", 4.53)
 
 
 def test_semantic_families_generate_more_than_the_examples() -> None:

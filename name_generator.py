@@ -554,15 +554,15 @@ def _is_pronounceable(word: str) -> bool:
 def _base_score(name: str, frequency: float, minecraft_weight: float = 0.0) -> float:
     length = len(name)
     length_bonus = {
-        4: 0.5,
-        5: 1.3,
-        6: 2.2,
-        7: 2.8,
-        8: 2.8,
-        9: 2.3,
-        10: 1.7,
-        11: 1.0,
-        12: 0.5,
+        4: 6.0,
+        5: 5.5,
+        6: 5.0,
+        7: 2.6,
+        8: 1.8,
+        9: 1.2,
+        10: 0.8,
+        11: 0.4,
+        12: 0.2,
     }.get(length, 0.0)
     # Very common words tend to be grammatical filler; very rare words are obscure.
     # Favor the familiar-but-distinctive middle of the frequency curve.

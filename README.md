@@ -8,6 +8,8 @@ names and reports every result with polished Discord embeds.
 - Generates names automatically from common English dictionary vocabulary.
 - Keeps the pool roughly 80% standalone words and limits suffix-heavy names
   such as `xGens`, `xKits`, `xPvP`, and `xCraft` to a smaller supporting share.
+- Gives recognizable 4-6 character words the strongest length priority instead
+  of favoring longer names.
 - Adds Minecraft-style transformations such as `PvP`, `Kits`, `Gens`, `Craft`,
   `Box`, and `Sky`.
 - Scores names for commonness, brandability, length, and Minecraft relevance.
@@ -15,7 +17,7 @@ names and reports every result with polished Discord embeds.
   `Dancer`, `Major`, `Mayor`, `Flat`, `Platform`, `RandomKits`, `BoxPvP`,
   `GenPvP`, and `Gens`.
 - Prioritizes straightforward words such as `Open`, `Flee`, `Zombie`, and
-  `Prison` alongside those examples.
+  `Prison`, with short memorable words such as `Loud` ranked automatically.
 - Includes the requested shapes such as `WoolGens`, `GensFood`, `LoopGens`,
   `AcidGens`, `AdonisMine`, `NestMines`, `NylonGN`, `Gmini`, `FlagClash`,
   `Beans`, and `Valknet`.
