@@ -36,6 +36,7 @@ jobs:
       - name: Check a paced candidate batch and send embeds
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_WEBHOOK_TAKEN: ${{ secrets.DISCORD_WEBHOOK_TAKEN }}
           CHECKS_PER_RUN: "20"
           REQUEST_INTERVAL_SECONDS: "13"
         run: python bot.py
@@ -52,4 +53,24 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/retry_queue.json
           git commit -m "Update name retry queue"
-          git push
+
+          # Another commit can land on main while a batch is still running, which
+          # rejects this push. Rebase onto the new tip and retry, keeping this
+          # run's queue snapshot if the file itself conflicts.
+          for attempt in 1 2 3 4 5; do
+            if git push; then
+              echo "Pushed the retry queue on attempt $attempt."
+              exit 0
+            fi
+
+            echo "Push rejected on attempt $attempt. Rebasing onto origin/main."
+            git fetch origin main
+            if ! git rebase --strategy-option=theirs origin/main; then
+              git rebase --abort
+              echo "Could not rebase the retry queue onto origin/main."
+              exit 1
+            fi
+          done
+
+          echo "Could not push the retry queue after 5 attempts."
+          exit 1

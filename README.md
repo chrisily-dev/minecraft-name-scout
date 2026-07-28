@@ -40,9 +40,10 @@ names and reports every result with polished Discord embeds.
 - Checks 20 unique names per workflow run, with 13 seconds between Minehut
   requests so the rate never exceeds five lookups per minute.
 - Sends one separate Discord embed message for every checked name.
-- Sends a green embed when a name appears available.
-- Sends a red embed when a name is unavailable and queues it for one retry the
-  next day.
+- Sends a green embed to the `DISCORD_WEBHOOK` channel when a name appears
+  available.
+- Sends a red embed to the separate `DISCORD_WEBHOOK_TAKEN` channel when a name
+  is unavailable, and queues it for one retry the next day.
 - Checks new names first. At most one due retry can use the final slot in a
   batch, keeping known unavailable names at the bottom of the queue.
 - Removes an unavailable name after its one retry so it cannot permanently
@@ -61,9 +62,14 @@ official Minehut dashboard.
 
 1. Create a private GitHub repository and add these files.
 2. Open **Settings -> Secrets and variables -> Actions**.
-3. Create a repository secret named `DISCORD_WEBHOOK`.
-4. Paste the Discord webhook URL as its value.
+3. Create a repository secret named `DISCORD_WEBHOOK` and paste the webhook URL
+   for the channel that should receive available names.
+4. Create a second secret named `DISCORD_WEBHOOK_TAKEN` and paste the webhook
+   URL for the channel that should receive taken names.
 5. Open **Actions -> Run Minecraft Name Scout -> Run workflow** to test it.
+
+If `DISCORD_WEBHOOK_TAKEN` is missing the run still succeeds, but every result
+goes to the single `DISCORD_WEBHOOK` channel and the log prints a warning.
 
 The scheduled workflow runs every five minutes, which is GitHub Actions' shortest
 supported schedule interval. Each run selects 20 non-repeating names and spaces
