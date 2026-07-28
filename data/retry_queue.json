@@ -1,4 +1,165 @@
 {
-  "items": [],
+  "items": [
+    {
+      "first_checked_at": "2026-07-28T22:20:55.245352+00:00",
+      "name": "Empire",
+      "retry_after": "2026-07-29T22:20:55.245352+00:00",
+      "score": 23.936,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:21:08.717461+00:00",
+      "name": "Legacy",
+      "retry_after": "2026-07-29T22:21:08.717461+00:00",
+      "score": 23.878,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:21:22.082835+00:00",
+      "name": "Vortex",
+      "retry_after": "2026-07-29T22:21:22.082835+00:00",
+      "score": 23.34,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:21:35.305688+00:00",
+      "name": "Tycoon",
+      "retry_after": "2026-07-29T22:21:35.305688+00:00",
+      "score": 22.99,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:21:48.564877+00:00",
+      "name": "Haven",
+      "retry_after": "2026-07-29T22:21:48.564877+00:00",
+      "score": 22.402,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:22:01.847321+00:00",
+      "name": "Quest",
+      "retry_after": "2026-07-29T22:22:01.847321+00:00",
+      "score": 22.388,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:22:15.078025+00:00",
+      "name": "Nexus",
+      "retry_after": "2026-07-29T22:22:15.078025+00:00",
+      "score": 22.09,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:22:28.290866+00:00",
+      "name": "Realm",
+      "retry_after": "2026-07-29T22:22:28.290866+00:00",
+      "score": 21.884,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:22:41.622601+00:00",
+      "name": "Titan",
+      "retry_after": "2026-07-29T22:22:41.622601+00:00",
+      "score": 21.74,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:22:55.207331+00:00",
+      "name": "Nova",
+      "retry_after": "2026-07-29T22:22:55.207331+00:00",
+      "score": 21.29,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:23:08.445014+00:00",
+      "name": "Valknet",
+      "retry_after": "2026-07-29T22:23:08.445014+00:00",
+      "score": 19.94,
+      "source": "owner-provided example",
+      "style": "Requested example"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:23:21.730167+00:00",
+      "name": "Survival",
+      "retry_after": "2026-07-29T22:23:21.730167+00:00",
+      "score": 19.828,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:23:35.070802+00:00",
+      "name": "Platform",
+      "retry_after": "2026-07-29T22:23:35.070802+00:00",
+      "score": 19.752,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:23:48.463454+00:00",
+      "name": "NylonGN",
+      "retry_after": "2026-07-29T22:23:48.463454+00:00",
+      "score": 19.59,
+      "source": "owner-provided example",
+      "style": "Requested example"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:24:01.791315+00:00",
+      "name": "Skyblock",
+      "retry_after": "2026-07-29T22:24:01.791315+00:00",
+      "score": 19.29,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:24:15.105528+00:00",
+      "name": "AcidGens",
+      "retry_after": "2026-07-29T22:24:15.105528+00:00",
+      "score": 19.24,
+      "source": "owner-provided example",
+      "style": "Requested example"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:24:28.388589+00:00",
+      "name": "GensFood",
+      "retry_after": "2026-07-29T22:24:28.388589+00:00",
+      "score": 19.24,
+      "source": "owner-provided example",
+      "style": "Requested example"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:24:41.713328+00:00",
+      "name": "LoopGens",
+      "retry_after": "2026-07-29T22:24:41.713328+00:00",
+      "score": 19.24,
+      "source": "owner-provided example",
+      "style": "Requested example"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:24:55.004572+00:00",
+      "name": "WoolGens",
+      "retry_after": "2026-07-29T22:24:55.004572+00:00",
+      "score": 19.24,
+      "source": "owner-provided example",
+      "style": "Requested example"
+    },
+    {
+      "first_checked_at": "2026-07-28T22:25:08.244493+00:00",
+      "name": "Random",
+      "retry_after": "2026-07-29T22:25:08.244493+00:00",
+      "score": 19.032,
+      "source": "curated style anchor",
+      "style": "Minecraft anchor"
+    }
+  ],
   "version": 1
 }
