@@ -25,7 +25,7 @@ USER_AGENT = "MinecraftNameScout/3.0 (+GitHub Actions; paced availability checks
 DEFAULT_QUEUE_PATH = Path("data/retry_queue.json")
 RETRY_DELAY = timedelta(days=1)
 DEFAULT_CHECKS_PER_RUN = 20
-MAX_CHECKS_PER_RUN = 20
+MAX_CHECKS_PER_RUN = 80
 DEFAULT_REQUEST_INTERVAL_SECONDS = 13.0
 MIN_REQUEST_INTERVAL_SECONDS = 13.0
 
