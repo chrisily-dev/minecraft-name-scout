@@ -5,15 +5,20 @@ import pytest
 
 from bot import (
     AvailabilityResult,
+    CheckReport,
     DISCORD_ERROR_COLOR,
     MINEHUT_LOOKUP_URL,
+    build_batch_payload,
     build_payload,
     check_name_availability,
     load_retry_queue,
+    main,
     save_retry_queue,
     select_check_target,
+    selection_number,
     send_to_discord,
     update_retry_queue,
+    validate_rate_settings,
 )
 from name_generator import Candidate
 
@@ -59,6 +64,34 @@ def test_unavailable_payload_uses_red_embed(candidate: Candidate) -> None:
     assert embed["color"] == DISCORD_ERROR_COLOR
     assert "currently **unavailable**" in embed["description"]
     assert embed["fields"][4]["value"] == "Queued for one retry tomorrow."
+
+
+def test_batch_payload_groups_five_result_embeds(
+    candidate: Candidate,
+    available: AvailabilityResult,
+) -> None:
+    reports = [
+        CheckReport(candidate, available, False, "No retry needed.")
+        for _ in range(5)
+    ]
+
+    payload = build_batch_payload(reports)
+
+    assert len(payload["embeds"]) == 5
+    assert payload["allowed_mentions"] == {"parse": []}
+
+
+def test_batch_payload_rejects_more_than_five_embeds(
+    candidate: Candidate,
+    available: AvailabilityResult,
+) -> None:
+    reports = [
+        CheckReport(candidate, available, False, "No retry needed.")
+        for _ in range(6)
+    ]
+
+    with pytest.raises(ValueError):
+        build_batch_payload(reports)
 
 
 def test_webhook_validation_rejects_missing_url(
@@ -204,3 +237,68 @@ def test_completed_retry_is_removed_from_queue(candidate: Candidate) -> None:
 
     assert queue["items"] == []
     assert "retry completed" in status.casefold()
+
+
+def test_rate_guard_enforces_the_moderator_limit() -> None:
+    validate_rate_settings(20, 13.0)
+
+    with pytest.raises(ValueError):
+        validate_rate_settings(21, 13.0)
+    with pytest.raises(ValueError):
+        validate_rate_settings(20, 12.9)
+
+
+def test_batch_selection_numbers_do_not_overlap_between_runs() -> None:
+    first_run = {selection_number(1, 20, slot) for slot in range(20)}
+    second_run = {selection_number(2, 20, slot) for slot in range(20)}
+
+    assert first_run == set(range(1, 21))
+    assert second_run == set(range(21, 41))
+    assert first_run.isdisjoint(second_run)
+
+
+def test_main_checks_twenty_unique_names_in_four_discord_batches(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    pool = [
+        Candidate(f"Name{chr(65 + index)}", 10.0 - index / 100, "test", "test")
+        for index in range(24)
+    ]
+    check = Mock(
+        return_value=AvailabilityResult(True, "No registered server found.", 404)
+    )
+    send = Mock()
+    sleep = Mock()
+
+    monkeypatch.setattr("bot.build_candidate_pool", lambda: pool)
+    monkeypatch.setattr("bot.check_name_availability", check)
+    monkeypatch.setattr("bot.send_to_discord", send)
+    monkeypatch.setattr("bot.time.sleep", sleep)
+    monkeypatch.setenv(
+        "DISCORD_WEBHOOK",
+        "https://discord.com/api/webhooks/example/token",
+    )
+    monkeypatch.setenv("RETRY_QUEUE_PATH", str(tmp_path / "retry_queue.json"))
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "bot.py",
+            "--run-number",
+            "1",
+            "--checks-per-run",
+            "20",
+            "--request-interval-seconds",
+            "13",
+        ],
+    )
+
+    main()
+
+    checked_names = [call.args[0] for call in check.call_args_list]
+    assert len(checked_names) == 20
+    assert len(set(checked_names)) == 20
+    assert send.call_count == 4
+    assert all(len(call.args[1]["embeds"]) == 5 for call in send.call_args_list)
+    assert sleep.call_count == 19
+    sleep.assert_called_with(13.0)

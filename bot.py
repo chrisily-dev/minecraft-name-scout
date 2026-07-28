@@ -1,4 +1,4 @@
-"""Send one Minecraft server-name candidate to a Discord webhook."""
+"""Check a paced batch of Minecraft server-name candidates."""
 
 from __future__ import annotations
 
@@ -17,11 +17,16 @@ from name_generator import Candidate, build_candidate_pool, select_candidate
 
 DISCORD_COLOR = 0x57F287
 DISCORD_ERROR_COLOR = 0xED4245
+DISCORD_EMBEDS_PER_MESSAGE = 5
 MINEHUT_DASHBOARD = "https://app.minehut.com/dashboard"
 MINEHUT_LOOKUP_URL = "https://api.minehut.com/server/{name}?byName=true"
-USER_AGENT = "MinecraftNameScout/2.0 (+GitHub Actions; one lookup per run)"
+USER_AGENT = "MinecraftNameScout/3.0 (+GitHub Actions; paced availability checks)"
 DEFAULT_QUEUE_PATH = Path("data/retry_queue.json")
 RETRY_DELAY = timedelta(days=1)
+DEFAULT_CHECKS_PER_RUN = 20
+MAX_CHECKS_PER_RUN = 20
+DEFAULT_REQUEST_INTERVAL_SECONDS = 13.0
+MIN_REQUEST_INTERVAL_SECONDS = 13.0
 
 
 @dataclass(frozen=True, slots=True)
@@ -29,6 +34,14 @@ class AvailabilityResult:
     available: bool
     reason: str
     status_code: int
+
+
+@dataclass(frozen=True, slots=True)
+class CheckReport:
+    candidate: Candidate
+    availability: AvailabilityResult
+    is_retry: bool
+    queue_status: str
 
 
 def check_name_availability(
@@ -102,14 +115,18 @@ def select_check_target(
     pool: list[Candidate],
     queue: dict[str, object],
     now: datetime,
+    *,
+    excluded_names: set[str] | None = None,
 ) -> tuple[Candidate, bool]:
     """Prefer the oldest due retry; otherwise select one new ranked candidate."""
     items = queue["items"]
+    excluded = {name.casefold() for name in (excluded_names or set())}
     due_items = sorted(
         (
             item
             for item in items
             if isinstance(item, dict)
+            and str(item.get("name", "")).casefold() not in excluded
             and isinstance(item.get("retry_after"), str)
             and _parse_timestamp(item["retry_after"]) <= now
         ),
@@ -132,6 +149,7 @@ def select_check_target(
         for item in items
         if isinstance(item, dict) and isinstance(item.get("name"), str)
     }
+    queued_names.update(excluded)
     for offset in range(len(pool)):
         candidate = select_candidate(run_number + offset, pool)
         if candidate.name.casefold() not in queued_names:
@@ -202,7 +220,7 @@ def build_embed(
         ),
         "description": (
             f"## `{candidate.name}`\n"
-            f"This dictionary-driven candidate is currently **{status_word}**."
+            f"This ranked candidate is currently **{status_word}**."
         ),
         "color": DISCORD_COLOR if availability.available else DISCORD_ERROR_COLOR,
         "fields": [
@@ -240,7 +258,7 @@ def build_embed(
         "footer": {
             "text": (
                 f"{'Retry' if is_retry else 'New candidate'} | "
-                "one API lookup per run | 4-12 letters"
+                "paced to at most 5 lookups/minute | 4-12 letters"
             )
         },
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -268,14 +286,40 @@ def build_payload(
     }
 
 
+def build_batch_payload(reports: list[CheckReport]) -> dict[str, object]:
+    if not 1 <= len(reports) <= DISCORD_EMBEDS_PER_MESSAGE:
+        raise ValueError(
+            f"A Discord result batch must contain 1-{DISCORD_EMBEDS_PER_MESSAGE} "
+            "reports."
+        )
+
+    return {
+        "username": "Minecraft Name Scout",
+        "allowed_mentions": {"parse": []},
+        "embeds": [
+            build_embed(
+                report.candidate,
+                report.availability,
+                is_retry=report.is_retry,
+                queue_status=report.queue_status,
+            )
+            for report in reports
+        ],
+    }
+
+
+def validate_webhook_url(webhook_url: str) -> None:
+    if not webhook_url.startswith("https://discord.com/api/webhooks/"):
+        raise ValueError("DISCORD_WEBHOOK is missing or is not a Discord webhook URL.")
+
+
 def send_to_discord(
     webhook_url: str,
     payload: dict[str, object],
     *,
     session: requests.Session | None = None,
 ) -> None:
-    if not webhook_url.startswith("https://discord.com/api/webhooks/"):
-        raise ValueError("DISCORD_WEBHOOK is missing or is not a Discord webhook URL.")
+    validate_webhook_url(webhook_url)
 
     client = session or requests.Session()
     response = client.post(webhook_url, json=payload, timeout=15)
@@ -290,8 +334,44 @@ def _run_number() -> int:
         except ValueError as error:
             raise ValueError("GITHUB_RUN_NUMBER must be an integer.") from error
 
-    # Local fallback: one deterministic slot per five-minute interval.
+    # Local fallback: one deterministic batch per five-minute interval.
     return max(int(time.time() // 300), 1)
+
+
+def _checks_per_run() -> int:
+    raw_value = os.environ.get("CHECKS_PER_RUN", str(DEFAULT_CHECKS_PER_RUN))
+    try:
+        return int(raw_value)
+    except ValueError as error:
+        raise ValueError("CHECKS_PER_RUN must be an integer.") from error
+
+
+def _request_interval_seconds() -> float:
+    raw_value = os.environ.get(
+        "REQUEST_INTERVAL_SECONDS",
+        str(DEFAULT_REQUEST_INTERVAL_SECONDS),
+    )
+    try:
+        return float(raw_value)
+    except ValueError as error:
+        raise ValueError("REQUEST_INTERVAL_SECONDS must be a number.") from error
+
+
+def validate_rate_settings(checks_per_run: int, interval_seconds: float) -> None:
+    if not 1 <= checks_per_run <= MAX_CHECKS_PER_RUN:
+        raise ValueError(
+            f"Checks per run must be between 1 and {MAX_CHECKS_PER_RUN}."
+        )
+    if interval_seconds < MIN_REQUEST_INTERVAL_SECONDS:
+        raise ValueError(
+            f"Request interval must be at least "
+            f"{MIN_REQUEST_INTERVAL_SECONDS:.0f} seconds."
+        )
+
+
+def selection_number(run_number: int, checks_per_run: int, slot: int) -> int:
+    """Map each workflow slot to a non-overlapping deterministic pool index."""
+    return ((max(run_number, 1) - 1) * checks_per_run) + slot + 1
 
 
 def main() -> None:
@@ -299,32 +379,77 @@ def main() -> None:
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Print the candidate and payload without sending to Discord.",
+        help="Print selected candidates without making network requests.",
     )
     parser.add_argument(
         "--run-number",
         type=int,
         help="Override the deterministic selection index.",
     )
+    parser.add_argument(
+        "--checks-per-run",
+        type=int,
+        help=f"Candidates to check (default {DEFAULT_CHECKS_PER_RUN}).",
+    )
+    parser.add_argument(
+        "--request-interval-seconds",
+        type=float,
+        help=(
+            "Seconds between Minehut requests "
+            f"(minimum {MIN_REQUEST_INTERVAL_SECONDS:.0f})."
+        ),
+    )
     args = parser.parse_args()
 
-    run_number = args.run_number or _run_number()
+    run_number = args.run_number if args.run_number is not None else _run_number()
+    checks_per_run = (
+        args.checks_per_run
+        if args.checks_per_run is not None
+        else _checks_per_run()
+    )
+    interval_seconds = (
+        args.request_interval_seconds
+        if args.request_interval_seconds is not None
+        else _request_interval_seconds()
+    )
+    try:
+        validate_rate_settings(checks_per_run, interval_seconds)
+    except ValueError as error:
+        parser.error(str(error))
+
     pool = build_candidate_pool()
+    checked_names: set[str] = set()
 
     if args.dry_run:
-        candidate = select_candidate(run_number, pool)
-        print(
-            f"Selected exactly one candidate: "
-            f"{candidate.name} (score {candidate.score:.1f})"
-        )
+        dry_queue: dict[str, object] = {"version": 1, "items": []}
+        candidates: list[Candidate] = []
+        now = datetime.now(timezone.utc)
+        for slot in range(checks_per_run):
+            candidate, _ = select_check_target(
+                selection_number(run_number, checks_per_run, slot),
+                pool,
+                dry_queue,
+                now,
+                excluded_names=checked_names,
+            )
+            checked_names.add(candidate.name.casefold())
+            candidates.append(candidate)
+
+        print(f"Selected {len(candidates)} unique candidates for the paced batch.")
         print(
             json.dumps(
                 {
-                    "candidate": candidate.name,
-                    "length": len(candidate.name),
-                    "score": candidate.score,
-                    "style": candidate.style,
-                    "api_lookup_performed": False,
+                    "candidates": [
+                        {
+                            "name": candidate.name,
+                            "length": len(candidate.name),
+                            "score": candidate.score,
+                            "style": candidate.style,
+                        }
+                        for candidate in candidates
+                    ],
+                    "request_interval_seconds": interval_seconds,
+                    "api_lookups_performed": 0,
                 },
                 indent=2,
             )
@@ -333,33 +458,58 @@ def main() -> None:
 
     queue_path = Path(os.environ.get("RETRY_QUEUE_PATH", DEFAULT_QUEUE_PATH))
     queue = load_retry_queue(queue_path)
-    now = datetime.now(timezone.utc)
-    candidate, is_retry = select_check_target(run_number, pool, queue, now)
-    print(
-        f"Selected exactly one {'retry' if is_retry else 'new candidate'}: "
-        f"{candidate.name} (score {candidate.score:.1f})"
-    )
-
-    availability = check_name_availability(candidate.name)
-    print(availability.reason)
-    queue_status = update_retry_queue(
-        queue,
-        candidate,
-        availability,
-        is_retry=is_retry,
-        now=now,
-    )
-
-    payload = build_payload(
-        candidate,
-        availability,
-        is_retry=is_retry,
-        queue_status=queue_status,
-    )
     webhook_url = os.environ.get("DISCORD_WEBHOOK", "")
-    send_to_discord(webhook_url, payload)
-    save_retry_queue(queue_path, queue)
-    print("Discord embed sent successfully.")
+    validate_webhook_url(webhook_url)
+    pending_reports: list[CheckReport] = []
+
+    for slot in range(checks_per_run):
+        now = datetime.now(timezone.utc)
+        candidate, is_retry = select_check_target(
+            selection_number(run_number, checks_per_run, slot),
+            pool,
+            queue,
+            now,
+            excluded_names=checked_names,
+        )
+        checked_names.add(candidate.name.casefold())
+        print(
+            f"Checking {slot + 1}/{checks_per_run} "
+            f"({'retry' if is_retry else 'new'}): {candidate.name}"
+        )
+
+        availability = check_name_availability(candidate.name)
+        print(availability.reason)
+        queue_status = update_retry_queue(
+            queue,
+            candidate,
+            availability,
+            is_retry=is_retry,
+            now=now,
+        )
+        pending_reports.append(
+            CheckReport(
+                candidate=candidate,
+                availability=availability,
+                is_retry=is_retry,
+                queue_status=queue_status,
+            )
+        )
+
+        is_last_check = slot == checks_per_run - 1
+        if (
+            len(pending_reports) == DISCORD_EMBEDS_PER_MESSAGE
+            or is_last_check
+        ):
+            payload = build_batch_payload(pending_reports)
+            send_to_discord(webhook_url, payload)
+            save_retry_queue(queue_path, queue)
+            print(f"Sent {len(pending_reports)} result embeds to Discord.")
+            pending_reports = []
+
+        if not is_last_check:
+            time.sleep(interval_seconds)
+
+    print(f"Completed {checks_per_run} paced availability checks.")
 
 
 if __name__ == "__main__":
