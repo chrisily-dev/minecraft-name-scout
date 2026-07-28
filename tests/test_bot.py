@@ -1,13 +1,19 @@
+from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock
 
 import pytest
 
 from bot import (
     AvailabilityResult,
+    DISCORD_ERROR_COLOR,
     MINEHUT_LOOKUP_URL,
     build_payload,
     check_name_availability,
+    load_retry_queue,
+    save_retry_queue,
+    select_check_target,
     send_to_discord,
+    update_retry_queue,
 )
 from name_generator import Candidate
 
@@ -33,6 +39,26 @@ def test_payload_uses_one_embed(
     assert "`Tycoon`" in payload["embeds"][0]["description"]
     assert payload["embeds"][0]["title"] == "Available Minehut Server Name"
     assert payload["allowed_mentions"] == {"parse": []}
+
+
+def test_unavailable_payload_uses_red_embed(candidate: Candidate) -> None:
+    unavailable = AvailabilityResult(
+        False,
+        "A registered Minehut server already uses this name.",
+        200,
+    )
+
+    payload = build_payload(
+        candidate,
+        unavailable,
+        queue_status="Queued for one retry tomorrow.",
+    )
+    embed = payload["embeds"][0]
+
+    assert embed["title"] == "Minehut Server Name Unavailable"
+    assert embed["color"] == DISCORD_ERROR_COLOR
+    assert "currently **unavailable**" in embed["description"]
+    assert embed["fields"][4]["value"] == "Queued for one retry tomorrow."
 
 
 def test_webhook_validation_rejects_missing_url(
@@ -91,7 +117,7 @@ def test_empty_server_object_means_available() -> None:
     response.raise_for_status.assert_called_once_with()
 
 
-def test_existing_server_does_not_notify() -> None:
+def test_existing_server_is_unavailable() -> None:
     response = Mock(status_code=200)
     response.json.return_value = {"server": {"_id": "existing"}}
     session = Mock()
@@ -100,3 +126,81 @@ def test_existing_server_does_not_notify() -> None:
     result = check_name_availability("Tycoon", session=session)
 
     assert result.available is False
+
+
+def test_new_unavailable_name_is_queued_for_tomorrow(
+    candidate: Candidate,
+    tmp_path,
+) -> None:
+    queue_path = tmp_path / "retry_queue.json"
+    queue = load_retry_queue(queue_path)
+    checked_at = datetime(2026, 7, 28, 10, 0, tzinfo=timezone.utc)
+    unavailable = AvailabilityResult(False, "Already registered.", 200)
+
+    status = update_retry_queue(
+        queue,
+        candidate,
+        unavailable,
+        is_retry=False,
+        now=checked_at,
+    )
+    save_retry_queue(queue_path, queue)
+    saved = load_retry_queue(queue_path)
+
+    assert "Queued for one retry" in status
+    assert len(saved["items"]) == 1
+    assert saved["items"][0]["name"] == "Tycoon"
+    assert datetime.fromisoformat(saved["items"][0]["retry_after"]) == (
+        checked_at + timedelta(days=1)
+    )
+
+
+def test_due_retry_uses_the_single_check_slot(candidate: Candidate) -> None:
+    now = datetime(2026, 7, 29, 10, 1, tzinfo=timezone.utc)
+    queue = {
+        "version": 1,
+        "items": [
+            {
+                "name": candidate.name,
+                "score": candidate.score,
+                "style": candidate.style,
+                "source": candidate.source,
+                "first_checked_at": (now - timedelta(days=1, minutes=1)).isoformat(),
+                "retry_after": (now - timedelta(minutes=1)).isoformat(),
+            }
+        ],
+    }
+    pool = [Candidate("Mining", 12.0, "Dictionary word", "common English")]
+
+    selected, is_retry = select_check_target(10, pool, queue, now)
+
+    assert selected == candidate
+    assert is_retry is True
+
+
+def test_completed_retry_is_removed_from_queue(candidate: Candidate) -> None:
+    queue = {
+        "version": 1,
+        "items": [
+            {
+                "name": candidate.name,
+                "score": candidate.score,
+                "style": candidate.style,
+                "source": candidate.source,
+                "first_checked_at": "2026-07-28T10:00:00+00:00",
+                "retry_after": "2026-07-29T10:00:00+00:00",
+            }
+        ],
+    }
+    unavailable = AvailabilityResult(False, "Still registered.", 200)
+
+    status = update_retry_queue(
+        queue,
+        candidate,
+        unavailable,
+        is_retry=True,
+        now=datetime(2026, 7, 29, 10, 0, tzinfo=timezone.utc),
+    )
+
+    assert queue["items"] == []
+    assert "retry completed" in status.casefold()
