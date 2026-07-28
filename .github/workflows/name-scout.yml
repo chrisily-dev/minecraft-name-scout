@@ -2,8 +2,8 @@ name: Run Minecraft Name Scout
 
 on:
   schedule:
-    # GitHub Actions' shortest supported schedule interval is five minutes.
-    - cron: "*/5 * * * *"
+    # Runs every 20 minutes
+    - cron: "*/20 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -16,7 +16,7 @@ concurrency:
 jobs:
   suggest:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30 # Increased timeout to safely accommodate 80 requests
 
     steps:
       - name: Check out repository
@@ -37,7 +37,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_WEBHOOK_TAKEN: ${{ secrets.DISCORD_WEBHOOK_TAKEN }}
-          CHECKS_PER_RUN: "20"
+          CHECKS_PER_RUN: "80"
           REQUEST_INTERVAL_SECONDS: "13"
         run: python bot.py
 
@@ -54,9 +54,6 @@ jobs:
           git add data/retry_queue.json
           git commit -m "Update name retry queue"
 
-          # Another commit can land on main while a batch is still running, which
-          # rejects this push. Rebase onto the new tip and retry, keeping this
-          # run's queue snapshot if the file itself conflicts.
           for attempt in 1 2 3 4 5; do
             if git push; then
               echo "Pushed the retry queue on attempt $attempt."
