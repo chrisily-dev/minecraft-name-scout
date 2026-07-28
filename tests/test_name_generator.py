@@ -33,10 +33,45 @@ def test_pool_contains_requested_style_and_no_obscure_shapes() -> None:
         "boxpvp",
         "genpvp",
         "gens",
+        "woolgens",
+        "gensfood",
+        "loopgens",
+        "acidgens",
+        "adonismine",
+        "nestmines",
+        "nylongn",
+        "gmini",
+        "flagclash",
+        "beans",
+        "valknet",
+        "harbor",
+        "ashen",
+        "basalt",
+        "cabin",
+        "drift",
+        "ember",
+        "flint",
+        "grove",
+        "warzone",
+        "towerdefense",
     }
     assert expected <= names
     assert len(pool) >= 500
     assert all(is_valid_name(candidate.name) for candidate in pool)
+    assert len(names) == len(pool)
+
+
+def test_semantic_families_generate_more_than_the_examples() -> None:
+    pool = build_candidate_pool()
+    names = {candidate.name.casefold() for candidate in pool}
+
+    assert {
+        "voidgens",
+        "gensrune",
+        "novamines",
+        "riftclash",
+        "valorpvp",
+    } <= names
 
 
 def test_selection_is_deterministic_and_returns_one_candidate() -> None:

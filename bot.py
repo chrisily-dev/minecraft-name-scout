@@ -239,8 +239,8 @@ def build_embed(
         ],
         "footer": {
             "text": (
-                f"{'Retry' if is_retry else 'New candidate'} • "
-                "one API lookup per run • 4–12 letters"
+                f"{'Retry' if is_retry else 'New candidate'} | "
+                "one API lookup per run | 4-12 letters"
             )
         },
         "timestamp": datetime.now(timezone.utc).isoformat(),

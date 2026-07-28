@@ -12,6 +12,14 @@ per run and reports the result with a polished Discord embed.
 - Includes styles such as `Tycoon`, `Sales`, `Installed`, `Mining`, `Farming`,
   `Dancer`, `Major`, `Mayor`, `Flat`, `Platform`, `RandomKits`, `BoxPvP`,
   `GenPvP`, and `Gens`.
+- Includes the requested shapes such as `WoolGens`, `GensFood`, `LoopGens`,
+  `AcidGens`, `AdonisMine`, `NestMines`, `NylonGN`, `Gmini`, `FlagClash`,
+  `Beans`, and `Valknet`.
+- Builds additional generator, mining, kit, PvP, and clash compounds from
+  semantic stem groups instead of requiring every possible name by hand.
+- Includes the strong reference words `Harbor`, `Ashen`, `Basalt`, `Cabin`,
+  `Drift`, `Ember`, `Flint`, and `Grove`, plus selected historical Minehut
+  references as availability candidates.
 - Rejects profanity, rare dictionary curiosities, awkward consonant clusters,
   symbols, and anything outside the 4-12 character limit.
 - Walks a ranked candidate pool without accidental random repeats.
@@ -24,10 +32,11 @@ per run and reports the result with a polished Discord embed.
 
 ## Minehut API notice
 
-Minehut's current published rules state that its API may not be used. Do not enable
-the scheduled workflow unless you have permission to use the endpoint. Even when
-the API reports a name as available, verify and claim it through the official
-Minehut dashboard.
+[Minehut's current published rules](https://support.minehut.com/hc/en-us/articles/27075816947731-Minehut-Rules)
+state that its API may not be used. Do not enable the scheduled workflow or raise
+its request rate unless you have written permission to use the endpoint. Even
+when the API reports a name as available, verify and claim it through the
+official Minehut dashboard.
 
 ## Setup
 

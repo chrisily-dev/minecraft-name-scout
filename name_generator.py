@@ -47,6 +47,99 @@ ANCHORS = (
     "Quest",
 )
 
+# Exact examples requested by the owner. They also guide the generalized
+# compound families below; the Discord presentation remains this bot's own.
+REQUESTED_NAMES = (
+    "WoolGens",
+    "GensFood",
+    "LoopGens",
+    "AcidGens",
+    "AdonisMine",
+    "NestMines",
+    "NylonGN",
+    "Gmini",
+    "FlagClash",
+    "Beans",
+    "Valknet",
+)
+
+# Strong single-word shapes supplied in the reference screenshot.
+REFERENCE_WORDS = (
+    "Harbor",
+    "Ashen",
+    "Basalt",
+    "Cabin",
+    "Drift",
+    "Ember",
+    "Flint",
+    "Grove",
+)
+
+# Historical references from the official Minehut Wiki's Notable Servers
+# directory. These are checked like any other candidate and are not assumed
+# to be available.
+NOTABLE_REFERENCES = (
+    "CapeCraft",
+    "Fewer",
+    "FunMinesX",
+    "Glowcraft",
+    "HotdogWater",
+    "HyruleGG",
+    "LabsMC",
+    "LeoneMC",
+    "Lifesteal",
+    "Lightskies",
+    "Mlum",
+    "Overcast",
+    "SurvivalGG",
+    "SynthCraft",
+    "TowerDefense",
+    "UnitedLands",
+    "Warzone",
+    "ZedarMC",
+)
+
+# Semantically grouped stems produce related names without relying on a fixed
+# hand-written list for every combination.
+GEN_STEMS = (
+    "Wool",
+    "Food",
+    "Loop",
+    "Acid",
+    "Nest",
+    "Void",
+    "Ore",
+    "Crop",
+    "Flux",
+    "Rune",
+    "Bloom",
+    "Stone",
+)
+
+MINE_STEMS = (
+    "Adonis",
+    "Nest",
+    "Tech",
+    "Rift",
+    "Nova",
+    "Forge",
+    "Solar",
+    "Titan",
+    "Deep",
+    "Crystal",
+)
+
+PVP_STEMS = (
+    "Flag",
+    "Rune",
+    "Rift",
+    "Titan",
+    "Nova",
+    "Valor",
+    "Crown",
+    "Blaze",
+)
+
 PREFIXES = (
     "Mine",
     "Craft",
@@ -335,6 +428,55 @@ def build_candidate_pool() -> list[Candidate]:
             "Minecraft anchor",
             "curated style anchor",
         )
+
+    curated_groups = (
+        (REQUESTED_NAMES, 11.0, "Requested example", "owner-provided example"),
+        (REFERENCE_WORDS, 9.0, "Strong word", "reference screenshot"),
+        (
+            NOTABLE_REFERENCES,
+            8.0,
+            "Minehut reference",
+            "official notable-server directory",
+        ),
+    )
+    for names, weight, style, source in curated_groups:
+        for name in names:
+            frequency = max(zipf_frequency(name.lower(), "en"), 4.0)
+            _add_candidate(
+                candidates,
+                name,
+                _base_score(name, frequency, minecraft_weight=weight),
+                style,
+                source,
+            )
+
+    compound_families = (
+        (GEN_STEMS, ("Gens",), ("", "Gens"), "Generator brand"),
+        (MINE_STEMS, ("Mine", "Mines"), ("",), "Mining brand"),
+        (PVP_STEMS, ("Clash", "PvP", "Kits"), ("",), "PvP brand"),
+    )
+    for stems, suffixes, prefixes, style in compound_families:
+        for stem in stems:
+            frequency = max(zipf_frequency(stem.lower(), "en"), 4.0)
+            for suffix in suffixes:
+                compound = f"{stem}{suffix}"
+                _add_candidate(
+                    candidates,
+                    compound,
+                    _base_score(compound, frequency, minecraft_weight=6.0),
+                    style,
+                    "semantic compound",
+                )
+            for prefix in prefixes:
+                if prefix:
+                    compound = f"{prefix}{stem}"
+                    _add_candidate(
+                        candidates,
+                        compound,
+                        _base_score(compound, frequency, minecraft_weight=5.8),
+                        style,
+                        "semantic compound",
+                    )
 
     # Strong standalone words such as Tycoon, Realm, Empire, and Nova.
     for word, frequency in common_words:
