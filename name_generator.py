@@ -75,6 +75,26 @@ REFERENCE_WORDS = (
     "Grove",
 )
 
+# Recognizable names retained from the owner's 2022 checker archive. Hundreds
+# of rare technical and dictionary-curiosity results were intentionally omitted.
+ARCHIVE_INSPIRATION = (
+    "Backseat",
+    "Evaluator",
+    "Recasting",
+    "Grabby",
+    "Workmates",
+    "Unfurling",
+    "Formwork",
+    "Trackball",
+    "Bulwarks",
+    "Scruple",
+    "Refocuses",
+    "Skydives",
+    "Oilskin",
+    "Coheres",
+    "Caroms",
+)
+
 # Historical references from the official Minehut Wiki's Notable Servers
 # directory. These are checked like any other candidate and are not assumed
 # to be available.
@@ -432,6 +452,12 @@ def build_candidate_pool() -> list[Candidate]:
     curated_groups = (
         (REQUESTED_NAMES, 11.0, "Requested example", "owner-provided example"),
         (REFERENCE_WORDS, 9.0, "Strong word", "reference screenshot"),
+        (
+            ARCHIVE_INSPIRATION,
+            6.5,
+            "Archive inspiration",
+            "filtered owner archive",
+        ),
         (
             NOTABLE_REFERENCES,
             8.0,

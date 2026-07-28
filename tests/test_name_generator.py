@@ -52,6 +52,12 @@ def test_pool_contains_requested_style_and_no_obscure_shapes() -> None:
         "ember",
         "flint",
         "grove",
+        "backseat",
+        "formwork",
+        "trackball",
+        "bulwarks",
+        "refocuses",
+        "skydives",
         "warzone",
         "towerdefense",
     }

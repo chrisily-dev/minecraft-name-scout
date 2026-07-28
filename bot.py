@@ -17,7 +17,6 @@ from name_generator import Candidate, build_candidate_pool, select_candidate
 
 DISCORD_COLOR = 0x57F287
 DISCORD_ERROR_COLOR = 0xED4245
-DISCORD_EMBEDS_PER_MESSAGE = 5
 MINEHUT_DASHBOARD = "https://app.minehut.com/dashboard"
 MINEHUT_LOOKUP_URL = "https://api.minehut.com/server/{name}?byName=true"
 USER_AGENT = "MinecraftNameScout/3.0 (+GitHub Actions; paced availability checks)"
@@ -34,14 +33,6 @@ class AvailabilityResult:
     available: bool
     reason: str
     status_code: int
-
-
-@dataclass(frozen=True, slots=True)
-class CheckReport:
-    candidate: Candidate
-    availability: AvailabilityResult
-    is_retry: bool
-    queue_status: str
 
 
 def check_name_availability(
@@ -286,28 +277,6 @@ def build_payload(
     }
 
 
-def build_batch_payload(reports: list[CheckReport]) -> dict[str, object]:
-    if not 1 <= len(reports) <= DISCORD_EMBEDS_PER_MESSAGE:
-        raise ValueError(
-            f"A Discord result batch must contain 1-{DISCORD_EMBEDS_PER_MESSAGE} "
-            "reports."
-        )
-
-    return {
-        "username": "Minecraft Name Scout",
-        "allowed_mentions": {"parse": []},
-        "embeds": [
-            build_embed(
-                report.candidate,
-                report.availability,
-                is_retry=report.is_retry,
-                queue_status=report.queue_status,
-            )
-            for report in reports
-        ],
-    }
-
-
 def validate_webhook_url(webhook_url: str) -> None:
     if not webhook_url.startswith("https://discord.com/api/webhooks/"):
         raise ValueError("DISCORD_WEBHOOK is missing or is not a Discord webhook URL.")
@@ -460,7 +429,6 @@ def main() -> None:
     queue = load_retry_queue(queue_path)
     webhook_url = os.environ.get("DISCORD_WEBHOOK", "")
     validate_webhook_url(webhook_url)
-    pending_reports: list[CheckReport] = []
 
     for slot in range(checks_per_run):
         now = datetime.now(timezone.utc)
@@ -486,26 +454,17 @@ def main() -> None:
             is_retry=is_retry,
             now=now,
         )
-        pending_reports.append(
-            CheckReport(
-                candidate=candidate,
-                availability=availability,
-                is_retry=is_retry,
-                queue_status=queue_status,
-            )
+        payload = build_payload(
+            candidate,
+            availability,
+            is_retry=is_retry,
+            queue_status=queue_status,
         )
+        send_to_discord(webhook_url, payload)
+        save_retry_queue(queue_path, queue)
+        print(f"Sent the {candidate.name} result embed to Discord.")
 
         is_last_check = slot == checks_per_run - 1
-        if (
-            len(pending_reports) == DISCORD_EMBEDS_PER_MESSAGE
-            or is_last_check
-        ):
-            payload = build_batch_payload(pending_reports)
-            send_to_discord(webhook_url, payload)
-            save_retry_queue(queue_path, queue)
-            print(f"Sent {len(pending_reports)} result embeds to Discord.")
-            pending_reports = []
-
         if not is_last_check:
             time.sleep(interval_seconds)
 

@@ -5,10 +5,8 @@ import pytest
 
 from bot import (
     AvailabilityResult,
-    CheckReport,
     DISCORD_ERROR_COLOR,
     MINEHUT_LOOKUP_URL,
-    build_batch_payload,
     build_payload,
     check_name_availability,
     load_retry_queue,
@@ -64,34 +62,6 @@ def test_unavailable_payload_uses_red_embed(candidate: Candidate) -> None:
     assert embed["color"] == DISCORD_ERROR_COLOR
     assert "currently **unavailable**" in embed["description"]
     assert embed["fields"][4]["value"] == "Queued for one retry tomorrow."
-
-
-def test_batch_payload_groups_five_result_embeds(
-    candidate: Candidate,
-    available: AvailabilityResult,
-) -> None:
-    reports = [
-        CheckReport(candidate, available, False, "No retry needed.")
-        for _ in range(5)
-    ]
-
-    payload = build_batch_payload(reports)
-
-    assert len(payload["embeds"]) == 5
-    assert payload["allowed_mentions"] == {"parse": []}
-
-
-def test_batch_payload_rejects_more_than_five_embeds(
-    candidate: Candidate,
-    available: AvailabilityResult,
-) -> None:
-    reports = [
-        CheckReport(candidate, available, False, "No retry needed.")
-        for _ in range(6)
-    ]
-
-    with pytest.raises(ValueError):
-        build_batch_payload(reports)
 
 
 def test_webhook_validation_rejects_missing_url(
@@ -257,7 +227,7 @@ def test_batch_selection_numbers_do_not_overlap_between_runs() -> None:
     assert first_run.isdisjoint(second_run)
 
 
-def test_main_checks_twenty_unique_names_in_four_discord_batches(
+def test_main_sends_one_embed_for_each_of_twenty_unique_names(
     monkeypatch,
     tmp_path,
 ) -> None:
@@ -298,7 +268,7 @@ def test_main_checks_twenty_unique_names_in_four_discord_batches(
     checked_names = [call.args[0] for call in check.call_args_list]
     assert len(checked_names) == 20
     assert len(set(checked_names)) == 20
-    assert send.call_count == 4
-    assert all(len(call.args[1]["embeds"]) == 5 for call in send.call_args_list)
+    assert send.call_count == 20
+    assert all(len(call.args[1]["embeds"]) == 1 for call in send.call_args_list)
     assert sleep.call_count == 19
     sleep.assert_called_with(13.0)
