@@ -5,6 +5,11 @@ on:
     # Runs every 20 minutes
     - cron: "*/20 * * * *"
   workflow_dispatch:
+    inputs:
+      checks_per_run:
+        description: "Names to check (use a small number for a smoke test)"
+        required: false
+        default: "80"
 
 permissions:
   contents: write
@@ -20,12 +25,12 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: main
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
@@ -37,7 +42,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_WEBHOOK_TAKEN: ${{ secrets.DISCORD_WEBHOOK_TAKEN }}
-          CHECKS_PER_RUN: "80"
+          CHECKS_PER_RUN: ${{ inputs.checks_per_run || '80' }}
           REQUEST_INTERVAL_SECONDS: "13"
         run: python bot.py
 
