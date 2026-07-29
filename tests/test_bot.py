@@ -11,6 +11,8 @@ from bot import (
     DELETING_WEBHOOK_ENV,
     DISCORD_ERROR_COLOR,
     DISCORD_PENDING_COLOR,
+    DISCORD_SUSPENDED_COLOR,
+    SUSPENDED_WEBHOOK_ENV,
     MAX_CHECKS_PER_RUN,
     ServerDetails,
     Webhooks,
@@ -241,18 +243,27 @@ AVAILABLE_URL = "https://discord.com/api/webhooks/example/available"
 TAKEN_URL = "https://discord.com/api/webhooks/example/taken"
 DELETING_URL = "https://discord.com/api/webhooks/example/deleting"
 
+SUSPENDED_URL = "https://discord.com/api/webhooks/example/suspended"
+
 ALL_WEBHOOKS = Webhooks(
-    available=AVAILABLE_URL, taken=TAKEN_URL, deleting=DELETING_URL
+    available=AVAILABLE_URL,
+    taken=TAKEN_URL,
+    deleting=DELETING_URL,
+    suspended=SUSPENDED_URL,
 )
 
 
-def _details(*, deleting: bool) -> ServerDetails:
+def _details(
+    *, deleting: bool = False, suspended: bool = False, reason: str = ""
+) -> ServerDetails:
     return ServerDetails(
         created_at=None,
         last_online=None,
         online=False,
         joins=0,
         deletion_started=deleting,
+        deletion_reason=reason,
+        suspended=suspended,
         plan="FREE",
     )
 
@@ -309,7 +320,87 @@ def test_a_pending_name_gets_its_own_colour() -> None:
     )
 
 
-def test_resolve_webhooks_reads_all_three_channels() -> None:
+def test_a_suspended_server_gets_its_own_channel() -> None:
+    suspended = AvailabilityResult(
+        False, "Already registered.", 200, _details(suspended=True)
+    )
+
+    assert select_webhook(suspended, webhooks=ALL_WEBHOOKS) == (
+        SUSPENDED_URL,
+        SUSPENDED_WEBHOOK_ENV,
+    )
+
+
+def test_deletion_outranks_suspension_when_a_server_is_both() -> None:
+    """Observed on a real server: suspended and flagged STARTER_OVER_CAP."""
+    both = AvailabilityResult(
+        False,
+        "Already registered.",
+        200,
+        _details(deleting=True, suspended=True, reason="STARTER_OVER_CAP"),
+    )
+
+    # The scheduled removal is the fact worth acting on.
+    assert select_webhook(both, webhooks=ALL_WEBHOOKS) == (
+        DELETING_URL,
+        DELETING_WEBHOOK_ENV,
+    )
+
+
+def test_a_suspended_server_gets_its_own_colour() -> None:
+    candidate = Candidate("Zyptrik", 10.0, "test", "test")
+    suspended = AvailabilityResult(
+        False, "Already registered.", 200, _details(suspended=True)
+    )
+    plain = AvailabilityResult(False, "Already registered.", 200, _details())
+
+    assert (
+        build_payload(candidate, suspended)["embeds"][0]["color"]
+        == DISCORD_SUSPENDED_COLOR
+    )
+    assert (
+        build_payload(candidate, plain)["embeds"][0]["color"] == DISCORD_ERROR_COLOR
+    )
+
+
+def test_the_embed_states_both_flags_and_the_deletion_reason() -> None:
+    candidate = Candidate("Complex", 10.0, "test", "test")
+    flagged = AvailabilityResult(
+        False,
+        "Already registered.",
+        200,
+        _details(deleting=True, suspended=True, reason="STARTER_OVER_CAP"),
+    )
+    plain = AvailabilityResult(False, "Already registered.", 200, _details())
+
+    hot = {f["name"]: f["value"] for f in build_payload(candidate, flagged)["embeds"][0]["fields"]}
+    cold = {f["name"]: f["value"] for f in build_payload(candidate, plain)["embeds"][0]["fields"]}
+
+    assert hot["Suspended"] == "This server is suspended by Minehut."
+    assert "marked for Deletion" in hot["Deletion Status"]
+    assert "STARTER_OVER_CAP" in hot["Deletion Status"]
+
+    # Both states are always stated, so silence is never the answer.
+    assert cold["Suspended"] == "This server is not suspended."
+    assert "not marked for deletion" in cold["Deletion Status"]
+    # No reason line when nothing is scheduled.
+    assert "Reason:" not in cold["Deletion Status"]
+
+
+def test_resolve_webhooks_reads_all_four_channels() -> None:
+    resolved = resolve_webhooks(
+        {
+            AVAILABLE_WEBHOOK_ENV: AVAILABLE_URL,
+            TAKEN_WEBHOOK_ENV: TAKEN_URL,
+            DELETING_WEBHOOK_ENV: DELETING_URL,
+            SUSPENDED_WEBHOOK_ENV: SUSPENDED_URL,
+        }
+    )
+
+    assert resolved == ALL_WEBHOOKS
+
+
+def test_suspended_falls_back_to_the_taken_channel(capsys) -> None:
     resolved = resolve_webhooks(
         {
             AVAILABLE_WEBHOOK_ENV: AVAILABLE_URL,
@@ -318,7 +409,8 @@ def test_resolve_webhooks_reads_all_three_channels() -> None:
         }
     )
 
-    assert resolved == ALL_WEBHOOKS
+    assert resolved.suspended == TAKEN_URL
+    assert SUSPENDED_WEBHOOK_ENV in capsys.readouterr().out
 
 
 def test_pending_deletion_falls_back_to_the_taken_channel(capsys) -> None:
@@ -337,7 +429,9 @@ def test_pending_deletion_falls_back_to_the_taken_channel(capsys) -> None:
 def test_resolve_webhooks_falls_back_when_the_split_is_unset(capsys) -> None:
     resolved = resolve_webhooks({AVAILABLE_WEBHOOK_ENV: AVAILABLE_URL})
 
-    assert resolved == Webhooks(AVAILABLE_URL, AVAILABLE_URL, AVAILABLE_URL)
+    assert resolved == Webhooks(
+        AVAILABLE_URL, AVAILABLE_URL, AVAILABLE_URL, AVAILABLE_URL
+    )
     assert TAKEN_WEBHOOK_ENV in capsys.readouterr().out
 
 

@@ -25,9 +25,13 @@ DISCORD_ERROR_COLOR = 0xED4245
 # Amber: a name being deleted is neither free nor a dead end. It sits between
 # the two, and the colour should say so at a glance.
 DISCORD_PENDING_COLOR = 0xE67E22
+# Violet: a suspended server is disabled but not scheduled for removal. It is a
+# maybe, and should not be mistaken for either of the other two states.
+DISCORD_SUSPENDED_COLOR = 0x9B59B6
 AVAILABLE_WEBHOOK_ENV = "DISCORD_WEBHOOK"
 TAKEN_WEBHOOK_ENV = "DISCORD_WEBHOOK_TAKEN"
 DELETING_WEBHOOK_ENV = "DISCORD_WEBHOOK_DELETING"
+SUSPENDED_WEBHOOK_ENV = "DISCORD_WEBHOOK_SUSPENDED"
 MINEHUT_CREATE_URL = "https://dashboard.minehut.com/servers/create"
 MINEHUT_LOOKUP_URL = "https://api.minehut.com/server/{name}?byName=true"
 USER_AGENT = "MinecraftNameScout/3.0 (+GitHub Actions; paced availability checks)"
@@ -87,6 +91,8 @@ class ServerDetails:
     online: bool
     joins: int
     deletion_started: bool
+    deletion_reason: str
+    suspended: bool
     plan: str
 
 
@@ -163,6 +169,7 @@ def _read_details(server: object) -> ServerDetails | None:
         isinstance(deletion, dict) and deletion.get("started")
     ) or bool(server.get("deleted"))
 
+    reason = deletion.get("reason") if isinstance(deletion, dict) else ""
     joins = server.get("joins")
     return ServerDetails(
         created_at=_epoch_millis(server.get("creation")),
@@ -170,6 +177,8 @@ def _read_details(server: object) -> ServerDetails | None:
         online=bool(server.get("online")),
         joins=int(joins) if isinstance(joins, (int, float)) else 0,
         deletion_started=deletion_started,
+        deletion_reason=str(reason or ""),
+        suspended=bool(server.get("suspended")),
         plan=str(server.get("activeServerPlan") or server.get("server_plan") or "unknown"),
     )
 
@@ -414,15 +423,31 @@ def _holder_fields(details: ServerDetails | None) -> list[dict[str, object]]:
         activity += f" | {details.joins:,} joins"
     fields.append({"name": "Activity", "value": activity, "inline": True})
 
-    # Always stated rather than only when true, so the absence of a warning is
-    # a positive answer instead of an ambiguous silence.
+    # Both states are always stated rather than only when true, so the absence
+    # of a warning is a positive answer instead of an ambiguous silence.
+    fields.append({
+        "name": "Suspended",
+        "value": (
+            "This server is suspended by Minehut."
+            if details.suspended
+            else "This server is not suspended."
+        ),
+        "inline": False,
+    })
+
+    deletion = (
+        "This server is marked for Deletion."
+        if details.deletion_started
+        else "This server is not marked for deletion yet."
+    )
+    if details.deletion_started and details.deletion_reason:
+        # The raw code is shown as-is. It is the only explanation Minehut gives
+        # for why a name is being freed, and paraphrasing codes I have not seen
+        # would risk inventing meanings.
+        deletion += f"\nReason: `{details.deletion_reason}`"
     fields.append({
         "name": "Deletion Status",
-        "value": (
-            "This server is marked for Deletion."
-            if details.deletion_started
-            else "This server is not marked for deletion yet."
-        ),
+        "value": deletion,
         "inline": False,
     })
 
@@ -449,6 +474,8 @@ def build_embed(
             if availability.available
             else DISCORD_PENDING_COLOR
             if is_pending_deletion(availability)
+            else DISCORD_SUSPENDED_COLOR
+            if is_suspended(availability)
             else DISCORD_ERROR_COLOR
         ),
         "fields": [
@@ -576,6 +603,15 @@ def is_pending_deletion(availability: AvailabilityResult) -> bool:
     )
 
 
+def is_suspended(availability: AvailabilityResult) -> bool:
+    """A taken name whose holder Minehut has disabled."""
+    return (
+        not availability.available
+        and availability.details is not None
+        and availability.details.suspended
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class Webhooks:
     """One destination per outcome, so each channel means one thing."""
@@ -583,6 +619,7 @@ class Webhooks:
     available: str
     taken: str
     deleting: str
+    suspended: str
 
 
 def select_webhook(
@@ -590,17 +627,21 @@ def select_webhook(
     *,
     webhooks: Webhooks,
 ) -> tuple[str, str]:
-    """Route each outcome to its own channel.
+    """Route each outcome to its own channel, strongest signal first.
 
-    Three tiers because there are three actions: claim it now, watch it because
-    it is about to free up, or ignore it. Names pending deletion are the rarest
-    and most useful of the three, and they were previously buried among the
-    taken results.
+    Four tiers, ordered by how much they are worth acting on: claim it now, it
+    is being deleted so get ready, it is disabled so it might go either way, or
+    ignore it.
+
+    Deletion outranks suspension deliberately. A server can be both, and when
+    it is, the scheduled removal is the fact that matters.
     """
     if availability.available:
         return webhooks.available, AVAILABLE_WEBHOOK_ENV
     if is_pending_deletion(availability):
         return webhooks.deleting, DELETING_WEBHOOK_ENV
+    if is_suspended(availability):
+        return webhooks.suspended, SUSPENDED_WEBHOOK_ENV
     return webhooks.taken, TAKEN_WEBHOOK_ENV
 
 
@@ -631,7 +672,19 @@ def resolve_webhooks(environ: dict[str, str]) -> Webhooks:
     else:
         validate_webhook_url(deleting, env_name=DELETING_WEBHOOK_ENV)
 
-    return Webhooks(available=available, taken=taken, deleting=deleting)
+    suspended = environ.get(SUSPENDED_WEBHOOK_ENV, "")
+    if not suspended:
+        print(
+            f"WARNING: {SUSPENDED_WEBHOOK_ENV} is not set, so suspended servers "
+            f"stay in the {TAKEN_WEBHOOK_ENV} channel."
+        )
+        suspended = taken
+    else:
+        validate_webhook_url(suspended, env_name=SUSPENDED_WEBHOOK_ENV)
+
+    return Webhooks(
+        available=available, taken=taken, deleting=deleting, suspended=suspended
+    )
 
 
 def send_to_discord(
@@ -859,6 +912,8 @@ def main() -> None:
             if availability.available
             else "pending deletion"
             if is_pending_deletion(availability)
+            else "suspended"
+            if is_suspended(availability)
             else "taken"
         )
         print(f"Sent the {candidate.name} result embed to the {channel} channel.")

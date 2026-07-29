@@ -72,19 +72,26 @@ official Minehut dashboard.
    URL for the channel that should receive taken names.
 5. Open **Actions -> Run Minecraft Name Scout -> Run workflow** to test it.
 
-Optionally create a third secret, `DISCORD_WEBHOOK_DELETING`, for names whose
-holding server is marked for deletion. Those are the most useful results in the
-system, since the name is about to free up, and they are easily lost among the
-taken results otherwise.
+Optionally add `DISCORD_WEBHOOK_DELETING` and `DISCORD_WEBHOOK_SUSPENDED`. Four
+channels, ordered by how much a result is worth acting on:
+
+| Channel | Meaning | Colour |
+| --- | --- | --- |
+| `DISCORD_WEBHOOK` | Free, claim it | green |
+| `DISCORD_WEBHOOK_DELETING` | Holder is being deleted, get ready | amber |
+| `DISCORD_WEBHOOK_SUSPENDED` | Holder is disabled, might go either way | violet |
+| `DISCORD_WEBHOOK_TAKEN` | Nothing to do | red |
+
+A server can be both suspended and marked for deletion. Deletion wins, because
+the scheduled removal is the fact worth acting on.
 
 Every webhook is optional except `DISCORD_WEBHOOK`. A missing one folds into the
-next channel up rather than dropping messages: without `DISCORD_WEBHOOK_DELETING`
-those results stay in the taken channel, and without `DISCORD_WEBHOOK_TAKEN`
-everything goes to the single available channel. The log says which fallback is
+taken channel rather than dropping messages, and the log says which fallback is
 in effect.
 
-The three channels map to the three possible actions: claim it now, watch it
-because it is freeing up, or ignore it.
+Taken embeds always state both flags, so the absence of a warning is a positive
+answer rather than an ambiguous silence, and a deletion carries Minehut's own
+reason code, such as `STARTER_OVER_CAP`.
 
 ## Scheduling
 
