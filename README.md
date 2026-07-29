@@ -75,6 +75,44 @@ official Minehut dashboard.
 If `DISCORD_WEBHOOK_TAKEN` is missing the run still succeeds, but every result
 goes to the single `DISCORD_WEBHOOK` channel and the log prints a warning.
 
+## Scheduling
+
+GitHub treats scheduled workflows as best effort. They are routinely delayed by
+15 to 60 minutes and dropped entirely at busy times, and everything scheduled on
+a round minute competes in the same queue. Relying on `cron` alone gives an
+irregular cadence with long silent gaps.
+
+So each run starts the next one itself. The last step calls the
+`workflow_dispatch` API, which begins another run as soon as the current one
+finishes. The `cron` entry stays as a fallback, on deliberately odd minutes, to
+restart the chain if it ever breaks.
+
+To enable it, create a **fine-grained personal access token** with
+**Actions: read and write** on this repository only, and save it as a repository
+secret named `CHAIN_TOKEN`:
+
+```bash
+gh secret set CHAIN_TOKEN -R <owner>/<repo>
+```
+
+The built-in `GITHUB_TOKEN` cannot be used. GitHub refuses to start a workflow
+from an event raised by `GITHUB_TOKEN`, to prevent runaway recursion, so opting
+in requires a PAT.
+
+Without `CHAIN_TOKEN` the workflow still runs; it just falls back to `cron` and
+its irregular timing.
+
+The chain only continues when the scan step succeeds. A failed scan stops it and
+leaves `cron` to restart things later, so a repeatable failure cannot spin in a
+tight loop and burn the Actions allowance.
+
+To stop the chain: disable the workflow in the Actions tab, or run it once from
+the UI with **chain** set to `false`.
+
+**Cost.** Chained runs are continuous, so this consumes Actions minutes at
+roughly 60 per hour. On a private repository that exhausts the monthly free
+allowance in about a day and a half. Public repositories get unlimited minutes.
+
 ## Pings
 
 Every message pings the role in `bot.ALWAYS_NOTIFY_ROLE`. Set it to `""` to turn

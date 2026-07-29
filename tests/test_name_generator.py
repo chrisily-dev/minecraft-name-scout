@@ -39,15 +39,8 @@ def test_pool_contains_requested_style_and_no_obscure_shapes() -> None:
         "boxpvp",
         "genpvp",
         "gens",
-        "woolgens",
-        "gensfood",
-        "loopgens",
-        "acidgens",
-        "adonismine",
-        "nestmines",
         "nylongn",
         "gmini",
-        "flagclash",
         "beans",
         "valknet",
         "harbor",
@@ -138,11 +131,14 @@ def test_recognizable_short_words_receive_priority() -> None:
     ) > _base_score("Example", 4.53)
 
 
-def test_semantic_families_generate_more_than_the_examples() -> None:
+def test_no_compounds_are_generated_at_all() -> None:
+    """Only the three hand-listed category names may carry a second word."""
     pool = build_candidate_pool()
     names = {candidate.name.casefold() for candidate in pool}
 
+    assert {"randomkits", "boxpvp", "genpvp"} <= names
     assert {
+        # Former stem-times-suffix output.
         "voidgens",
         "novamines",
         "riftclash",
@@ -150,7 +146,41 @@ def test_semantic_families_generate_more_than_the_examples() -> None:
         "stormgens",
         "ironmines",
         "emberpvp",
-    } <= names
+        "amberhub",
+        # Former common-word-times-suffix output, the FillPvP shape.
+        "fillpvp",
+        "openkits",
+        "workcraft",
+        # Former hand-listed compounds.
+        "woolgens",
+        "gensfood",
+        "loopgens",
+        "acidgens",
+        "adonismine",
+        "nestmines",
+        "flagclash",
+    }.isdisjoint(names)
+
+
+def test_the_only_compounds_are_the_three_allowed_ones() -> None:
+    pool = build_candidate_pool()
+    allowed = {"randomkits", "boxpvp", "genpvp"}
+    # Whole words that merely end in these letters are fine; a compound is a
+    # real word with a game mode bolted on, which is what must not appear.
+    modes = ("pvp", "hub", "kits", "gens", "smp", "clash")
+
+    offenders = {
+        candidate.name
+        for candidate in pool
+        if candidate.name.casefold() not in allowed
+        and any(
+            candidate.name.casefold().endswith(mode)
+            and len(candidate.name) > len(mode)
+            for mode in modes
+        )
+    }
+
+    assert offenders == set(), f"unexpected compounds: {sorted(offenders)}"
 
 
 def test_pool_drops_mc_tags_and_existing_servers() -> None:

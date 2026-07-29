@@ -61,9 +61,6 @@ ANCHORS = (
     "Flat",
     "Platform",
     "Random",
-    "RandomKits",
-    "BoxPvP",
-    "GenPvP",
     "Kits",
     "Gens",
     "Skyblock",
@@ -79,20 +76,26 @@ ANCHORS = (
     "Quest",
 )
 
-# Exact examples requested by the owner. They also guide the generalized
-# compound families below; the Discord presentation remains this bot's own.
+# Exact one-word examples requested by the owner.
+#
+# The compound entries that used to live here (WoolGens, GensFood, LoopGens,
+# AcidGens, AdonisMine, NestMines, FlagClash) were removed: a name may no longer
+# carry a game mode as its second word. Restoring one is a matter of adding it
+# back to this tuple.
 REQUESTED_NAMES = (
-    "WoolGens",
-    "GensFood",
-    "LoopGens",
-    "AcidGens",
-    "AdonisMine",
-    "NestMines",
     "NylonGN",
     "Gmini",
-    "FlagClash",
     "Beans",
     "Valknet",
+)
+
+# The only compounds anywhere in the pool. These three are established category
+# names rather than a pattern to extend, so nothing is generated from them.
+# Adding a fourth is a deliberate edit, not a side effect of a suffix bank.
+ALLOWED_COMPOUNDS = (
+    "RandomKits",
+    "BoxPvP",
+    "GenPvP",
 )
 
 # Strong single-word shapes supplied in the reference screenshot.
@@ -173,127 +176,10 @@ RECENT_ARCHIVE_INSPIRATION = (
     "Spurs",
 )
 
-# Semantically grouped stems produce related names without relying on a fixed
-# hand-written list for every combination.
-GEN_STEMS = (
-    "Wool",
-    "Food",
-    "Loop",
-    "Acid",
-    "Nest",
-    "Void",
-    "Ore",
-    "Crop",
-    "Flux",
-    "Rune",
-    "Bloom",
-    "Stone",
-)
-
-MINE_STEMS = (
-    "Adonis",
-    "Nest",
-    "Tech",
-    "Rift",
-    "Nova",
-    "Forge",
-    "Solar",
-    "Titan",
-    "Deep",
-    "Crystal",
-)
-
-PVP_STEMS = (
-    "Flag",
-    "Rune",
-    "Rift",
-    "Titan",
-    "Nova",
-    "Valor",
-    "Crown",
-    "Blaze",
-)
-
-# Curated parts that produce natural two-part server names. Invalid results
-# over the 12-character limit are discarded by the normal name validator.
-BRAND_STEMS = (
-    "Amber",
-    "Arcane",
-    "Arctic",
-    "Ash",
-    "Aurora",
-    "Blaze",
-    "Bloom",
-    "Cinder",
-    "Cloud",
-    "Coral",
-    "Cosmic",
-    "Crimson",
-    "Crown",
-    "Crystal",
-    "Dawn",
-    "Dragon",
-    "Dusk",
-    "Echo",
-    "Ember",
-    "Fable",
-    "Flame",
-    "Forest",
-    "Frost",
-    "Galaxy",
-    "Glacier",
-    "Golden",
-    "Hollow",
-    "Iron",
-    "Jade",
-    "Lunar",
-    "Mystic",
-    "Neon",
-    "Nova",
-    "Oak",
-    "Obsidian",
-    "Pixel",
-    "Quartz",
-    "Raven",
-    "Rift",
-    "River",
-    "Ruby",
-    "Shadow",
-    "Silver",
-    "Solar",
-    "Storm",
-    "Titan",
-    "Valor",
-    "Velvet",
-    "Void",
-    "Wild",
-    "Winter",
-)
-
-# A generated name may only gain a second word when that word names a game mode,
-# giving shapes like RandomKits and BoxPvP. Generic nouns such as Haven, Vale,
-# and Cove are deliberately absent, and so is the MC tag.
-BRAND_SUFFIXES = (
-    "Craft",
-    "Gens",
-    "Hub",
-    "Kits",
-    "Mines",
-    "PvP",
-    "Realm",
-    "SMP",
-)
-
-SUFFIXES = (
-    "Craft",
-    "PvP",
-    "Kits",
-    "Gens",
-    "SMP",
-    "Realm",
-    "Hub",
-    "Core",
-)
+# No stem or suffix banks remain. Every mechanical combination of them
+# produced the exact shapes that are unwanted: FillPvP, AmberHub, VoidGens,
+# NovaMines. The pool is now single words plus a handful of names listed by
+# hand, and nothing is assembled at runtime.
 
 POWER_WORDS = {
     "alpha",
@@ -571,6 +457,7 @@ def build_candidate_pool() -> list[Candidate]:
 
     curated_groups = (
         (WATCHLIST_NAMES, 14.0, "Watchlist", "requested watch name"),
+        (ALLOWED_COMPOUNDS, 11.5, "Category name", "established category"),
         (
             CORE_STANDALONE_WORDS,
             10.5,
@@ -603,37 +490,11 @@ def build_candidate_pool() -> list[Candidate]:
                 source,
             )
 
-    # The game mode always lands second, so these build StemGens and StemPvP but
-    # never GensStem.
-    compound_families = (
-        (GEN_STEMS, ("Gens",), "Generator brand"),
-        (MINE_STEMS, ("Mine", "Mines"), "Mining brand"),
-        (PVP_STEMS, ("Clash", "PvP", "Kits"), "PvP brand"),
-    )
-    for stems, suffixes, style in compound_families:
-        for stem in stems:
-            frequency = max(zipf_frequency(stem.lower(), "en"), 4.0)
-            for suffix in suffixes:
-                compound = f"{stem}{suffix}"
-                _add_candidate(
-                    candidates,
-                    compound,
-                    _base_score(compound, frequency, minecraft_weight=6.0),
-                    style,
-                    "semantic compound",
-                )
-
-    for stem in BRAND_STEMS:
-        frequency = max(zipf_frequency(stem.lower(), "en"), 4.0)
-        for suffix in BRAND_SUFFIXES:
-            compound = f"{stem}{suffix}"
-            _add_candidate(
-                candidates,
-                compound,
-                _base_score(compound, frequency, minecraft_weight=5.5),
-                "Server brand",
-                "curated brand parts",
-            )
+    # No compounds are generated at all. Every mechanical "word + game mode"
+    # family produced names like FillPvP, AmberHub, and VoidGens, which are not
+    # wanted. The only three compounds in the pool are RandomKits, BoxPvP, and
+    # GenPvP, and they are listed by hand in ANCHORS because those three are
+    # established category names rather than a pattern to extend.
 
     # Strong standalone words such as Tycoon, Realm, Empire, and Nova.
     for word, frequency in common_words:
@@ -643,30 +504,6 @@ def build_candidate_pool() -> list[Candidate]:
         if word in POWER_WORDS:
             score += 3.0
         _add_candidate(candidates, display, score, "Brand word", "common English")
-
-    # Transform only the strongest common words, keeping the pool useful and fast.
-    transform_words = sorted(
-        common_words,
-        key=lambda item: (
-            item[0] not in POWER_WORDS,
-            abs(item[1] - 4.65),
-            abs(len(item[0]) - 6),
-            item[0],
-        ),
-    )[:650]
-
-    for word, frequency in transform_words:
-        display = _display_word(word)
-
-        for suffix in SUFFIXES:
-            compound = f"{display}{suffix}"
-            _add_candidate(
-                candidates,
-                compound,
-                _base_score(compound, frequency, minecraft_weight=3.0),
-                f"{suffix} server",
-                f"{word} + {suffix}",
-            )
 
     ranked = sorted(
         candidates.values(),
