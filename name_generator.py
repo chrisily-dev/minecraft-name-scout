@@ -208,6 +208,63 @@ POWER_WORDS = {
     "vortex",
 }
 
+# wordfreq ranks how often a token appears in English text, not whether it is a
+# dictionary word, and people write about people constantly. So given names rank
+# very high: "david" outranks most real vocabulary. wordfreq also lowercases
+# everything, leaving no capitalisation signal to filter on, hence this list.
+#
+# Deliberately excludes names that are also ordinary words, because those make
+# perfectly good server names: Grace, Frank, Mark, Jack, Luke, Rose, Art, Bill,
+# Dawn, Hope, Joy, May, Miles, Rusty, Sunny, Victor, Wade.
+GIVEN_NAMES = {
+    "aaron", "adam", "adrian", "alan", "albert", "alex", "alexander", "alice",
+    "alicia", "amanda", "amber", "amy", "andrea", "andrew", "angela", "anna",
+    "anne", "anthony", "antonio", "arthur", "ashley", "barbara", "benjamin",
+    "beth", "betty", "brandon", "brenda", "brian", "bruce", "bryan", "carl",
+    "carlos", "carol", "carolyn", "catherine", "cathy", "charles", "cheryl",
+    "chris", "christian", "christina", "christine", "christopher", "cindy",
+    "claire", "clara", "colin", "connie", "craig", "cynthia", "dan", "daniel",
+    "danny", "darren", "dave", "david", "dean", "debbie", "deborah", "debra",
+    "dennis", "derek", "diana", "diane", "donald", "donna", "doris", "dorothy",
+    "douglas", "duncan", "edward", "eileen", "elaine", "eleanor", "elena",
+    "elizabeth", "ellen", "emily", "emma", "eric", "erica", "erin", "ethan",
+    "eugene", "evelyn", "fiona", "fran", "frances", "francis", "fred",
+    "frederick", "gary", "gavin", "geoffrey", "george", "gerald", "gordon",
+    "graham", "greg", "gregory", "hannah", "harold", "harriet", "harry",
+    "heather", "heidi", "helen", "henry", "holly", "howard", "hugh", "ian",
+    "irene", "isaac", "jack", "jacob", "james", "jamie", "jane", "janet",
+    "janice", "jason", "jean", "jeff", "jeffrey", "jennifer", "jenny", "jeremy",
+    "jerome", "jerry", "jessica", "jill", "jim", "joan", "joanna", "joanne",
+    "joel", "john", "johnny", "jonathan", "jordan", "joseph", "joshua", "joyce",
+    "juan", "judith", "judy", "julia", "julian", "julie", "justin", "karen",
+    "kate", "katherine", "kathleen", "kathryn", "kathy", "keith", "kelly",
+    "kenneth", "kevin", "kim", "kimberly", "kyle", "larry", "laura", "lauren",
+    "laurie", "lawrence", "leonard", "leslie", "linda", "lindsay", "lisa",
+    "lloyd", "logan", "lois", "loretta", "lori", "louis", "louise", "lucas",
+    "lucy", "luke", "lydia", "lynn", "malcolm", "marcus", "margaret", "maria",
+    "marian", "marie", "marilyn", "mario", "marion", "marjorie", "mark",
+    "martha", "martin", "mary", "matthew", "maureen", "megan", "melissa",
+    "michael", "michelle", "mike", "mildred", "monica", "nancy", "naomi",
+    "natalie", "nathan", "neil", "nicholas", "nicole", "nigel", "nina", "noah",
+    "norman", "olivia", "oscar", "owen", "pamela", "patricia", "patrick",
+    "paul", "paula", "pauline", "peggy", "peter", "philip", "phillip",
+    "phyllis", "rachel", "ralph", "randy", "raymond", "rebecca", "regina",
+    "renee", "rhonda", "richard", "rita", "robert", "roberta", "robin",
+    "rodney", "roger", "ronald", "rosemary", "roy", "russell", "ruth", "ryan",
+    "sally", "samantha", "samuel", "sandra", "sara", "sarah", "scott", "sean",
+    "sharon", "sheila", "shirley", "sidney", "simon", "sophia", "stanley",
+    "stephanie", "stephen", "steve", "steven", "stuart", "susan", "suzanne",
+    "sylvia", "tammy", "teresa", "terry", "theodore", "theresa", "thomas",
+    "tiffany", "timothy", "tina", "todd", "tom", "tracy", "travis", "trevor",
+    "tyler", "valerie", "vanessa", "vernon", "veronica", "vincent", "virginia",
+    "walter", "wanda", "warren", "wayne", "wendy", "wesley", "william",
+    "yvonne", "zachary",
+    # Newer given names that are equally common in modern text.
+    "aiden", "bennett", "caleb", "carter", "chloe", "connor", "elijah", "ellie",
+    "evan", "felix", "gabriel", "hugo", "isla", "jonah", "leah", "liam", "maya",
+    "milo", "nora", "oliver", "parker", "sophie", "tucker", "wyatt",
+}
+
 NEGATIVE_WORDS = {
     "abuse",
     "abused",
@@ -407,6 +464,7 @@ def _common_words(limit: int = 6_000) -> list[tuple[str, float]]:
         if (
             frequency >= 3.95
             and word not in NEGATIVE_WORDS
+            and word not in GIVEN_NAMES
             and not profanity.contains_profanity(word)
         ):
             words.append((word, frequency))

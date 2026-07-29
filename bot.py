@@ -37,6 +37,10 @@ RETRY_DELAY = timedelta(days=1)
 # only come round once the whole pool cycles, roughly a day, which is far too
 # slow for a name someone is actively waiting to claim.
 WATCH_REFRESH = timedelta(hours=1)
+# A name whose holder is being deleted is the closest thing to a lead this bot
+# produces, so it is revisited far sooner than an ordinary taken name, and kept
+# on that cadence until it either frees up or stops being marked.
+PENDING_DELETION_REFRESH = timedelta(hours=3)
 DEFAULT_CHECKS_PER_RUN = 20
 MAX_CHECKS_PER_RUN = 80
 DEFAULT_REQUEST_INTERVAL_SECONDS = 13.0
@@ -320,6 +324,30 @@ def update_retry_queue(
         queue["items"] = items
         hours = int(WATCH_REFRESH.total_seconds() // 3600)
         return f"Watched name. Checked again every {hours}h."
+
+    # Checked before the is_retry branch on purpose. An ordinary name leaves the
+    # queue after its single retry, but a name being deleted has to stay on the
+    # short cycle until it either frees up or the deletion is called off.
+    if is_pending_deletion(availability):
+        retry_after = now + PENDING_DELETION_REFRESH
+        items.append(
+            {
+                "name": candidate.name,
+                "score": candidate.score,
+                "style": candidate.style,
+                "source": candidate.source,
+                "first_checked_at": now.isoformat(),
+                "retry_after": retry_after.isoformat(),
+                "pending_deletion": True,
+            }
+        )
+        queue["items"] = items
+        hours = int(PENDING_DELETION_REFRESH.total_seconds() // 3600)
+        unix_time = int(retry_after.timestamp())
+        return (
+            f"Marked for deletion, so rechecked every {hours}h. "
+            f"Next check <t:{unix_time}:R>."
+        )
 
     if is_retry:
         queue["items"] = items

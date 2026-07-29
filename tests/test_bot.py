@@ -17,6 +17,7 @@ from bot import (
     MIN_REQUEST_INTERVAL_SECONDS,
     MINEHUT_LOOKUP_URL,
     NAME_WATCHERS,
+    PENDING_DELETION_REFRESH,
     TAKEN_WEBHOOK_ENV,
     build_mentions,
     build_payload,
@@ -416,6 +417,108 @@ def test_an_available_result_has_no_holder_fields(
     )
     # The create link is only offered where it would actually work.
     assert "Minehut" in fields
+
+
+def test_a_deleting_name_is_rechecked_on_the_short_cycle() -> None:
+    now = datetime(2026, 7, 29, 12, 0, tzinfo=timezone.utc)
+    queue: dict[str, object] = {"version": 1, "items": []}
+    pending = AvailabilityResult(
+        False, "Already registered.", 200, _details(deleting=True)
+    )
+
+    status = update_retry_queue(
+        queue,
+        Candidate("Empire", 10.0, "test", "test"),
+        pending,
+        is_retry=False,
+        now=now,
+    )
+
+    assert len(queue["items"]) == 1
+    entry = queue["items"][0]
+    assert entry["pending_deletion"] is True
+    assert datetime.fromisoformat(entry["retry_after"]) == now + PENDING_DELETION_REFRESH
+    assert "every 3h" in status
+
+
+def test_a_deleting_name_stays_on_the_cycle_across_retries() -> None:
+    """An ordinary name leaves after one retry; this one must not."""
+    now = datetime(2026, 7, 29, 12, 0, tzinfo=timezone.utc)
+    queue: dict[str, object] = {"version": 1, "items": []}
+    pending = AvailabilityResult(
+        False, "Already registered.", 200, _details(deleting=True)
+    )
+    candidate = Candidate("Empire", 10.0, "test", "test")
+
+    for cycle in range(3):
+        moment = now + PENDING_DELETION_REFRESH * cycle
+        update_retry_queue(queue, candidate, pending, is_retry=cycle > 0, now=moment)
+        assert len(queue["items"]) == 1, f"dropped on cycle {cycle}"
+
+    assert queue["items"][0]["pending_deletion"] is True
+
+
+def test_a_deleting_name_leaves_the_queue_once_it_frees_up() -> None:
+    now = datetime(2026, 7, 29, 12, 0, tzinfo=timezone.utc)
+    queue: dict[str, object] = {"version": 1, "items": []}
+    candidate = Candidate("Empire", 10.0, "test", "test")
+
+    update_retry_queue(
+        queue,
+        candidate,
+        AvailabilityResult(False, "Already registered.", 200, _details(deleting=True)),
+        is_retry=False,
+        now=now,
+    )
+    update_retry_queue(
+        queue,
+        candidate,
+        AvailabilityResult(True, "No registered server found.", 404),
+        is_retry=True,
+        now=now + PENDING_DELETION_REFRESH,
+    )
+
+    assert queue["items"] == []
+
+
+def test_a_deletion_that_is_called_off_returns_to_the_slow_cycle() -> None:
+    now = datetime(2026, 7, 29, 12, 0, tzinfo=timezone.utc)
+    queue: dict[str, object] = {"version": 1, "items": []}
+    candidate = Candidate("Empire", 10.0, "test", "test")
+
+    update_retry_queue(
+        queue,
+        candidate,
+        AvailabilityResult(False, "Already registered.", 200, _details(deleting=True)),
+        is_retry=False,
+        now=now,
+    )
+    # No longer marked, so it should stop occupying a short-cycle slot.
+    update_retry_queue(
+        queue,
+        candidate,
+        AvailabilityResult(False, "Already registered.", 200, _details(deleting=False)),
+        is_retry=True,
+        now=now + PENDING_DELETION_REFRESH,
+    )
+
+    assert queue["items"] == []
+
+
+def test_given_names_are_kept_out_of_the_pool() -> None:
+    from name_generator import build_candidate_pool
+
+    names = {candidate.name.casefold() for candidate in build_candidate_pool()}
+
+    # wordfreq ranks tokens by how often they appear in text, so first names
+    # score higher than most real vocabulary and flooded the pool.
+    assert {
+        "anna", "david", "sarah", "emma", "peter", "daniel", "maria",
+        "michael", "jennifer", "oliver", "simon", "nancy",
+    }.isdisjoint(names)
+
+    # Names that are also ordinary words stay, because they are decent names.
+    assert {"grace", "frank"} <= names
 
 
 def test_a_watched_name_comes_due_after_the_refresh_window() -> None:
