@@ -69,15 +69,27 @@ def test_a_taken_name_never_pings_the_role(candidate: Candidate) -> None:
     assert payload["allowed_mentions"] == {"parse": []}
 
 
-def test_a_watcher_is_pinged_even_when_their_name_is_taken() -> None:
+def test_a_taken_name_never_pings_a_watcher_either() -> None:
+    """A ping always means the name is claimable right now."""
     taken = AvailabilityResult(False, "Already registered.", 200)
-    watcher = NAME_WATCHERS["harbor"][0]
 
     payload = build_payload(Candidate("Harbor", 12.0, "Watchlist", "test"), taken)
 
-    # The watcher asked about this specific name, not about good news only.
-    assert payload["content"] == f"<@{watcher}>"
-    assert payload["allowed_mentions"] == {"parse": [], "users": [watcher]}
+    assert "content" not in payload
+    assert payload["allowed_mentions"] == {"parse": []}
+
+
+def test_no_embed_carries_a_footer() -> None:
+    """The old footer repeated the same rate-limit blurb on every message."""
+    available = AvailabilityResult(True, "No registered server found.", 404)
+    taken = AvailabilityResult(False, "Already registered.", 200)
+    candidate = Candidate("Tycoon", 14.2, "Brand word", "test")
+
+    for result in (available, taken):
+        embed = build_payload(candidate, result)["embeds"][0]
+
+        assert "footer" not in embed
+        assert "timestamp" in embed
 
 
 def test_available_watched_name_pings_the_role_and_the_watcher(
@@ -238,6 +250,94 @@ def test_resolve_webhooks_rejects_a_malformed_taken_url() -> None:
                 TAKEN_WEBHOOK_ENV: "https://example.com/not-discord",
             }
         )
+
+
+SERVER_PAYLOAD = {
+    "server": {
+        "_id": "5a5c07d79e8f962972a2bf84",
+        "name": "Empire",
+        "creation": 1515980759159,
+        "last_online": 1784404485473,
+        "online": False,
+        "joins": 260,
+        "activeServerPlan": "Starter",
+        "deletion": {"started": False},
+        "deleted": False,
+    }
+}
+
+
+def test_taken_result_carries_the_holding_server_details() -> None:
+    response = Mock(status_code=200)
+    response.json.return_value = SERVER_PAYLOAD
+    session = Mock()
+    session.get.return_value = response
+
+    result = check_name_availability("Empire", session=session)
+
+    assert result.available is False
+    assert result.details is not None
+    assert result.details.created_at == datetime(
+        2018, 1, 15, 1, 45, 59, 159000, tzinfo=timezone.utc
+    )
+    assert result.details.online is False
+    assert result.details.joins == 260
+    assert result.details.deletion_started is False
+
+
+def test_taken_embed_renders_timestamps_for_discord() -> None:
+    response = Mock(status_code=200)
+    response.json.return_value = SERVER_PAYLOAD
+    session = Mock()
+    session.get.return_value = response
+    result = check_name_availability("Empire", session=session)
+
+    embed = build_payload(Candidate("Empire", 10.0, "test", "test"), result)["embeds"][0]
+    fields = {field["name"]: field["value"] for field in embed["fields"]}
+
+    # Discord renders <t:...> in the reader's own timezone.
+    assert fields["Last online"].startswith("<t:1784404485:R>")
+    assert "<t:1515980759:d>" in fields["Created"]
+    assert "260 joins" in fields["Activity"]
+
+
+def test_a_server_being_deleted_is_called_out() -> None:
+    payload = {"server": dict(SERVER_PAYLOAD["server"], deletion={"started": True})}
+    response = Mock(status_code=200)
+    response.json.return_value = payload
+    session = Mock()
+    session.get.return_value = response
+    result = check_name_availability("Empire", session=session)
+
+    embed = build_payload(Candidate("Empire", 10.0, "test", "test"), result)["embeds"][0]
+    fields = {field["name"]: field["value"] for field in embed["fields"]}
+
+    # The one signal worth acting on: the name is about to free up.
+    assert "free up soon" in fields["Heads up"]
+
+
+def test_missing_server_fields_do_not_break_the_embed() -> None:
+    response = Mock(status_code=200)
+    response.json.return_value = {"server": {"_id": "x", "name": "Empire"}}
+    session = Mock()
+    session.get.return_value = response
+    result = check_name_availability("Empire", session=session)
+
+    embed = build_payload(Candidate("Empire", 10.0, "test", "test"), result)["embeds"][0]
+    fields = {field["name"]: field["value"] for field in embed["fields"]}
+
+    assert fields["Last online"] == "Never started"
+    assert "Created" not in fields
+
+
+def test_an_available_result_has_no_holder_fields(
+    candidate: Candidate,
+    available: AvailabilityResult,
+) -> None:
+    embed = build_payload(candidate, available)["embeds"][0]
+    fields = {field["name"] for field in embed["fields"]}
+
+    assert fields.isdisjoint({"Last online", "Created", "Activity", "Heads up"})
 
 
 def test_404_means_available_with_exactly_one_lookup() -> None:

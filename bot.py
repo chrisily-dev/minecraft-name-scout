@@ -50,10 +50,28 @@ ALWAYS_NOTIFY_ROLE = "1531794005107671081"
 
 
 @dataclass(frozen=True, slots=True)
+class ServerDetails:
+    """What Minehut knows about a server that already holds a name.
+
+    Only populated for taken names. ``last_online`` is the useful one: a name
+    held by a server nobody has started in a year is a far better bet than one
+    in daily use, and ``deletion_started`` means the name is about to free up.
+    """
+
+    created_at: datetime | None
+    last_online: datetime | None
+    online: bool
+    joins: int
+    deletion_started: bool
+    plan: str
+
+
+@dataclass(frozen=True, slots=True)
 class AvailabilityResult:
     available: bool
     reason: str
     status_code: int
+    details: ServerDetails | None = None
 
 
 def check_name_availability(
@@ -97,6 +115,38 @@ def check_name_availability(
         available=False,
         reason="Minehut says this name is already registered.",
         status_code=200,
+        details=_read_details(server),
+    )
+
+
+def _epoch_millis(value: object) -> datetime | None:
+    """Convert a Minehut millisecond timestamp, treating 0 as never."""
+    if not isinstance(value, (int, float)) or value <= 0:
+        return None
+    try:
+        return datetime.fromtimestamp(value / 1000, tz=timezone.utc)
+    except (OverflowError, OSError, ValueError):
+        return None
+
+
+def _read_details(server: object) -> ServerDetails | None:
+    """Pull the interesting fields out of a server payload, tolerating gaps."""
+    if not isinstance(server, dict):
+        return None
+
+    deletion = server.get("deletion")
+    deletion_started = bool(
+        isinstance(deletion, dict) and deletion.get("started")
+    ) or bool(server.get("deleted"))
+
+    joins = server.get("joins")
+    return ServerDetails(
+        created_at=_epoch_millis(server.get("creation")),
+        last_online=_epoch_millis(server.get("last_online")),
+        online=bool(server.get("online")),
+        joins=int(joins) if isinstance(joins, (int, float)) else 0,
+        deletion_started=deletion_started,
+        plan=str(server.get("activeServerPlan") or server.get("server_plan") or "unknown"),
     )
 
 
@@ -230,6 +280,53 @@ def update_retry_queue(
     return f"Checking again <t:{unix_time}:R>."
 
 
+def _holder_fields(details: ServerDetails | None) -> list[dict[str, object]]:
+    """Describe the server currently holding a name.
+
+    Rendered with Discord timestamps so everyone reads them in their own
+    timezone, and so "last online" shows as a relative age. A name last used
+    years ago is a much better prospect than one in daily use.
+    """
+    if details is None:
+        return []
+
+    fields: list[dict[str, object]] = []
+
+    if details.last_online is not None:
+        stamp = int(details.last_online.timestamp())
+        fields.append({
+            "name": "Last online",
+            "value": f"<t:{stamp}:R> (<t:{stamp}:d>)",
+            "inline": True,
+        })
+    else:
+        fields.append({"name": "Last online", "value": "Never started", "inline": True})
+
+    if details.created_at is not None:
+        stamp = int(details.created_at.timestamp())
+        fields.append({
+            "name": "Created",
+            "value": f"<t:{stamp}:d> (<t:{stamp}:R>)",
+            "inline": True,
+        })
+
+    activity = "Online now" if details.online else "Offline"
+    if details.joins:
+        activity += f" | {details.joins:,} joins"
+    fields.append({"name": "Activity", "value": activity, "inline": True})
+
+    # The one field worth acting on: the holder is being removed, so the name
+    # should free up shortly.
+    if details.deletion_started:
+        fields.append({
+            "name": "Heads up",
+            "value": "This server is being deleted. The name may free up soon.",
+            "inline": False,
+        })
+
+    return fields
+
+
 def build_embed(
     candidate: Candidate,
     availability: AvailabilityResult,
@@ -257,6 +354,7 @@ def build_embed(
                 "value": f"{len(candidate.name)} characters",
                 "inline": True,
             },
+            *_holder_fields(availability.details),
             {
                 "name": "Result",
                 "value": availability.reason,
@@ -273,12 +371,8 @@ def build_embed(
                 "inline": False,
             },
         ],
-        "footer": {
-            "text": (
-                f"{'Retry' if is_retry else 'New name'} | "
-                "max 5 checks/min | 4-12 letters"
-            )
-        },
+        # No footer text. The bare timestamp is enough, and the old line
+        # repeated the same rate-limit blurb on every single message.
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -290,12 +384,15 @@ def build_mentions(
 ) -> tuple[str, dict[str, object]]:
     """Return the ping line for a name and the mentions Discord may resolve.
 
-    The role is pinged only on an available name. Almost every check comes back
-    taken, so pinging the role on those would fire constantly and get the
-    channel muted. A watcher still hears about their own name either way, since
-    they asked about that specific name rather than about good news.
+    Nothing pings unless the name is actually open. Almost every check comes
+    back taken, so pinging on those would fire constantly and get both the role
+    and the individual watchers to mute the channel. A ping here always means
+    the name is claimable right now.
     """
-    role_ids = [ALWAYS_NOTIFY_ROLE] if (available and ALWAYS_NOTIFY_ROLE) else []
+    if not available:
+        return "", {"parse": []}
+
+    role_ids = [ALWAYS_NOTIFY_ROLE] if ALWAYS_NOTIFY_ROLE else []
     user_ids = list(NAME_WATCHERS.get(name.casefold(), ()))
 
     content = " ".join(
