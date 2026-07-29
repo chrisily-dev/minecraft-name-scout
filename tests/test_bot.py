@@ -157,9 +157,8 @@ def test_unavailable_payload_uses_red_embed(candidate: Candidate) -> None:
     assert embed["color"] == DISCORD_ERROR_COLOR
     assert "already in use" in embed["description"]
     assert fields["Retry"] == "Queued for one retry tomorrow."
-    assert fields["Minehut"] == (
-        "[Create server](https://dashboard.minehut.com/servers/create)"
-    )
+    # A taken name cannot be created, so the link is not offered.
+    assert "Minehut" not in fields
     assert "Type" not in fields
 
 
@@ -316,8 +315,7 @@ def test_a_server_being_deleted_is_called_out() -> None:
     embed = build_payload(Candidate("Empire", 10.0, "test", "test"), result)["embeds"][0]
     fields = {field["name"]: field["value"] for field in embed["fields"]}
 
-    # The one signal worth acting on: the name is about to free up.
-    assert "free up soon" in fields["Heads up"]
+    assert fields["Deletion Status"] == "This server is marked for Deletion."
 
 
 def test_missing_server_fields_do_not_break_the_embed() -> None:
@@ -332,6 +330,8 @@ def test_missing_server_fields_do_not_break_the_embed() -> None:
 
     assert fields["Last online"] == "Never started"
     assert "Created" not in fields
+    # Stated even on a sparse payload, so silence is never the answer.
+    assert fields["Deletion Status"] == "This server is not marked for deletion yet."
 
 
 def test_an_available_result_has_no_holder_fields(
@@ -341,7 +341,11 @@ def test_an_available_result_has_no_holder_fields(
     embed = build_payload(candidate, available)["embeds"][0]
     fields = {field["name"] for field in embed["fields"]}
 
-    assert fields.isdisjoint({"Last online", "Created", "Activity", "Heads up"})
+    assert fields.isdisjoint(
+        {"Last online", "Created", "Activity", "Deletion Status"}
+    )
+    # The create link is only offered where it would actually work.
+    assert "Minehut" in fields
 
 
 def test_a_watched_name_comes_due_after_the_refresh_window() -> None:

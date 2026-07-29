@@ -372,14 +372,17 @@ def _holder_fields(details: ServerDetails | None) -> list[dict[str, object]]:
         activity += f" | {details.joins:,} joins"
     fields.append({"name": "Activity", "value": activity, "inline": True})
 
-    # The one field worth acting on: the holder is being removed, so the name
-    # should free up shortly.
-    if details.deletion_started:
-        fields.append({
-            "name": "Heads up",
-            "value": "This server is being deleted. The name may free up soon.",
-            "inline": False,
-        })
+    # Always stated rather than only when true, so the absence of a warning is
+    # a positive answer instead of an ambiguous silence.
+    fields.append({
+        "name": "Deletion Status",
+        "value": (
+            "This server is marked for Deletion."
+            if details.deletion_started
+            else "This server is not marked for deletion yet."
+        ),
+        "inline": False,
+    })
 
     return fields
 
@@ -422,11 +425,17 @@ def build_embed(
                 "value": queue_status,
                 "inline": False,
             },
-            {
-                "name": "Minehut",
-                "value": f"[Create server]({MINEHUT_CREATE_URL})",
-                "inline": False,
-            },
+            # Only offered when the name can actually be claimed. On a taken
+            # name the link just leads to a rejected form.
+            *(
+                [{
+                    "name": "Minehut",
+                    "value": f"[Create server]({MINEHUT_CREATE_URL})",
+                    "inline": False,
+                }]
+                if availability.available
+                else []
+            ),
         ],
         # No footer text. The bare timestamp is enough, and the old line
         # repeated the same rate-limit blurb on every single message.
