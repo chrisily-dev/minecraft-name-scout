@@ -763,6 +763,10 @@ def test_completed_retry_is_removed_from_queue(candidate: Candidate) -> None:
 
     assert queue["items"] == []
     assert "retry finished" in status.casefold()
+    # Leaving the queue is what makes a name selectable again, so the wording
+    # must not read as the bot giving up on it.
+    assert "back of the line" in status.casefold()
+    assert "removed" not in status.casefold()
 
 
 def test_rate_guard_enforces_the_moderator_limit() -> None:

@@ -319,7 +319,7 @@ def update_retry_queue(
     if availability.available:
         queue["items"] = items
         return (
-            "Available on retry. Removed from the queue."
+            "Available on retry. No longer queued."
             if is_retry
             else "No retry needed."
         )
@@ -357,8 +357,11 @@ def update_retry_queue(
         )
 
     if is_retry:
+        # Leaving the queue is what makes a name selectable again: anything
+        # still queued is skipped by new-name selection. So this is the back of
+        # the line, not the end of the road, and the wording should say so.
         queue["items"] = items
-        return "Retry finished. Removed from the queue."
+        return "Retry finished. Back of the line for another pass."
 
     retry_after = now + RETRY_DELAY
     items.append(
