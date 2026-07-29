@@ -192,6 +192,21 @@ def test_unavailable_payload_uses_red_embed(candidate: Candidate) -> None:
     # A taken name cannot be created, so the link is not offered.
     assert "Minehut" not in fields
     assert "Type" not in fields
+    # The title and description already say the name is taken. A third
+    # restatement was pure noise on the busiest channels.
+    assert "Result" not in fields
+
+
+def test_an_available_embed_keeps_the_result_line(
+    candidate: Candidate,
+    available: AvailabilityResult,
+) -> None:
+    fields = {
+        f["name"]: f["value"]
+        for f in build_payload(candidate, available)["embeds"][0]["fields"]
+    }
+
+    assert fields["Result"] == "No registered server found."
 
 
 def test_webhook_copy_is_plain_and_has_no_long_dashes(

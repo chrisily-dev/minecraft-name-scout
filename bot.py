@@ -490,11 +490,17 @@ def build_embed(
                 "inline": True,
             },
             *_holder_fields(availability.details),
-            {
-                "name": "Result",
-                "value": availability.reason,
-                "inline": False,
-            },
+            # Only shown for an available name. On a taken one the title, the
+            # description, and this field all said the same thing three times.
+            *(
+                [{
+                    "name": "Result",
+                    "value": availability.reason,
+                    "inline": False,
+                }]
+                if availability.available
+                else []
+            ),
             {
                 "name": "Retry",
                 "value": queue_status,
