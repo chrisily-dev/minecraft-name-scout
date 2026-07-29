@@ -51,8 +51,6 @@ CORE_STANDALONE_WORDS = (
 # These are style anchors, not a list of every name the bot can produce.
 ANCHORS = (
     "Tycoon",
-    "Notch",
-    "Hypixel",
     "Sales",
     "Installed",
     "Mining",
@@ -109,6 +107,19 @@ REFERENCE_WORDS = (
     "Grove",
 )
 
+# Names someone is waiting on. They are scored high so the bot reaches them
+# early, and bot.NAME_WATCHERS pings the interested person on each result.
+# Several are not English dictionary words, so without this group they would
+# never enter the pool and their ping could never fire.
+WATCHLIST_NAMES = (
+    "Harbor",
+    "Harbour",
+    "Sete",
+    "Dungeon",
+    "Dungeons",
+    "Dunheon",
+)
+
 # Recognizable names retained from the owner's 2022 checker archive. Hundreds
 # of rare technical and dictionary-curiosity results were intentionally omitted.
 ARCHIVE_INSPIRATION = (
@@ -160,30 +171,6 @@ RECENT_ARCHIVE_INSPIRATION = (
     "Listeners",
     "Modelling",
     "Spurs",
-)
-
-# Historical references from the official Minehut Wiki's Notable Servers
-# directory. These are checked like any other candidate and are not assumed
-# to be available.
-NOTABLE_REFERENCES = (
-    "CapeCraft",
-    "Fewer",
-    "FunMinesX",
-    "Glowcraft",
-    "HotdogWater",
-    "HyruleGG",
-    "LabsMC",
-    "LeoneMC",
-    "Lifesteal",
-    "Lightskies",
-    "Mlum",
-    "Overcast",
-    "SurvivalGG",
-    "SynthCraft",
-    "TowerDefense",
-    "UnitedLands",
-    "Warzone",
-    "ZedarMC",
 )
 
 # Semantically grouped stems produce related names without relying on a fixed
@@ -283,75 +270,18 @@ BRAND_STEMS = (
     "Winter",
 )
 
+# A generated name may only gain a second word when that word names a game mode,
+# giving shapes like RandomKits and BoxPvP. Generic nouns such as Haven, Vale,
+# and Cove are deliberately absent, and so is the MC tag.
 BRAND_SUFFIXES = (
     "Craft",
     "Gens",
-    "Haven",
     "Hub",
     "Kits",
-    "MC",
     "Mines",
     "PvP",
     "Realm",
     "SMP",
-)
-
-CURATED_COMPOUNDS = (
-    "AshenVale",
-    "BlazePeak",
-    "BloomCove",
-    "CloudForge",
-    "CoralQuest",
-    "CrownVale",
-    "DawnHarbor",
-    "DragonCove",
-    "DuskForge",
-    "EchoValley",
-    "EmberPeak",
-    "FableHaven",
-    "FlameCove",
-    "ForestVale",
-    "FrostHaven",
-    "FrostPeak",
-    "GalaxyForge",
-    "GoldenVale",
-    "HollowPeak",
-    "IronHaven",
-    "JadeHarbor",
-    "LunarVale",
-    "MysticCove",
-    "NeonForge",
-    "NovaHarbor",
-    "OakValley",
-    "PixelCove",
-    "QuartzPeak",
-    "RavenHaven",
-    "RiftValley",
-    "RiverForge",
-    "RubyHaven",
-    "ShadowCove",
-    "SilverPeak",
-    "SolarVale",
-    "StormHaven",
-    "TitanForge",
-    "ValorPeak",
-    "VelvetCove",
-    "VoidHarbor",
-    "WildHaven",
-    "WinterVale",
-)
-
-PREFIXES = (
-    "Mine",
-    "Craft",
-    "Block",
-    "Sky",
-    "Box",
-    "Gen",
-    "Kit",
-    "Pixel",
-    "Nether",
-    "Ender",
 )
 
 SUFFIXES = (
@@ -363,7 +293,6 @@ SUFFIXES = (
     "Realm",
     "Hub",
     "Core",
-    "MC",
 )
 
 POWER_WORDS = {
@@ -623,6 +552,7 @@ def build_candidate_pool() -> list[Candidate]:
         name.casefold()
         for name in (
             *CORE_STANDALONE_WORDS,
+            *WATCHLIST_NAMES,
             *REFERENCE_WORDS,
             *ARCHIVE_INSPIRATION,
             *RECENT_ARCHIVE_INSPIRATION,
@@ -640,6 +570,7 @@ def build_candidate_pool() -> list[Candidate]:
         )
 
     curated_groups = (
+        (WATCHLIST_NAMES, 14.0, "Watchlist", "requested watch name"),
         (
             CORE_STANDALONE_WORDS,
             10.5,
@@ -660,18 +591,6 @@ def build_candidate_pool() -> list[Candidate]:
             "Archive pick",
             "filtered newer owner archive",
         ),
-        (
-            NOTABLE_REFERENCES,
-            8.0,
-            "Minehut reference",
-            "official notable-server directory",
-        ),
-        (
-            CURATED_COMPOUNDS,
-            7.5,
-            "Server brand",
-            "curated compound bank",
-        ),
     )
     for names, weight, style, source in curated_groups:
         for name in names:
@@ -684,12 +603,14 @@ def build_candidate_pool() -> list[Candidate]:
                 source,
             )
 
+    # The game mode always lands second, so these build StemGens and StemPvP but
+    # never GensStem.
     compound_families = (
-        (GEN_STEMS, ("Gens",), ("", "Gens"), "Generator brand"),
-        (MINE_STEMS, ("Mine", "Mines"), ("",), "Mining brand"),
-        (PVP_STEMS, ("Clash", "PvP", "Kits"), ("",), "PvP brand"),
+        (GEN_STEMS, ("Gens",), "Generator brand"),
+        (MINE_STEMS, ("Mine", "Mines"), "Mining brand"),
+        (PVP_STEMS, ("Clash", "PvP", "Kits"), "PvP brand"),
     )
-    for stems, suffixes, prefixes, style in compound_families:
+    for stems, suffixes, style in compound_families:
         for stem in stems:
             frequency = max(zipf_frequency(stem.lower(), "en"), 4.0)
             for suffix in suffixes:
@@ -701,16 +622,6 @@ def build_candidate_pool() -> list[Candidate]:
                     style,
                     "semantic compound",
                 )
-            for prefix in prefixes:
-                if prefix:
-                    compound = f"{prefix}{stem}"
-                    _add_candidate(
-                        candidates,
-                        compound,
-                        _base_score(compound, frequency, minecraft_weight=5.8),
-                        style,
-                        "semantic compound",
-                    )
 
     for stem in BRAND_STEMS:
         frequency = max(zipf_frequency(stem.lower(), "en"), 4.0)
@@ -755,16 +666,6 @@ def build_candidate_pool() -> list[Candidate]:
                 _base_score(compound, frequency, minecraft_weight=3.0),
                 f"{suffix} server",
                 f"{word} + {suffix}",
-            )
-
-        for prefix in PREFIXES:
-            compound = f"{prefix}{display}"
-            _add_candidate(
-                candidates,
-                compound,
-                _base_score(compound, frequency, minecraft_weight=2.6),
-                f"{prefix} brand",
-                f"{prefix} + {word}",
             )
 
     ranked = sorted(

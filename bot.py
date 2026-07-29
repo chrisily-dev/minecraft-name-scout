@@ -29,6 +29,21 @@ MAX_CHECKS_PER_RUN = 80
 DEFAULT_REQUEST_INTERVAL_SECONDS = 13.0
 MIN_REQUEST_INTERVAL_SECONDS = 13.0
 
+# Discord user IDs to ping when a specific name is checked, keyed by the
+# casefolded name. Every name here also lives in
+# name_generator.WATCHLIST_NAMES so the pool actually reaches it.
+NAME_WATCHERS: dict[str, tuple[str, ...]] = {
+    "harbor": ("1154980857342345286",),
+    "harbour": ("1154980857342345286",),
+    "sete": ("672518392447762462",),
+    "dungeon": ("672518392447762462",),
+    "dungeons": ("672518392447762462",),
+    "dunheon": ("672518392447762462",),
+}
+
+# Pinged on every result. Set to "" to stop the per-message role ping.
+ALWAYS_NOTIFY_ROLE = "1531794005107671081"
+
 
 @dataclass(frozen=True, slots=True)
 class AvailabilityResult:
@@ -264,6 +279,27 @@ def build_embed(
     }
 
 
+def build_mentions(name: str) -> tuple[str, dict[str, object]]:
+    """Return the ping line for a name and the mentions Discord may resolve."""
+    role_ids = [ALWAYS_NOTIFY_ROLE] if ALWAYS_NOTIFY_ROLE else []
+    user_ids = list(NAME_WATCHERS.get(name.casefold(), ()))
+
+    content = " ".join(
+        [
+            *(f"<@&{role_id}>" for role_id in role_ids),
+            *(f"<@{user_id}>" for user_id in user_ids),
+        ]
+    )
+    # "parse" stays empty so only these exact IDs can ping. A stray @everyone in
+    # a generated name can never resolve.
+    allowed_mentions: dict[str, object] = {"parse": []}
+    if role_ids:
+        allowed_mentions["roles"] = role_ids
+    if user_ids:
+        allowed_mentions["users"] = user_ids
+    return content, allowed_mentions
+
+
 def build_payload(
     candidate: Candidate,
     availability: AvailabilityResult,
@@ -271,9 +307,10 @@ def build_payload(
     is_retry: bool = False,
     queue_status: str = "No retry needed.",
 ) -> dict[str, object]:
-    return {
+    content, allowed_mentions = build_mentions(candidate.name)
+    payload: dict[str, object] = {
         "username": "Minecraft Name Scout",
-        "allowed_mentions": {"parse": []},
+        "allowed_mentions": allowed_mentions,
         "embeds": [
             build_embed(
                 candidate,
@@ -283,6 +320,9 @@ def build_payload(
             )
         ],
     }
+    if content:
+        payload["content"] = content
+    return payload
 
 
 def validate_webhook_url(

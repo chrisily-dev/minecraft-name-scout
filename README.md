@@ -10,8 +10,11 @@ names and reports every result with polished Discord embeds.
   such as `xGens`, `xKits`, `xPvP`, and `xCraft` to a smaller supporting share.
 - Gives recognizable 4-6 character words the strongest length priority instead
   of favoring longer names.
-- Adds Minecraft-style transformations such as `PvP`, `Kits`, `Gens`, `Craft`,
-  `Box`, and `Sky`.
+- Adds a second word only when that word is a game mode, giving `RandomKits`
+  and `BoxPvP` while rejecting generic mashups such as `FrostHaven`,
+  `PixelCove`, and `MineTycoon`.
+- Never emits an `MC` tag, and does not suggest names of servers that already
+  exist.
 - Scores names for commonness, brandability, length, and Minecraft relevance.
 - Includes styles such as `Tycoon`, `Sales`, `Installed`, `Mining`, `Farming`,
   `Dancer`, `Major`, `Mayor`, `Flat`, `Platform`, `RandomKits`, `BoxPvP`,
@@ -26,8 +29,9 @@ names and reports every result with polished Discord embeds.
 - Builds thousands of extra server-ready combinations from curated parts such
   as `FrostHaven`, `PixelCove`, `StormGens`, `IronMines`, and `EmberPvP`.
 - Includes the strong reference words `Harbor`, `Ashen`, `Basalt`, `Cabin`,
-  `Drift`, `Ember`, `Flint`, and `Grove`, plus selected historical Minehut
-  references as availability candidates.
+  `Drift`, `Ember`, `Flint`, and `Grove`.
+- Checks the `WATCHLIST_NAMES` group early and pings whoever is waiting on each
+  of those names.
 - Retains recognizable inspiration from the supplied 2022 archive, including
   `Backseat`, `Formwork`, `Trackball`, `Bulwarks`, `Refocuses`, and `Skydives`,
   while rejecting hundreds of obscure dictionary curiosities.
@@ -70,6 +74,17 @@ official Minehut dashboard.
 
 If `DISCORD_WEBHOOK_TAKEN` is missing the run still succeeds, but every result
 goes to the single `DISCORD_WEBHOOK` channel and the log prints a warning.
+
+## Pings
+
+Every message pings the role in `bot.ALWAYS_NOTIFY_ROLE`. Set it to `""` to turn
+that off. `bot.NAME_WATCHERS` maps a name to the Discord user IDs that should
+also be pinged when that specific name is checked.
+
+A watched name must also appear in `name_generator.WATCHLIST_NAMES`, otherwise
+the generator never produces it and the ping can never fire. A test enforces
+this. `allowed_mentions` lists only these exact IDs, so a generated name can
+never cause an unintended `@everyone`.
 
 The scheduled workflow runs every five minutes, which is GitHub Actions' shortest
 supported schedule interval. Each run selects 20 non-repeating names and spaces

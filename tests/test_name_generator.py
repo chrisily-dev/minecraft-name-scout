@@ -83,8 +83,6 @@ def test_pool_contains_requested_style_and_no_obscure_shapes() -> None:
         "listeners",
         "modelling",
         "spurs",
-        "warzone",
-        "towerdefense",
     }
     assert expected <= names
     assert len(pool) >= 4_000
@@ -99,7 +97,6 @@ def test_pool_is_mostly_standalone_words() -> None:
         "gens",
         "hub",
         "kits",
-        "mc",
         "mines",
         "pvp",
         "smp",
@@ -147,15 +144,62 @@ def test_semantic_families_generate_more_than_the_examples() -> None:
 
     assert {
         "voidgens",
-        "gensrune",
         "novamines",
         "riftclash",
         "valorpvp",
-        "frosthaven",
-        "pixelcove",
         "stormgens",
         "ironmines",
         "emberpvp",
+    } <= names
+
+
+def test_pool_drops_mc_tags_and_existing_servers() -> None:
+    pool = build_candidate_pool()
+    names = {candidate.name.casefold() for candidate in pool}
+
+    assert not any(name.endswith("mc") for name in names)
+    assert {
+        "warzone",
+        "towerdefense",
+        "zedarmc",
+        "labsmc",
+        "capecraft",
+        "lifesteal",
+        "hypixel",
+        "notch",
+    }.isdisjoint(names)
+
+
+def test_a_second_word_is_always_a_game_mode() -> None:
+    pool = build_candidate_pool()
+    names = {candidate.name.casefold() for candidate in pool}
+
+    # RandomKits and BoxPvP are fine; FrostHaven and PixelCove are the shape
+    # that got dropped, along with prefix forms such as MineTycoon.
+    assert {"randomkits", "boxpvp"} <= names
+    assert {
+        "frosthaven",
+        "pixelcove",
+        "ashenvale",
+        "dawnharbor",
+        "echovalley",
+        "minetycoon",
+        "skyempire",
+        "gensrune",
+    }.isdisjoint(names)
+
+
+def test_watchlist_names_reach_the_pool() -> None:
+    pool = build_candidate_pool()
+    names = {candidate.name.casefold() for candidate in pool}
+
+    assert {
+        "harbor",
+        "harbour",
+        "sete",
+        "dungeon",
+        "dungeons",
+        "dunheon",
     } <= names
 
 
