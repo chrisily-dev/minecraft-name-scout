@@ -1,4 +1,5 @@
 from name_generator import (
+    WATCHLIST_NAMES,
     Candidate,
     _base_score,
     build_candidate_pool,
@@ -116,14 +117,14 @@ def test_recognizable_short_words_receive_priority() -> None:
         candidate.name.casefold(): index
         for index, candidate in enumerate(pool, start=1)
     }
-    short_names = [
-        candidate
-        for candidate in pool[:100]
-        if 4 <= len(candidate.name) <= 6
-    ]
+    # Watched names are pinned to the front regardless of length, so they are
+    # excluded here: this is about how the scoring ranks generated names.
+    watched = {name.casefold() for name in WATCHLIST_NAMES}
+    generated = [c for c in pool[:100] if c.name.casefold() not in watched]
+    short_names = [c for c in generated if 4 <= len(c.name) <= 6]
 
     assert positions["loud"] <= 500
-    assert len(short_names) >= 50
+    assert len(short_names) >= len(generated) // 2
     assert min(
         _base_score("Loud", 4.53),
         _base_score("Cloud", 4.53),
@@ -220,17 +221,18 @@ def test_a_second_word_is_always_a_game_mode() -> None:
 
 
 def test_watchlist_names_reach_the_pool() -> None:
+    """Every watched name, whatever the list grows to, must be generatable."""
     pool = build_candidate_pool()
     names = {candidate.name.casefold() for candidate in pool}
 
-    assert {
-        "harbor",
-        "harbour",
-        "sete",
-        "dungeon",
-        "dungeons",
-        "dunheon",
-    } <= names
+    missing = {n.casefold() for n in WATCHLIST_NAMES} - names
+    assert missing == set(), f"watched but never generated: {sorted(missing)}"
+
+
+def test_every_watchlist_name_is_a_legal_minehut_name() -> None:
+    # A watched name that could never exist would silently never fire.
+    illegal = [name for name in WATCHLIST_NAMES if not is_valid_name(name)]
+    assert illegal == [], f"illegal watch names: {illegal}"
 
 
 def test_selection_is_deterministic_and_returns_one_candidate() -> None:

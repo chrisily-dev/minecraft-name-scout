@@ -60,6 +60,12 @@ NAME_WATCHERS: dict[str, tuple[str, ...]] = {
     "dungeon": ("672518392447762462",),
     "dungeons": ("672518392447762462",),
     "dunheon": ("672518392447762462",),
+    "prison": ("615580983881760787",),
+    "prisonrp": ("615580983881760787",),
+    "roleplay": ("615580983881760787",),
+    "horizon": ("615580983881760787",),
+    "raidrise": ("615580983881760787",),
+    "prisonescape": ("615580983881760787",),
 }
 
 # Pinged on every result. Set to "" to stop the per-message role ping.

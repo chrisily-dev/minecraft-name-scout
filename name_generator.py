@@ -121,6 +121,12 @@ WATCHLIST_NAMES = (
     "Dungeon",
     "Dungeons",
     "Dunheon",
+    "Prison",
+    "PrisonRP",
+    "Roleplay",
+    "Horizon",
+    "RaidRise",
+    "PrisonEscape",
 )
 
 # Recognizable names retained from the owner's 2022 checker archive. Hundreds
