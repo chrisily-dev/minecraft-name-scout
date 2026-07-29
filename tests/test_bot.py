@@ -88,6 +88,31 @@ def test_a_taken_name_never_pings_a_watcher_either() -> None:
     assert payload["allowed_mentions"] == {"parse": []}
 
 
+def test_a_watcher_hears_when_their_name_is_marked_for_deletion() -> None:
+    """The advance warning is the whole point of watching a name."""
+    watcher = NAME_WATCHERS["harbor"][0]
+    pending = AvailabilityResult(
+        False, "Already registered.", 200, _details(deleting=True)
+    )
+
+    payload = build_payload(Candidate("Harbor", 12.0, "Watchlist", "test"), pending)
+
+    assert payload["content"] == f"<@{watcher}>"
+    # The role is not pinged: it only hears about names that are open now.
+    assert payload["allowed_mentions"] == {"parse": [], "users": [watcher]}
+
+
+def test_an_unwatched_name_marked_for_deletion_pings_nobody() -> None:
+    pending = AvailabilityResult(
+        False, "Already registered.", 200, _details(deleting=True)
+    )
+
+    payload = build_payload(Candidate("Tycoon", 14.2, "Brand word", "test"), pending)
+
+    assert "content" not in payload
+    assert payload["allowed_mentions"] == {"parse": []}
+
+
 def test_no_embed_carries_a_footer() -> None:
     """The old footer repeated the same rate-limit blurb on every message."""
     available = AvailabilityResult(True, "No registered server found.", 404)

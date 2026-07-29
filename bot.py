@@ -66,6 +66,7 @@ NAME_WATCHERS: dict[str, tuple[str, ...]] = {
     "horizon": ("615580983881760787",),
     "raidrise": ("615580983881760787",),
     "prisonescape": ("615580983881760787",),
+    "state": ("615580983881760787",),
 }
 
 # Pinged on every result. Set to "" to stop the per-message role ping.
@@ -491,18 +492,22 @@ def build_mentions(
     name: str,
     *,
     available: bool,
+    pending_deletion: bool = False,
 ) -> tuple[str, dict[str, object]]:
     """Return the ping line for a name and the mentions Discord may resolve.
 
-    Nothing pings unless the name is actually open. Almost every check comes
-    back taken, so pinging on those would fire constantly and get both the role
-    and the individual watchers to mute the channel. A ping here always means
-    the name is claimable right now.
+    The role only hears about names that are open right now, because almost
+    every check comes back taken and pinging on those would get the channel
+    muted.
+
+    Someone watching a specific name also hears when its holder is marked for
+    deletion. That is the advance warning a watch exists for: it is the moment
+    to get ready, not after someone else has already claimed it.
     """
-    if not available:
+    if not available and not pending_deletion:
         return "", {"parse": []}
 
-    role_ids = [ALWAYS_NOTIFY_ROLE] if ALWAYS_NOTIFY_ROLE else []
+    role_ids = [ALWAYS_NOTIFY_ROLE] if (available and ALWAYS_NOTIFY_ROLE) else []
     user_ids = list(NAME_WATCHERS.get(name.casefold(), ()))
 
     content = " ".join(
@@ -531,6 +536,7 @@ def build_payload(
     content, allowed_mentions = build_mentions(
         candidate.name,
         available=availability.available,
+        pending_deletion=is_pending_deletion(availability),
     )
     payload: dict[str, object] = {
         "username": "Minecraft Name Scout",

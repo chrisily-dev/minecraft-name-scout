@@ -127,6 +127,7 @@ WATCHLIST_NAMES = (
     "Horizon",
     "RaidRise",
     "PrisonEscape",
+    "State",
 )
 
 # Recognizable names retained from the owner's 2022 checker archive. Hundreds
