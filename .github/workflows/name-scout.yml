@@ -112,9 +112,25 @@ jobs:
           # a small value would otherwise pin the chain to that value forever.
           # The next run always starts at the workflow default; change the
           # default here if a different sustained rate is wanted.
-          gh workflow run name-scout.yml \
-            --repo "$GITHUB_REPOSITORY" \
-            --ref main \
-            -f chain=true
+          if ! output=$(gh workflow run name-scout.yml \
+                --repo "$GITHUB_REPOSITORY" \
+                --ref main \
+                -f chain=true 2>&1); then
+            echo "$output"
+            case "$output" in
+              *403*|*"not accessible"*)
+                echo "::error::CHAIN_TOKEN reached GitHub but was refused."
+                echo "The token needs 'Actions: Read and write' on this repository."
+                echo "Edit it at https://github.com/settings/personal-access-tokens"
+                echo "  Repository access  -> Only select repositories -> this repo"
+                echo "  Repository permissions -> Actions -> Read and write"
+                ;;
+              *404*)
+                echo "::error::CHAIN_TOKEN cannot see this repository."
+                echo "Under 'Repository access', select this repository explicitly."
+                ;;
+            esac
+            exit 1
+          fi
 
           echo "Queued the next run."
