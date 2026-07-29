@@ -115,9 +115,14 @@ allowance in about a day and a half. Public repositories get unlimited minutes.
 
 ## Pings
 
-Every message pings the role in `bot.ALWAYS_NOTIFY_ROLE`. Set it to `""` to turn
-that off. `bot.NAME_WATCHERS` maps a name to the Discord user IDs that should
-also be pinged when that specific name is checked.
+`bot.ALWAYS_NOTIFY_ROLE` is pinged when a name comes back **available**, and only
+then. Set it to `""` to turn that off. Taken names never ping the role: nearly
+every check comes back taken, so pinging on those would fire constantly and get
+the channel muted.
+
+`bot.NAME_WATCHERS` maps a name to the Discord user IDs pinged when that specific
+name is checked, available or not. Someone watching a name asked about that name
+rather than about good news, so they hear either way.
 
 A watched name must also appear in `name_generator.WATCHLIST_NAMES`, otherwise
 the generator never produces it and the ping can never fire. A test enforces

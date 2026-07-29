@@ -283,9 +283,19 @@ def build_embed(
     }
 
 
-def build_mentions(name: str) -> tuple[str, dict[str, object]]:
-    """Return the ping line for a name and the mentions Discord may resolve."""
-    role_ids = [ALWAYS_NOTIFY_ROLE] if ALWAYS_NOTIFY_ROLE else []
+def build_mentions(
+    name: str,
+    *,
+    available: bool,
+) -> tuple[str, dict[str, object]]:
+    """Return the ping line for a name and the mentions Discord may resolve.
+
+    The role is pinged only on an available name. Almost every check comes back
+    taken, so pinging the role on those would fire constantly and get the
+    channel muted. A watcher still hears about their own name either way, since
+    they asked about that specific name rather than about good news.
+    """
+    role_ids = [ALWAYS_NOTIFY_ROLE] if (available and ALWAYS_NOTIFY_ROLE) else []
     user_ids = list(NAME_WATCHERS.get(name.casefold(), ()))
 
     content = " ".join(
@@ -311,7 +321,10 @@ def build_payload(
     is_retry: bool = False,
     queue_status: str = "No retry needed.",
 ) -> dict[str, object]:
-    content, allowed_mentions = build_mentions(candidate.name)
+    content, allowed_mentions = build_mentions(
+        candidate.name,
+        available=availability.available,
+    )
     payload: dict[str, object] = {
         "username": "Minecraft Name Scout",
         "allowed_mentions": allowed_mentions,

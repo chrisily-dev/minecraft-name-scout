@@ -51,7 +51,7 @@ def test_payload_uses_one_embed(
     assert len(payload["embeds"]) == 1
     assert "`Tycoon`" in payload["embeds"][0]["description"]
     assert payload["embeds"][0]["title"] == "Available: Tycoon"
-    # An unwatched name still pings the role, and nothing else.
+    # An unwatched but available name pings the role, and nothing else.
     assert payload["content"] == f"<@&{ALWAYS_NOTIFY_ROLE}>"
     assert payload["allowed_mentions"] == {
         "parse": [],
@@ -59,7 +59,28 @@ def test_payload_uses_one_embed(
     }
 
 
-def test_watched_name_pings_the_role_and_the_watcher(
+def test_a_taken_name_never_pings_the_role(candidate: Candidate) -> None:
+    """Nearly every check comes back taken, so the role must stay quiet."""
+    taken = AvailabilityResult(False, "Already registered.", 200)
+
+    payload = build_payload(candidate, taken)
+
+    assert "content" not in payload
+    assert payload["allowed_mentions"] == {"parse": []}
+
+
+def test_a_watcher_is_pinged_even_when_their_name_is_taken() -> None:
+    taken = AvailabilityResult(False, "Already registered.", 200)
+    watcher = NAME_WATCHERS["harbor"][0]
+
+    payload = build_payload(Candidate("Harbor", 12.0, "Watchlist", "test"), taken)
+
+    # The watcher asked about this specific name, not about good news only.
+    assert payload["content"] == f"<@{watcher}>"
+    assert payload["allowed_mentions"] == {"parse": [], "users": [watcher]}
+
+
+def test_available_watched_name_pings_the_role_and_the_watcher(
     available: AvailabilityResult,
 ) -> None:
     watcher = NAME_WATCHERS["harbor"][0]
@@ -75,18 +96,21 @@ def test_watched_name_pings_the_role_and_the_watcher(
 
 
 def test_watchers_are_matched_regardless_of_casing() -> None:
-    assert build_mentions("HARBOUR") == build_mentions("harbour")
-    assert NAME_WATCHERS["harbour"][0] in build_mentions("Harbour")[0]
+    assert build_mentions("HARBOUR", available=True) == build_mentions(
+        "harbour", available=True
+    )
+    assert NAME_WATCHERS["harbour"][0] in build_mentions("Harbour", available=True)[0]
 
 
 def test_mentions_never_let_discord_parse_anything_else() -> None:
     for name in ("Tycoon", "Harbor", "Dungeons"):
-        _, allowed = build_mentions(name)
+        for available in (True, False):
+            _, allowed = build_mentions(name, available=available)
 
-        # An empty "parse" is what stops @everyone or a stray role from
-        # resolving; only the IDs listed here can ping.
-        assert allowed["parse"] == []
-        assert set(allowed) <= {"parse", "roles", "users"}
+            # An empty "parse" is what stops @everyone or a stray role from
+            # resolving; only the IDs listed here can ping.
+            assert allowed["parse"] == []
+            assert set(allowed) <= {"parse", "roles", "users"}
 
 
 def test_every_watched_name_can_actually_be_generated() -> None:
