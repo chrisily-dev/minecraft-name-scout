@@ -16,11 +16,14 @@ from bot import (
     TAKEN_WEBHOOK_ENV,
     build_mentions,
     build_payload,
+    WATCH_REFRESH,
     check_name_availability,
+    due_watchlist_names,
     is_retry_slot,
     load_retry_queue,
     main,
     resolve_webhooks,
+    record_watch_check,
     save_retry_queue,
     select_check_target,
     select_webhook,
@@ -28,8 +31,9 @@ from bot import (
     send_to_discord,
     update_retry_queue,
     validate_rate_settings,
+    watch_slots,
 )
-from name_generator import Candidate
+from name_generator import WATCHLIST_NAMES, Candidate
 
 
 @pytest.fixture
@@ -340,6 +344,103 @@ def test_an_available_result_has_no_holder_fields(
     assert fields.isdisjoint({"Last online", "Created", "Activity", "Heads up"})
 
 
+def test_a_watched_name_comes_due_after_the_refresh_window() -> None:
+    now = datetime(2026, 7, 29, 12, 0, tzinfo=timezone.utc)
+    just_checked = (now - timedelta(minutes=5)).isoformat()
+    stale = (now - timedelta(hours=2)).isoformat()
+    queue = {
+        "version": 1,
+        "items": [],
+        "watch_checks": {"harbor": just_checked, "harbour": stale},
+    }
+
+    due = due_watchlist_names(queue, now)
+
+    assert "Harbor" not in due, "checked 5 minutes ago, not due yet"
+    assert "Harbour" in due, "checked 2 hours ago, overdue"
+    # Never-checked names are due and sort ahead of merely stale ones.
+    assert due[0] not in ("Harbour",)
+
+
+def test_recording_a_check_stops_a_name_being_due() -> None:
+    now = datetime(2026, 7, 29, 12, 0, tzinfo=timezone.utc)
+    queue: dict[str, object] = {"version": 1, "items": []}
+
+    assert "Harbor" in due_watchlist_names(queue, now)
+    record_watch_check(queue, "Harbor", now)
+
+    assert "Harbor" not in due_watchlist_names(queue, now)
+    # And it comes back once the window has passed.
+    assert "Harbor" in due_watchlist_names(queue, now + WATCH_REFRESH)
+
+
+def test_a_watched_name_is_never_parked_in_the_retry_queue() -> None:
+    """Queueing a watched name would make it ineligible for a whole day."""
+    now = datetime(2026, 7, 29, 12, 0, tzinfo=timezone.utc)
+    queue: dict[str, object] = {"version": 1, "items": []}
+    taken = AvailabilityResult(False, "Already registered.", 200)
+
+    status = update_retry_queue(
+        queue,
+        Candidate("Harbor", 14.0, "Watchlist", "test"),
+        taken,
+        is_retry=False,
+        now=now,
+    )
+
+    assert queue["items"] == []
+    assert "Watched name" in status
+
+
+def test_watched_names_cannot_swallow_a_whole_batch() -> None:
+    # Six watched names must not starve the ordinary rotation.
+    assert watch_slots(80) == 20
+    assert watch_slots(8) == 2
+    assert watch_slots(3) == 1
+    assert watch_slots(1) == 1
+
+
+def test_main_checks_due_watched_names_first(monkeypatch, tmp_path) -> None:
+    queue_path = tmp_path / "retry_queue.json"
+    pool = [Candidate(f"Filler{i:02d}", 5.0, "test", "test") for i in range(30)]
+    check = Mock(
+        return_value=AvailabilityResult(True, "No registered server found.", 404)
+    )
+
+    monkeypatch.setattr("bot.build_candidate_pool", lambda: pool)
+    monkeypatch.setattr("bot.check_name_availability", check)
+    monkeypatch.setattr("bot.send_to_discord", Mock())
+    monkeypatch.setattr("bot.time.sleep", Mock())
+    monkeypatch.setenv(AVAILABLE_WEBHOOK_ENV, AVAILABLE_URL)
+    monkeypatch.setenv(TAKEN_WEBHOOK_ENV, TAKEN_URL)
+    monkeypatch.setenv("RETRY_QUEUE_PATH", str(queue_path))
+    monkeypatch.setattr(
+        "sys.argv",
+        ["bot.py", "--run-number", "1", "--checks-per-run", "20",
+         "--request-interval-seconds", "13"],
+    )
+
+    main()
+
+    checked = [call.args[0] for call in check.call_args_list]
+    watched = {name.casefold() for name in WATCHLIST_NAMES}
+    leading = [name for name in checked[:5] if name.casefold() in watched]
+
+    # Every watched name is due on a fresh queue, so they lead the batch.
+    assert len(leading) == 5
+    # And the cap leaves room for ordinary names.
+    assert any(name.casefold() not in watched for name in checked)
+
+    # The cap admits five of the six, and the leftover rolls into the next
+    # batch rather than being dropped.
+    saved = load_retry_queue(queue_path)
+    assert set(saved["watch_checks"]) == {
+        name for name in watched if name in saved["watch_checks"]
+    }
+    assert len(saved["watch_checks"]) == watch_slots(20)
+    assert set(saved["watch_checks"]) < watched
+
+
 def test_404_means_available_with_exactly_one_lookup() -> None:
     response = Mock(status_code=404)
     session = Mock()
@@ -585,10 +686,14 @@ def test_main_places_a_due_retry_in_the_final_slot(
     tmp_path,
 ) -> None:
     queue_path = tmp_path / "retry_queue.json"
+    # Mark every watched name as freshly checked so none are due. This test is
+    # about where a retry lands, not about the watch cadence.
+    fresh = datetime.now(timezone.utc).isoformat()
     save_retry_queue(
         queue_path,
         {
             "version": 1,
+            "watch_checks": {name.casefold(): fresh for name in WATCHLIST_NAMES},
             "items": [
                 {
                     "name": candidate.name,

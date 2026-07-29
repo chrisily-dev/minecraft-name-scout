@@ -120,9 +120,15 @@ then. Set it to `""` to turn that off. Taken names never ping the role: nearly
 every check comes back taken, so pinging on those would fire constantly and get
 the channel muted.
 
-`bot.NAME_WATCHERS` maps a name to the Discord user IDs pinged when that specific
-name is checked, available or not. Someone watching a name asked about that name
-rather than about good news, so they hear either way.
+`bot.NAME_WATCHERS` maps a name to the Discord user IDs pinged when that name
+comes up free. Nothing pings on a taken result, so a ping always means the name
+is claimable right now.
+
+Names in `name_generator.WATCHLIST_NAMES` are rechecked on their own schedule,
+every `bot.WATCH_REFRESH` (one hour), rather than waiting for the ordinary
+rotation to reach them. They take the front of each batch, are never parked in
+the retry queue, and are capped at a quarter of a batch so a backlog of watched
+names cannot stall everything else.
 
 A watched name must also appear in `name_generator.WATCHLIST_NAMES`, otherwise
 the generator never produces it and the ping can never fire. A test enforces

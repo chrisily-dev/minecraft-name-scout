@@ -12,7 +12,12 @@ import time
 
 import requests
 
-from name_generator import Candidate, build_candidate_pool, select_candidate
+from name_generator import (
+    WATCHLIST_NAMES,
+    Candidate,
+    build_candidate_pool,
+    select_candidate,
+)
 
 
 DISCORD_COLOR = 0x57F287
@@ -24,6 +29,10 @@ MINEHUT_LOOKUP_URL = "https://api.minehut.com/server/{name}?byName=true"
 USER_AGENT = "MinecraftNameScout/3.0 (+GitHub Actions; paced availability checks)"
 DEFAULT_QUEUE_PATH = Path("data/retry_queue.json")
 RETRY_DELAY = timedelta(days=1)
+# Watched names get their own cadence. Left to the ordinary rotation they would
+# only come round once the whole pool cycles, roughly a day, which is far too
+# slow for a name someone is actively waiting to claim.
+WATCH_REFRESH = timedelta(hours=1)
 DEFAULT_CHECKS_PER_RUN = 20
 MAX_CHECKS_PER_RUN = 80
 DEFAULT_REQUEST_INTERVAL_SECONDS = 13.0
@@ -234,6 +243,46 @@ def select_check_target(
     raise RuntimeError("Every generated candidate is already in the retry queue.")
 
 
+def watchlist_keys() -> set[str]:
+    """Casefolded names that are on the hourly watch cadence."""
+    return {name.casefold() for name in WATCHLIST_NAMES}
+
+
+def watch_slots(checks_per_run: int) -> int:
+    """How many slots in one batch may go to watched names.
+
+    Capped so a backlog of watched names cannot swallow a whole batch and stall
+    the ordinary rotation. At the usual batch size this is far more than the
+    handful of names that actually come due each hour.
+    """
+    return max(1, checks_per_run // 4)
+
+
+def due_watchlist_names(queue: dict[str, object], now: datetime) -> list[str]:
+    """Watched names that have not been checked within the refresh window."""
+    raw = queue.get("watch_checks")
+    checks = raw if isinstance(raw, dict) else {}
+
+    due: list[tuple[datetime | None, str]] = []
+    for name in WATCHLIST_NAMES:
+        stamp = checks.get(name.casefold())
+        last = _parse_timestamp(stamp) if isinstance(stamp, str) else None
+        if last is None or last + WATCH_REFRESH <= now:
+            due.append((last, name))
+
+    # Never-checked names first, then the longest-waiting.
+    due.sort(key=lambda item: (item[0] is not None, item[0] or now))
+    return [name for _, name in due]
+
+
+def record_watch_check(queue: dict[str, object], name: str, now: datetime) -> None:
+    raw = queue.get("watch_checks")
+    if not isinstance(raw, dict):
+        raw = {}
+        queue["watch_checks"] = raw
+    raw[name.casefold()] = now.isoformat()
+
+
 def update_retry_queue(
     queue: dict[str, object],
     candidate: Candidate,
@@ -259,6 +308,14 @@ def update_retry_queue(
             if is_retry
             else "No retry needed."
         )
+
+    if candidate.name.casefold() in watchlist_keys():
+        # Watched names run on the hourly cadence instead of the retry queue.
+        # Queueing them would also make them ineligible for a day, which is the
+        # opposite of what a watch is for.
+        queue["items"] = items
+        hours = int(WATCH_REFRESH.total_seconds() // 3600)
+        return f"Watched name. Checked again every {hours}h."
 
     if is_retry:
         queue["items"] = items
@@ -640,24 +697,47 @@ def main() -> None:
     queue = load_retry_queue(queue_path)
     available_webhook_url, taken_webhook_url = resolve_webhooks(dict(os.environ))
 
+    watch_used = 0
     for slot in range(checks_per_run):
         now = datetime.now(timezone.utc)
-        candidate, is_retry = select_check_target(
-            selection_number(run_number, checks_per_run, slot),
-            pool,
-            queue,
-            now,
-            excluded_names=checked_names,
-            allow_due_retry=is_retry_slot(slot, checks_per_run),
-        )
+
+        # Watched names come first and are never held back by the retry queue,
+        # so someone waiting on a name hears within the refresh window rather
+        # than whenever the rotation happens to reach it.
+        due_watch = [
+            name
+            for name in due_watchlist_names(queue, now)
+            if name.casefold() not in checked_names
+        ]
+        if due_watch and watch_used < watch_slots(checks_per_run):
+            watch_used += 1
+            name = due_watch[0]
+            candidate = next(
+                (item for item in pool if item.name.casefold() == name.casefold()),
+                Candidate(name, 0.0, "Watchlist", "watched name"),
+            )
+            is_retry = False
+            kind = "watch"
+        else:
+            candidate, is_retry = select_check_target(
+                selection_number(run_number, checks_per_run, slot),
+                pool,
+                queue,
+                now,
+                # Watched names are handled above; letting the ordinary
+                # rotation pick one too would waste a slot on a duplicate.
+                excluded_names=checked_names | watchlist_keys(),
+                allow_due_retry=is_retry_slot(slot, checks_per_run),
+            )
+            kind = "retry" if is_retry else "new"
+
         checked_names.add(candidate.name.casefold())
-        print(
-            f"Checking {slot + 1}/{checks_per_run} "
-            f"({'retry' if is_retry else 'new'}): {candidate.name}"
-        )
+        print(f"Checking {slot + 1}/{checks_per_run} ({kind}): {candidate.name}")
 
         availability = check_name_availability(candidate.name)
         print(availability.reason)
+        if candidate.name.casefold() in watchlist_keys():
+            record_watch_check(queue, candidate.name, now)
         queue_status = update_retry_queue(
             queue,
             candidate,
