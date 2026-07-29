@@ -17,6 +17,7 @@ from bot import (
     build_mentions,
     build_payload,
     check_name_availability,
+    is_retry_slot,
     load_retry_queue,
     main,
     resolve_webhooks,
@@ -344,6 +345,58 @@ def test_rate_guard_enforces_the_moderator_limit() -> None:
         validate_rate_settings(MAX_CHECKS_PER_RUN + 1, 13.0)
     with pytest.raises(ValueError):
         validate_rate_settings(MAX_CHECKS_PER_RUN, MIN_REQUEST_INTERVAL_SECONDS - 0.1)
+
+
+def test_retry_slots_take_the_tail_of_the_batch() -> None:
+    assert [is_retry_slot(slot, 80) for slot in (0, 39, 40, 79)] == [
+        False,
+        False,
+        True,
+        True,
+    ]
+    # A three-check batch keeps the original single trailing retry slot.
+    assert [is_retry_slot(slot, 3) for slot in (0, 1, 2)] == [False, False, True]
+    # A batch is never made up entirely of retries.
+    assert is_retry_slot(0, 1) is False
+
+
+def test_a_backlogged_queue_actually_drains(candidate: Candidate) -> None:
+    """One retry slot per run grew the queue by ~checks_per_run and drained one."""
+    now = datetime(2026, 7, 29, 12, 0, tzinfo=timezone.utc)
+    due = (now - timedelta(hours=1)).isoformat()
+    queue = {
+        "version": 1,
+        "items": [
+            {
+                "name": f"Queued{index:03d}",
+                "score": 9.0,
+                "style": "test",
+                "source": "test",
+                "first_checked_at": due,
+                "retry_after": due,
+            }
+            for index in range(40)
+        ],
+    }
+    pool = [Candidate(f"FreshNm{index:03d}", 10.0, "test", "test") for index in range(60)]
+
+    checked: set[str] = set()
+    retries = 0
+    for slot in range(20):
+        selected, is_retry = select_check_target(
+            selection_number(1, 20, slot),
+            pool,
+            queue,
+            now,
+            excluded_names=checked,
+            allow_due_retry=is_retry_slot(slot, 20),
+        )
+        checked.add(selected.name.casefold())
+        retries += is_retry
+
+    # Half the batch works the backlog down instead of only ever adding to it.
+    assert retries == 10
+    assert len(checked) == 20
 
 
 def test_batch_selection_numbers_do_not_overlap_between_runs() -> None:
