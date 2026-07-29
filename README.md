@@ -72,8 +72,19 @@ official Minehut dashboard.
    URL for the channel that should receive taken names.
 5. Open **Actions -> Run Minecraft Name Scout -> Run workflow** to test it.
 
-If `DISCORD_WEBHOOK_TAKEN` is missing the run still succeeds, but every result
-goes to the single `DISCORD_WEBHOOK` channel and the log prints a warning.
+Optionally create a third secret, `DISCORD_WEBHOOK_DELETING`, for names whose
+holding server is marked for deletion. Those are the most useful results in the
+system, since the name is about to free up, and they are easily lost among the
+taken results otherwise.
+
+Every webhook is optional except `DISCORD_WEBHOOK`. A missing one folds into the
+next channel up rather than dropping messages: without `DISCORD_WEBHOOK_DELETING`
+those results stay in the taken channel, and without `DISCORD_WEBHOOK_TAKEN`
+everything goes to the single available channel. The log says which fallback is
+in effect.
+
+The three channels map to the three possible actions: claim it now, watch it
+because it is freeing up, or ignore it.
 
 ## Scheduling
 

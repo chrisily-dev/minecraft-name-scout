@@ -8,8 +8,12 @@ from bot import (
     ALWAYS_NOTIFY_ROLE,
     AVAILABLE_WEBHOOK_ENV,
     AvailabilityResult,
+    DELETING_WEBHOOK_ENV,
     DISCORD_ERROR_COLOR,
+    DISCORD_PENDING_COLOR,
     MAX_CHECKS_PER_RUN,
+    ServerDetails,
+    Webhooks,
     MIN_REQUEST_INTERVAL_SECONDS,
     MINEHUT_LOOKUP_URL,
     NAME_WATCHERS,
@@ -209,25 +213,90 @@ def test_webhook_request_has_timeout(
 
 AVAILABLE_URL = "https://discord.com/api/webhooks/example/available"
 TAKEN_URL = "https://discord.com/api/webhooks/example/taken"
+DELETING_URL = "https://discord.com/api/webhooks/example/deleting"
+
+ALL_WEBHOOKS = Webhooks(
+    available=AVAILABLE_URL, taken=TAKEN_URL, deleting=DELETING_URL
+)
 
 
-def test_each_availability_routes_to_its_own_channel(
+def _details(*, deleting: bool) -> ServerDetails:
+    return ServerDetails(
+        created_at=None,
+        last_online=None,
+        online=False,
+        joins=0,
+        deletion_started=deleting,
+        plan="FREE",
+    )
+
+
+def test_each_outcome_routes_to_its_own_channel(
     available: AvailabilityResult,
 ) -> None:
-    taken = AvailabilityResult(False, "Already registered.", 200)
-    routing = {
-        "available_webhook_url": AVAILABLE_URL,
-        "taken_webhook_url": TAKEN_URL,
-    }
+    taken = AvailabilityResult(
+        False, "Already registered.", 200, _details(deleting=False)
+    )
+    pending = AvailabilityResult(
+        False, "Already registered.", 200, _details(deleting=True)
+    )
 
-    assert select_webhook(available, **routing) == (
+    assert select_webhook(available, webhooks=ALL_WEBHOOKS) == (
         AVAILABLE_URL,
         AVAILABLE_WEBHOOK_ENV,
     )
-    assert select_webhook(taken, **routing) == (TAKEN_URL, TAKEN_WEBHOOK_ENV)
+    assert select_webhook(taken, webhooks=ALL_WEBHOOKS) == (
+        TAKEN_URL,
+        TAKEN_WEBHOOK_ENV,
+    )
+    # The whole point of the third channel: these are about to free up.
+    assert select_webhook(pending, webhooks=ALL_WEBHOOKS) == (
+        DELETING_URL,
+        DELETING_WEBHOOK_ENV,
+    )
 
 
-def test_resolve_webhooks_reads_both_channels() -> None:
+def test_a_taken_name_without_details_is_not_treated_as_pending() -> None:
+    bare = AvailabilityResult(False, "Already registered.", 200)
+
+    assert select_webhook(bare, webhooks=ALL_WEBHOOKS) == (
+        TAKEN_URL,
+        TAKEN_WEBHOOK_ENV,
+    )
+
+
+def test_a_pending_name_gets_its_own_colour() -> None:
+    pending = AvailabilityResult(
+        False, "Already registered.", 200, _details(deleting=True)
+    )
+    taken = AvailabilityResult(
+        False, "Already registered.", 200, _details(deleting=False)
+    )
+    candidate = Candidate("Empire", 10.0, "test", "test")
+
+    assert (
+        build_payload(candidate, pending)["embeds"][0]["color"]
+        == DISCORD_PENDING_COLOR
+    )
+    assert (
+        build_payload(candidate, taken)["embeds"][0]["color"] == DISCORD_ERROR_COLOR
+    )
+
+
+def test_resolve_webhooks_reads_all_three_channels() -> None:
+    resolved = resolve_webhooks(
+        {
+            AVAILABLE_WEBHOOK_ENV: AVAILABLE_URL,
+            TAKEN_WEBHOOK_ENV: TAKEN_URL,
+            DELETING_WEBHOOK_ENV: DELETING_URL,
+        }
+    )
+
+    assert resolved == ALL_WEBHOOKS
+
+
+def test_pending_deletion_falls_back_to_the_taken_channel(capsys) -> None:
+    """An unset secret must change nothing, not drop messages."""
     resolved = resolve_webhooks(
         {
             AVAILABLE_WEBHOOK_ENV: AVAILABLE_URL,
@@ -235,13 +304,14 @@ def test_resolve_webhooks_reads_both_channels() -> None:
         }
     )
 
-    assert resolved == (AVAILABLE_URL, TAKEN_URL)
+    assert resolved.deleting == TAKEN_URL
+    assert DELETING_WEBHOOK_ENV in capsys.readouterr().out
 
 
 def test_resolve_webhooks_falls_back_when_the_split_is_unset(capsys) -> None:
     resolved = resolve_webhooks({AVAILABLE_WEBHOOK_ENV: AVAILABLE_URL})
 
-    assert resolved == (AVAILABLE_URL, AVAILABLE_URL)
+    assert resolved == Webhooks(AVAILABLE_URL, AVAILABLE_URL, AVAILABLE_URL)
     assert TAKEN_WEBHOOK_ENV in capsys.readouterr().out
 
 

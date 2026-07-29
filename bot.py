@@ -22,8 +22,12 @@ from name_generator import (
 
 DISCORD_COLOR = 0x57F287
 DISCORD_ERROR_COLOR = 0xED4245
+# Amber: a name being deleted is neither free nor a dead end. It sits between
+# the two, and the colour should say so at a glance.
+DISCORD_PENDING_COLOR = 0xE67E22
 AVAILABLE_WEBHOOK_ENV = "DISCORD_WEBHOOK"
 TAKEN_WEBHOOK_ENV = "DISCORD_WEBHOOK_TAKEN"
+DELETING_WEBHOOK_ENV = "DISCORD_WEBHOOK_DELETING"
 MINEHUT_CREATE_URL = "https://dashboard.minehut.com/servers/create"
 MINEHUT_LOOKUP_URL = "https://api.minehut.com/server/{name}?byName=true"
 USER_AGENT = "MinecraftNameScout/3.0 (+GitHub Actions; paced availability checks)"
@@ -402,7 +406,13 @@ def build_embed(
             if availability.available
             else f"`{candidate.name}` is already in use on Minehut."
         ),
-        "color": DISCORD_COLOR if availability.available else DISCORD_ERROR_COLOR,
+        "color": (
+            DISCORD_COLOR
+            if availability.available
+            else DISCORD_PENDING_COLOR
+            if is_pending_deletion(availability)
+            else DISCORD_ERROR_COLOR
+        ),
         "fields": [
             {
                 "name": "Status",
@@ -514,33 +524,71 @@ def validate_webhook_url(
         raise ValueError(f"{env_name} is missing or is not a Discord webhook URL.")
 
 
+def is_pending_deletion(availability: AvailabilityResult) -> bool:
+    """A taken name whose holder is being removed, so it should free up soon."""
+    return (
+        not availability.available
+        and availability.details is not None
+        and availability.details.deletion_started
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class Webhooks:
+    """One destination per outcome, so each channel means one thing."""
+
+    available: str
+    taken: str
+    deleting: str
+
+
 def select_webhook(
     availability: AvailabilityResult,
     *,
-    available_webhook_url: str,
-    taken_webhook_url: str,
+    webhooks: Webhooks,
 ) -> tuple[str, str]:
-    """Route available and taken names to their own Discord channels."""
+    """Route each outcome to its own channel.
+
+    Three tiers because there are three actions: claim it now, watch it because
+    it is about to free up, or ignore it. Names pending deletion are the rarest
+    and most useful of the three, and they were previously buried among the
+    taken results.
+    """
     if availability.available:
-        return available_webhook_url, AVAILABLE_WEBHOOK_ENV
-    return taken_webhook_url, TAKEN_WEBHOOK_ENV
+        return webhooks.available, AVAILABLE_WEBHOOK_ENV
+    if is_pending_deletion(availability):
+        return webhooks.deleting, DELETING_WEBHOOK_ENV
+    return webhooks.taken, TAKEN_WEBHOOK_ENV
 
 
-def resolve_webhooks(environ: dict[str, str]) -> tuple[str, str]:
-    """Read both webhooks, falling back to one channel when the split is unset."""
-    available_webhook_url = environ.get(AVAILABLE_WEBHOOK_ENV, "")
-    validate_webhook_url(available_webhook_url, env_name=AVAILABLE_WEBHOOK_ENV)
+def resolve_webhooks(environ: dict[str, str]) -> Webhooks:
+    """Read the webhooks, folding missing channels into the ones that exist."""
+    available = environ.get(AVAILABLE_WEBHOOK_ENV, "")
+    validate_webhook_url(available, env_name=AVAILABLE_WEBHOOK_ENV)
 
-    taken_webhook_url = environ.get(TAKEN_WEBHOOK_ENV, "")
-    if not taken_webhook_url:
+    taken = environ.get(TAKEN_WEBHOOK_ENV, "")
+    if not taken:
         print(
             f"WARNING: {TAKEN_WEBHOOK_ENV} is not set, so taken names still go to "
             f"the {AVAILABLE_WEBHOOK_ENV} channel. Set the secret to split them."
         )
-        return available_webhook_url, available_webhook_url
+        taken = available
+    else:
+        validate_webhook_url(taken, env_name=TAKEN_WEBHOOK_ENV)
 
-    validate_webhook_url(taken_webhook_url, env_name=TAKEN_WEBHOOK_ENV)
-    return available_webhook_url, taken_webhook_url
+    deleting = environ.get(DELETING_WEBHOOK_ENV, "")
+    if not deleting:
+        # Falls back to the taken channel, which is where these results used to
+        # go, so an unset secret changes nothing rather than dropping messages.
+        print(
+            f"WARNING: {DELETING_WEBHOOK_ENV} is not set, so names pending "
+            f"deletion stay in the {TAKEN_WEBHOOK_ENV} channel."
+        )
+        deleting = taken
+    else:
+        validate_webhook_url(deleting, env_name=DELETING_WEBHOOK_ENV)
+
+    return Webhooks(available=available, taken=taken, deleting=deleting)
 
 
 def send_to_discord(
@@ -704,7 +752,7 @@ def main() -> None:
 
     queue_path = Path(os.environ.get("RETRY_QUEUE_PATH", DEFAULT_QUEUE_PATH))
     queue = load_retry_queue(queue_path)
-    available_webhook_url, taken_webhook_url = resolve_webhooks(dict(os.environ))
+    webhooks = resolve_webhooks(dict(os.environ))
 
     watch_used = 0
     for slot in range(checks_per_run):
@@ -760,14 +808,16 @@ def main() -> None:
             is_retry=is_retry,
             queue_status=queue_status,
         )
-        webhook_url, webhook_env = select_webhook(
-            availability,
-            available_webhook_url=available_webhook_url,
-            taken_webhook_url=taken_webhook_url,
-        )
+        webhook_url, webhook_env = select_webhook(availability, webhooks=webhooks)
         send_to_discord(webhook_url, payload, env_name=webhook_env)
         save_retry_queue(queue_path, queue)
-        channel = "available" if availability.available else "taken"
+        channel = (
+            "available"
+            if availability.available
+            else "pending deletion"
+            if is_pending_deletion(availability)
+            else "taken"
+        )
         print(f"Sent the {candidate.name} result embed to the {channel} channel.")
 
         is_last_check = slot == checks_per_run - 1
