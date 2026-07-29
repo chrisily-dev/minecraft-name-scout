@@ -5,11 +5,16 @@ from unittest.mock import Mock
 import pytest
 
 from bot import (
+    ALWAYS_NOTIFY_ROLE,
     AVAILABLE_WEBHOOK_ENV,
     AvailabilityResult,
     DISCORD_ERROR_COLOR,
+    MAX_CHECKS_PER_RUN,
+    MIN_REQUEST_INTERVAL_SECONDS,
     MINEHUT_LOOKUP_URL,
+    NAME_WATCHERS,
     TAKEN_WEBHOOK_ENV,
+    build_mentions,
     build_payload,
     check_name_availability,
     load_retry_queue,
@@ -42,11 +47,54 @@ def test_payload_uses_one_embed(
 ) -> None:
     payload = build_payload(candidate, available)
 
-    assert "content" not in payload
     assert len(payload["embeds"]) == 1
     assert "`Tycoon`" in payload["embeds"][0]["description"]
     assert payload["embeds"][0]["title"] == "Available: Tycoon"
-    assert payload["allowed_mentions"] == {"parse": []}
+    # An unwatched name still pings the role, and nothing else.
+    assert payload["content"] == f"<@&{ALWAYS_NOTIFY_ROLE}>"
+    assert payload["allowed_mentions"] == {
+        "parse": [],
+        "roles": [ALWAYS_NOTIFY_ROLE],
+    }
+
+
+def test_watched_name_pings_the_role_and_the_watcher(
+    available: AvailabilityResult,
+) -> None:
+    watcher = NAME_WATCHERS["harbor"][0]
+
+    payload = build_payload(Candidate("Harbor", 12.0, "Watchlist", "test"), available)
+
+    assert payload["content"] == f"<@&{ALWAYS_NOTIFY_ROLE}> <@{watcher}>"
+    assert payload["allowed_mentions"] == {
+        "parse": [],
+        "roles": [ALWAYS_NOTIFY_ROLE],
+        "users": [watcher],
+    }
+
+
+def test_watchers_are_matched_regardless_of_casing() -> None:
+    assert build_mentions("HARBOUR") == build_mentions("harbour")
+    assert NAME_WATCHERS["harbour"][0] in build_mentions("Harbour")[0]
+
+
+def test_mentions_never_let_discord_parse_anything_else() -> None:
+    for name in ("Tycoon", "Harbor", "Dungeons"):
+        _, allowed = build_mentions(name)
+
+        # An empty "parse" is what stops @everyone or a stray role from
+        # resolving; only the IDs listed here can ping.
+        assert allowed["parse"] == []
+        assert set(allowed) <= {"parse", "roles", "users"}
+
+
+def test_every_watched_name_can_actually_be_generated() -> None:
+    from name_generator import WATCHLIST_NAMES
+
+    watchlist = {name.casefold() for name in WATCHLIST_NAMES}
+
+    # A watcher on a name the generator never produces would never fire.
+    assert set(NAME_WATCHERS) <= watchlist
 
 
 def test_unavailable_payload_uses_red_embed(candidate: Candidate) -> None:
@@ -290,12 +338,12 @@ def test_completed_retry_is_removed_from_queue(candidate: Candidate) -> None:
 
 
 def test_rate_guard_enforces_the_moderator_limit() -> None:
-    validate_rate_settings(20, 13.0)
+    validate_rate_settings(MAX_CHECKS_PER_RUN, 13.0)
 
     with pytest.raises(ValueError):
-        validate_rate_settings(21, 13.0)
+        validate_rate_settings(MAX_CHECKS_PER_RUN + 1, 13.0)
     with pytest.raises(ValueError):
-        validate_rate_settings(20, 12.9)
+        validate_rate_settings(MAX_CHECKS_PER_RUN, MIN_REQUEST_INTERVAL_SECONDS - 0.1)
 
 
 def test_batch_selection_numbers_do_not_overlap_between_runs() -> None:
