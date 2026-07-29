@@ -1,4 +1,4 @@
-"""Check a paced batch of Minecraft server-name candidates."""
+﻿"""Check a paced batch of Minecraft server-name candidates."""
 
 from __future__ import annotations
 
@@ -28,6 +28,10 @@ DEFAULT_CHECKS_PER_RUN = 20
 MAX_CHECKS_PER_RUN = 80
 DEFAULT_REQUEST_INTERVAL_SECONDS = 13.0
 MIN_REQUEST_INTERVAL_SECONDS = 13.0
+# Share of each batch that may be spent draining due retries. Each taken name
+# needs one retry to leave the queue, so in a steady state roughly half of all
+# checks are retries.
+RETRY_SLOT_SHARE = 0.5
 
 
 @dataclass(frozen=True, slots=True)
@@ -385,6 +389,20 @@ def selection_number(run_number: int, checks_per_run: int, slot: int) -> int:
     return ((max(run_number, 1) - 1) * checks_per_run) + slot + 1
 
 
+def is_retry_slot(slot: int, checks_per_run: int) -> bool:
+    """Return whether this slot may spend itself on a due retry.
+
+    Every taken name joins the queue, but a name only leaves it by being
+    retried. Allowing a single retry per run made the queue grow by roughly
+    checks_per_run each time while draining by one, so it eventually covered
+    the whole pool and select_check_target had nothing left to offer. Retries
+    now get a share of the batch, which keeps the queue flat over time. They
+    still sit at the tail so new names are always checked first.
+    """
+    new_name_slots = max(1, round(checks_per_run * (1 - RETRY_SLOT_SHARE)))
+    return slot >= new_name_slots
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -442,7 +460,7 @@ def main() -> None:
                 dry_queue,
                 now,
                 excluded_names=checked_names,
-                allow_due_retry=slot == checks_per_run - 1,
+                allow_due_retry=is_retry_slot(slot, checks_per_run),
             )
             checked_names.add(candidate.name.casefold())
             candidates.append(candidate)
@@ -480,7 +498,7 @@ def main() -> None:
             queue,
             now,
             excluded_names=checked_names,
-            allow_due_retry=slot == checks_per_run - 1,
+            allow_due_retry=is_retry_slot(slot, checks_per_run),
         )
         checked_names.add(candidate.name.casefold())
         print(
