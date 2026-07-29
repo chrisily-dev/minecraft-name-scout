@@ -108,10 +108,13 @@ jobs:
           # GITHUB_TOKEN cannot be used here: GitHub deliberately refuses to
           # start a workflow from an event raised by GITHUB_TOKEN, to stop
           # runaway recursion. A PAT is the supported way to opt in.
+          # Deliberately does not forward checks_per_run. A smoke test run with
+          # a small value would otherwise pin the chain to that value forever.
+          # The next run always starts at the workflow default; change the
+          # default here if a different sustained rate is wanted.
           gh workflow run name-scout.yml \
             --repo "$GITHUB_REPOSITORY" \
             --ref main \
-            -f checks_per_run="${{ inputs.checks_per_run || '80' }}" \
             -f chain=true
 
           echo "Queued the next run."
