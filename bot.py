@@ -299,32 +299,51 @@ def due_watchlist_names(queue: dict[str, object], now: datetime) -> list[str]:
     return [name for _, name in due]
 
 
+def result_status(availability: AvailabilityResult) -> str:
+    """The one word that decides which channel a result belongs in."""
+    if availability.available:
+        return "available"
+    if is_pending_deletion(availability):
+        return "deleting"
+    if is_suspended(availability):
+        return "suspended"
+    return "taken"
+
+
 def _announced(queue: dict[str, object]) -> dict[str, object]:
-    raw = queue.get("announced_available")
+    raw = queue.get("announced_status")
     if not isinstance(raw, dict):
         raw = {}
-        queue["announced_available"] = raw
+        # Carry over the older available-only records so names already reported
+        # free do not all announce again on the first run after this change.
+        legacy = queue.get("announced_available")
+        if isinstance(legacy, dict):
+            for key in legacy:
+                raw[key] = "available"
+        queue["announced_status"] = raw
     return raw
 
 
-def was_announced_available(queue: dict[str, object], name: str) -> bool:
-    """Whether this name has already been reported free and still is."""
-    return name.casefold() in _announced(queue)
+def last_announced_status(queue: dict[str, object], name: str) -> str | None:
+    """What was last reported for this name, or None if never reported."""
+    value = _announced(queue).get(name.casefold())
+    return value if isinstance(value, str) else None
 
 
-def mark_announced_available(
-    queue: dict[str, object], name: str, now: datetime
+def record_announced_status(
+    queue: dict[str, object], name: str, status: str
 ) -> None:
-    _announced(queue)[name.casefold()] = now.isoformat()
+    _announced(queue)[name.casefold()] = status
 
 
-def forget_announced_available(queue: dict[str, object], name: str) -> None:
-    """Clear the record so the name announces again if it frees up later.
+def should_announce(queue: dict[str, object], name: str, status: str) -> bool:
+    """Only speak when something actually changed.
 
-    Called whenever a name comes back taken. Without it, a name that was free,
-    got claimed, and later freed again would stay silent the second time.
+    A name that is still taken, still suspended, or still free is not news.
+    Repeating it every pass buries the transitions, which are the only part
+    anyone can act on.
     """
-    _announced(queue).pop(name.casefold(), None)
+    return last_announced_status(queue, name) != status
 
 
 def record_watch_check(queue: dict[str, object], name: str, now: datetime) -> None:
@@ -932,21 +951,13 @@ def main() -> None:
             is_retry=is_retry,
             now=now,
         )
-        # Keep checking a free name, but only announce it the first time. A
-        # name that is still free is not news, and repeating it teaches people
-        # to skim past the one channel that should always mean something.
-        repeat_available = availability.available and was_announced_available(
-            queue, candidate.name
-        )
-        if availability.available:
-            mark_announced_available(queue, candidate.name, now)
-        else:
-            # Claimed since. Clearing this means a later release announces again.
-            forget_announced_available(queue, candidate.name)
+        # Every name keeps being checked on its normal schedule. Only the
+        # message is conditional: a result that says the same thing as last
+        # time is noise, and it buries the transitions worth acting on.
+        status = result_status(availability)
+        previous = last_announced_status(queue, candidate.name)
 
-        if repeat_available:
-            print(f"{candidate.name} is still available and was already announced.")
-        else:
+        if should_announce(queue, candidate.name, status):
             payload = build_payload(
                 candidate,
                 availability,
@@ -955,16 +966,11 @@ def main() -> None:
             )
             webhook_url, webhook_env = select_webhook(availability, webhooks=webhooks)
             send_to_discord(webhook_url, payload, env_name=webhook_env)
-            channel = (
-                "available"
-                if availability.available
-                else "pending deletion"
-                if is_pending_deletion(availability)
-                else "suspended"
-                if is_suspended(availability)
-                else "taken"
-            )
-            print(f"Sent the {candidate.name} result embed to the {channel} channel.")
+            change = "first sighting" if previous is None else f"{previous} -> {status}"
+            print(f"Sent {candidate.name} to the {status} channel ({change}).")
+            record_announced_status(queue, candidate.name, status)
+        else:
+            print(f"{candidate.name} is still {status}. Nothing to report.")
 
         save_retry_queue(queue_path, queue)
 

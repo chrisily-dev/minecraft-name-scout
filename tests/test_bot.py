@@ -26,10 +26,11 @@ from bot import (
     WATCH_REFRESH,
     check_name_availability,
     due_watchlist_names,
-    forget_announced_available,
     is_retry_slot,
-    mark_announced_available,
-    was_announced_available,
+    last_announced_status,
+    record_announced_status,
+    result_status,
+    should_announce,
     load_retry_queue,
     main,
     resolve_webhooks,
@@ -707,37 +708,82 @@ def test_an_available_name_is_announced_once_then_stays_quiet(
     assert send.call_count == 1, "still free, so nothing new to say"
 
     saved = load_retry_queue(queue_path)
-    assert "freeone" in saved["announced_available"]
+    assert saved["announced_status"]["freeone"] == "available"
+
+
+def test_result_status_names_each_outcome() -> None:
+    assert result_status(AvailabilityResult(True, "free", 404)) == "available"
+    assert (
+        result_status(
+            AvailabilityResult(False, "x", 200, _details(deleting=True))
+        )
+        == "deleting"
+    )
+    assert (
+        result_status(
+            AvailabilityResult(False, "x", 200, _details(suspended=True))
+        )
+        == "suspended"
+    )
+    assert result_status(AvailabilityResult(False, "x", 200, _details())) == "taken"
+
+
+def test_only_a_change_of_status_is_worth_announcing() -> None:
+    queue: dict[str, object] = {"version": 1, "items": []}
+
+    # Never seen before, so the first sighting always speaks.
+    assert should_announce(queue, "Empire", "taken")
+    record_announced_status(queue, "Empire", "taken")
+
+    # Still taken on the next twenty passes: silence.
+    assert not should_announce(queue, "Empire", "taken")
+
+    # Suspended is a real change and must be reported.
+    assert should_announce(queue, "Empire", "suspended")
+    record_announced_status(queue, "Empire", "suspended")
+    assert not should_announce(queue, "Empire", "suspended")
+
+    # So is being scheduled for deletion, and then freeing up.
+    assert should_announce(queue, "Empire", "deleting")
+    record_announced_status(queue, "Empire", "deleting")
+    assert should_announce(queue, "Empire", "available")
 
 
 def test_a_claimed_name_announces_again_once_it_frees_up() -> None:
-    """Free, claimed, free again must produce two announcements, not one."""
-    now = datetime(2026, 7, 30, 12, 0, tzinfo=timezone.utc)
+    """Free, claimed, free again must speak twice, not once."""
     queue: dict[str, object] = {"version": 1, "items": []}
 
-    # First sighting: nothing recorded yet, so it announces.
-    assert not was_announced_available(queue, "Freeone")
-    mark_announced_available(queue, "Freeone", now)
+    assert should_announce(queue, "Freeone", "available")
+    record_announced_status(queue, "Freeone", "available")
+    assert not should_announce(queue, "Freeone", "available")
 
-    # Still free later: already recorded, so it stays quiet.
-    assert was_announced_available(queue, "Freeone")
+    # Someone claims it. That is a change, so it is reported.
+    assert should_announce(queue, "Freeone", "taken")
+    record_announced_status(queue, "Freeone", "taken")
 
-    # Someone claims it. The bot reports that, and clears the record.
-    forget_announced_available(queue, "Freeone")
-
-    # It frees up again months later and must announce a second time.
-    assert not was_announced_available(queue, "Freeone")
+    # Released again months later: announced a second time.
+    assert should_announce(queue, "Freeone", "available")
 
 
-def test_announcement_tracking_ignores_casing() -> None:
-    now = datetime(2026, 7, 30, 12, 0, tzinfo=timezone.utc)
+def test_status_tracking_ignores_casing() -> None:
     queue: dict[str, object] = {"version": 1, "items": []}
 
-    mark_announced_available(queue, "Freeone", now)
+    record_announced_status(queue, "Freeone", "taken")
 
-    assert was_announced_available(queue, "FREEONE")
-    forget_announced_available(queue, "freeone")
-    assert not was_announced_available(queue, "Freeone")
+    assert last_announced_status(queue, "FREEONE") == "taken"
+    assert not should_announce(queue, "freeONE", "taken")
+
+
+def test_older_available_records_are_carried_over() -> None:
+    """Names already reported free must not all re-announce after the change."""
+    queue: dict[str, object] = {
+        "version": 1,
+        "items": [],
+        "announced_available": {"freeone": "2026-07-30T00:00:00+00:00"},
+    }
+
+    assert last_announced_status(queue, "Freeone") == "available"
+    assert not should_announce(queue, "Freeone", "available")
 
 
 def test_a_watched_name_comes_due_after_the_refresh_window() -> None:
