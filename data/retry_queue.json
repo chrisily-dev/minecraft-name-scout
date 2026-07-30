@@ -55,9 +55,11 @@
     "becomes": "available",
     "beside": "available",
     "cannot": "available",
+    "cape": "taken",
     "chasing": "available",
     "closely": "available",
     "clothing": "available",
+    "clubs": "deleting",
     "comments": "available",
     "committed": "available",
     "concerns": "available",
@@ -74,6 +76,7 @@
     "dungeon": "taken",
     "dungeons": "taken",
     "dunheon": "taken",
+    "duties": "deleting",
     "engaged": "available",
     "entered": "available",
     "entering": "available",
@@ -91,7 +94,9 @@
     "fiscal": "available",
     "forcing": "available",
     "forming": "available",
+    "forms": "deleting",
     "gaining": "available",
+    "galaxygens": "taken",
     "gospel": "available",
     "growing": "taken",
     "handful": "available",
@@ -109,6 +114,7 @@
     "laughed": "available",
     "legally": "available",
     "lessons": "available",
+    "loans": "deleting",
     "located": "available",
     "location": "available",
     "managers": "available",
@@ -143,6 +149,7 @@
     "pulling": "available",
     "pupils": "available",
     "putting": "available",
+    "quote": "taken",
     "quoted": "available",
     "raidrise": "taken",
     "ranging": "available",
@@ -155,7 +162,9 @@
     "remarks": "available",
     "removing": "available",
     "reports": "available",
+    "ridge": "deleting",
     "roleplay": "taken",
+    "save": "taken",
     "sciences": "available",
     "scoring": "taken",
     "seeing": "available",
@@ -169,97 +178,22 @@
     "stepped": "available",
     "studied": "available",
     "surgeon": "available",
+    "swear": "taken",
     "telling": "available",
+    "toys": "deleting",
+    "trend": "taken",
     "usual": "deleting",
     "veteran": "taken",
     "violence": "suspended",
     "visitors": "available",
+    "waves": "taken",
+    "wayne": "taken",
     "welfare": "available",
     "whereas": "available",
     "willing": "available",
     "yield": "deleting"
   },
   "items": [
-    {
-      "first_checked_at": "2026-07-29T03:32:57.695910+00:00",
-      "name": "Waves",
-      "retry_after": "2026-07-30T03:32:57.695910+00:00",
-      "score": 12.178,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:33:11.286702+00:00",
-      "name": "Wayne",
-      "retry_after": "2026-07-30T03:33:11.286702+00:00",
-      "score": 12.178,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:33:25.007431+00:00",
-      "name": "Save",
-      "retry_after": "2026-07-30T03:33:25.007431+00:00",
-      "score": 12.174,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:33:38.604199+00:00",
-      "name": "Clubs",
-      "retry_after": "2026-07-30T03:33:38.604199+00:00",
-      "score": 12.164,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:33:52.060600+00:00",
-      "name": "GalaxyGens",
-      "retry_after": "2026-07-30T03:33:52.060600+00:00",
-      "score": 13.112,
-      "source": "curated brand parts",
-      "style": "Server brand"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:34:05.787446+00:00",
-      "name": "Loans",
-      "retry_after": "2026-07-30T03:34:05.787446+00:00",
-      "score": 12.164,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:34:19.132200+00:00",
-      "name": "Quote",
-      "retry_after": "2026-07-30T03:34:19.132200+00:00",
-      "score": 12.164,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:34:32.553548+00:00",
-      "name": "Swear",
-      "retry_after": "2026-07-30T03:34:32.553548+00:00",
-      "score": 12.164,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:34:45.980764+00:00",
-      "name": "Trend",
-      "retry_after": "2026-07-30T03:34:45.980764+00:00",
-      "score": 12.164,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:35:12.944498+00:00",
-      "name": "Cape",
-      "retry_after": "2026-07-30T03:35:12.944498+00:00",
-      "score": 12.16,
-      "source": "common English",
-      "style": "Brand word"
-    },
     {
       "first_checked_at": "2026-07-29T03:35:26.394308+00:00",
       "name": "Edit",
@@ -30413,33 +30347,6 @@
       "style": "Brand word"
     },
     {
-      "first_checked_at": "2026-07-30T00:26:03.850722+00:00",
-      "name": "Toys",
-      "pending_deletion": true,
-      "retry_after": "2026-07-30T03:26:03.850722+00:00",
-      "score": 12.39,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T00:27:23.930751+00:00",
-      "name": "Forms",
-      "pending_deletion": true,
-      "retry_after": "2026-07-30T03:27:23.930751+00:00",
-      "score": 12.308,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T00:29:48.166434+00:00",
-      "name": "Ridge",
-      "pending_deletion": true,
-      "retry_after": "2026-07-30T03:29:48.166434+00:00",
-      "score": 11.228,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
       "first_checked_at": "2026-07-30T00:30:01.568598+00:00",
       "name": "Tends",
       "retry_after": "2026-07-31T00:30:01.568598+00:00",
@@ -30515,15 +30422,6 @@
       "first_checked_at": "2026-07-30T00:32:03.321750+00:00",
       "name": "Brands",
       "retry_after": "2026-07-31T00:32:03.321750+00:00",
-      "score": 11.208,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T00:32:16.886824+00:00",
-      "name": "Duties",
-      "pending_deletion": true,
-      "retry_after": "2026-07-30T03:32:16.886824+00:00",
       "score": 11.208,
       "source": "common English",
       "style": "Brand word"
@@ -32005,22 +31903,76 @@
       "score": 12.428,
       "source": "common English",
       "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-30T03:28:02.828517+00:00",
+      "name": "Toys",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T06:28:02.828517+00:00",
+      "score": 12.39,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-30T03:28:16.281158+00:00",
+      "name": "Forms",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T06:28:16.281158+00:00",
+      "score": 12.308,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-30T03:29:48.680171+00:00",
+      "name": "Ridge",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T06:29:48.680171+00:00",
+      "score": 11.228,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-30T03:32:26.673715+00:00",
+      "name": "Duties",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T06:32:26.673715+00:00",
+      "score": 11.208,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-30T03:33:46.878905+00:00",
+      "name": "Clubs",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T06:33:46.878905+00:00",
+      "score": 12.164,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-30T03:34:13.677252+00:00",
+      "name": "Loans",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T06:34:13.677252+00:00",
+      "score": 12.164,
+      "source": "common English",
+      "style": "Brand word"
     }
   ],
   "version": 1,
   "watch_checks": {
-    "dungeon": "2026-07-30T02:36:10.537971+00:00",
-    "dungeons": "2026-07-30T02:36:23.987252+00:00",
-    "dunheon": "2026-07-30T02:36:37.453170+00:00",
-    "harbor": "2026-07-30T02:35:30.062296+00:00",
-    "harbour": "2026-07-30T02:35:43.554570+00:00",
+    "dungeon": "2026-07-30T03:36:13.865222+00:00",
+    "dungeons": "2026-07-30T03:36:27.020620+00:00",
+    "dunheon": "2026-07-30T03:36:40.148993+00:00",
+    "harbor": "2026-07-30T03:35:34.420137+00:00",
+    "harbour": "2026-07-30T03:35:47.568620+00:00",
     "horizon": "2026-07-30T02:57:46.120073+00:00",
     "prison": "2026-07-30T02:56:51.825364+00:00",
     "prisonescape": "2026-07-30T02:58:13.649034+00:00",
     "prisonrp": "2026-07-30T02:57:18.764583+00:00",
     "raidrise": "2026-07-30T02:57:59.683128+00:00",
     "roleplay": "2026-07-30T02:57:32.369942+00:00",
-    "sete": "2026-07-30T02:35:56.996289+00:00",
+    "sete": "2026-07-30T03:36:00.707094+00:00",
     "state": "2026-07-30T03:14:56.054751+00:00"
   }
 }
