@@ -299,6 +299,34 @@ def due_watchlist_names(queue: dict[str, object], now: datetime) -> list[str]:
     return [name for _, name in due]
 
 
+def _announced(queue: dict[str, object]) -> dict[str, object]:
+    raw = queue.get("announced_available")
+    if not isinstance(raw, dict):
+        raw = {}
+        queue["announced_available"] = raw
+    return raw
+
+
+def was_announced_available(queue: dict[str, object], name: str) -> bool:
+    """Whether this name has already been reported free and still is."""
+    return name.casefold() in _announced(queue)
+
+
+def mark_announced_available(
+    queue: dict[str, object], name: str, now: datetime
+) -> None:
+    _announced(queue)[name.casefold()] = now.isoformat()
+
+
+def forget_announced_available(queue: dict[str, object], name: str) -> None:
+    """Clear the record so the name announces again if it frees up later.
+
+    Called whenever a name comes back taken. Without it, a name that was free,
+    got claimed, and later freed again would stay silent the second time.
+    """
+    _announced(queue).pop(name.casefold(), None)
+
+
 def record_watch_check(queue: dict[str, object], name: str, now: datetime) -> None:
     raw = queue.get("watch_checks")
     if not isinstance(raw, dict):
@@ -904,25 +932,41 @@ def main() -> None:
             is_retry=is_retry,
             now=now,
         )
-        payload = build_payload(
-            candidate,
-            availability,
-            is_retry=is_retry,
-            queue_status=queue_status,
+        # Keep checking a free name, but only announce it the first time. A
+        # name that is still free is not news, and repeating it teaches people
+        # to skim past the one channel that should always mean something.
+        repeat_available = availability.available and was_announced_available(
+            queue, candidate.name
         )
-        webhook_url, webhook_env = select_webhook(availability, webhooks=webhooks)
-        send_to_discord(webhook_url, payload, env_name=webhook_env)
+        if availability.available:
+            mark_announced_available(queue, candidate.name, now)
+        else:
+            # Claimed since. Clearing this means a later release announces again.
+            forget_announced_available(queue, candidate.name)
+
+        if repeat_available:
+            print(f"{candidate.name} is still available and was already announced.")
+        else:
+            payload = build_payload(
+                candidate,
+                availability,
+                is_retry=is_retry,
+                queue_status=queue_status,
+            )
+            webhook_url, webhook_env = select_webhook(availability, webhooks=webhooks)
+            send_to_discord(webhook_url, payload, env_name=webhook_env)
+            channel = (
+                "available"
+                if availability.available
+                else "pending deletion"
+                if is_pending_deletion(availability)
+                else "suspended"
+                if is_suspended(availability)
+                else "taken"
+            )
+            print(f"Sent the {candidate.name} result embed to the {channel} channel.")
+
         save_retry_queue(queue_path, queue)
-        channel = (
-            "available"
-            if availability.available
-            else "pending deletion"
-            if is_pending_deletion(availability)
-            else "suspended"
-            if is_suspended(availability)
-            else "taken"
-        )
-        print(f"Sent the {candidate.name} result embed to the {channel} channel.")
 
         is_last_check = slot == checks_per_run - 1
         if not is_last_check:

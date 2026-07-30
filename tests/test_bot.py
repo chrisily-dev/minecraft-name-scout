@@ -26,7 +26,10 @@ from bot import (
     WATCH_REFRESH,
     check_name_availability,
     due_watchlist_names,
+    forget_announced_available,
     is_retry_slot,
+    mark_announced_available,
+    was_announced_available,
     load_retry_queue,
     main,
     resolve_webhooks,
@@ -653,6 +656,88 @@ def test_given_names_are_kept_out_of_the_pool() -> None:
 
     # Names that are also ordinary words stay, because they are decent names.
     assert {"grace", "frank"} <= names
+
+
+def _quiet_watchlist(queue_path) -> None:
+    """Seed the queue so no watched name is due, isolating other behaviour."""
+    fresh = datetime.now(timezone.utc).isoformat()
+    save_retry_queue(
+        queue_path,
+        {
+            "version": 1,
+            "items": [],
+            "watch_checks": {name.casefold(): fresh for name in WATCHLIST_NAMES},
+        },
+    )
+
+
+def test_an_available_name_is_announced_once_then_stays_quiet(
+    monkeypatch, tmp_path
+) -> None:
+    """Still-free is not news. Only the transition is worth a message."""
+    queue_path = tmp_path / "retry_queue.json"
+    pool = [Candidate("Freeone", 10.0, "test", "test")]
+    send = Mock()
+    # Watched names take priority and would otherwise claim the only slot.
+    _quiet_watchlist(queue_path)
+
+    monkeypatch.setattr("bot.build_candidate_pool", lambda: pool)
+    monkeypatch.setattr(
+        "bot.check_name_availability",
+        Mock(return_value=AvailabilityResult(True, "No registered server found.", 404)),
+    )
+    monkeypatch.setattr("bot.send_to_discord", send)
+    monkeypatch.setattr("bot.time.sleep", Mock())
+    monkeypatch.setenv(AVAILABLE_WEBHOOK_ENV, AVAILABLE_URL)
+    monkeypatch.setenv(TAKEN_WEBHOOK_ENV, TAKEN_URL)
+    monkeypatch.setenv("RETRY_QUEUE_PATH", str(queue_path))
+
+    def run_once() -> None:
+        monkeypatch.setattr(
+            "sys.argv",
+            ["bot.py", "--run-number", "1", "--checks-per-run", "1",
+             "--request-interval-seconds", "13"],
+        )
+        main()
+
+    run_once()
+    assert send.call_count == 1, "the first sighting must be announced"
+
+    run_once()
+    assert send.call_count == 1, "still free, so nothing new to say"
+
+    saved = load_retry_queue(queue_path)
+    assert "freeone" in saved["announced_available"]
+
+
+def test_a_claimed_name_announces_again_once_it_frees_up() -> None:
+    """Free, claimed, free again must produce two announcements, not one."""
+    now = datetime(2026, 7, 30, 12, 0, tzinfo=timezone.utc)
+    queue: dict[str, object] = {"version": 1, "items": []}
+
+    # First sighting: nothing recorded yet, so it announces.
+    assert not was_announced_available(queue, "Freeone")
+    mark_announced_available(queue, "Freeone", now)
+
+    # Still free later: already recorded, so it stays quiet.
+    assert was_announced_available(queue, "Freeone")
+
+    # Someone claims it. The bot reports that, and clears the record.
+    forget_announced_available(queue, "Freeone")
+
+    # It frees up again months later and must announce a second time.
+    assert not was_announced_available(queue, "Freeone")
+
+
+def test_announcement_tracking_ignores_casing() -> None:
+    now = datetime(2026, 7, 30, 12, 0, tzinfo=timezone.utc)
+    queue: dict[str, object] = {"version": 1, "items": []}
+
+    mark_announced_available(queue, "Freeone", now)
+
+    assert was_announced_available(queue, "FREEONE")
+    forget_announced_available(queue, "freeone")
+    assert not was_announced_available(queue, "Freeone")
 
 
 def test_a_watched_name_comes_due_after_the_refresh_window() -> None:
