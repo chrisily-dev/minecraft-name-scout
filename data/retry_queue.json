@@ -46,9 +46,13 @@
     "willing": "2026-07-30T02:05:08.606994+00:00"
   },
   "announced_status": {
+    "actions": "deleting",
     "adult": "taken",
     "agent": "taken",
+    "aids": "taken",
+    "aims": "deleting",
     "amazon": "taken",
+    "angel": "taken",
     "anti": "taken",
     "anytime": "available",
     "anyway": "taken",
@@ -62,6 +66,7 @@
     "ball": "taken",
     "bank": "taken",
     "banking": "deleting",
+    "base": "taken",
     "basis": "taken",
     "bass": "taken",
     "bearing": "available",
@@ -72,6 +77,7 @@
     "becomes": "available",
     "beef": "taken",
     "begin": "taken",
+    "benefit": "deleting",
     "beside": "available",
     "billy": "taken",
     "blazehub": "taken",
@@ -79,6 +85,7 @@
     "bloompvp": "taken",
     "boards": "deleting",
     "bold": "taken",
+    "bonus": "taken",
     "bound": "taken",
     "boxes": "taken",
     "brand": "taken",
@@ -90,6 +97,7 @@
     "cannot": "available",
     "cape": "taken",
     "card": "taken",
+    "category": "deleting",
     "chart": "taken",
     "chasing": "available",
     "chris": "taken",
@@ -112,13 +120,16 @@
     "crying": "suspended",
     "crystalhub": "taken",
     "crystalkits": "taken",
+    "crystalmines": "taken",
     "crystalsmp": "taken",
     "cultural": "available",
     "cuts": "deleting",
     "daddy": "suspended",
+    "dancer": "deleting",
     "dawn": "taken",
     "decided": "available",
     "decides": "available",
+    "deep": "taken",
     "demands": "available",
     "deputy": "suspended",
     "dining": "available",
@@ -157,6 +168,7 @@
     "faced": "suspended",
     "faith": "taken",
     "fakehub": "taken",
+    "fakesmp": "taken",
     "fancy": "deleting",
     "fans": "taken",
     "figured": "available",
@@ -166,6 +178,7 @@
     "films": "deleting",
     "fiscal": "available",
     "fits": "taken",
+    "flash": "taken",
     "foodgens": "taken",
     "fool": "taken",
     "forcing": "available",
@@ -175,11 +188,15 @@
     "frostpvp": "taken",
     "gaining": "available",
     "galaxygens": "taken",
+    "glass": "taken",
     "glory": "taken",
     "gospel": "available",
     "grade": "taken",
+    "grave": "taken",
+    "gross": "taken",
     "growing": "taken",
     "gulf": "taken",
+    "gunspvp": "taken",
     "handful": "available",
     "harbor": "taken",
     "harbour": "taken",
@@ -198,6 +215,7 @@
     "isis": "taken",
     "jadekits": "taken",
     "january": "taken",
+    "jason": "taken",
     "join": "taken",
     "jokes": "taken",
     "july": "taken",
@@ -207,12 +225,14 @@
     "kills": "taken",
     "kinds": "deleting",
     "king": "taken",
+    "knew": "taken",
     "latin": "taken",
     "laughed": "available",
     "legally": "available",
     "lessons": "available",
     "lewis": "taken",
     "linked": "taken",
+    "lion": "taken",
     "lips": "deleting",
     "lisa": "taken",
     "lived": "deleting",
@@ -221,6 +241,7 @@
     "location": "available",
     "logo": "taken",
     "loop": "taken",
+    "loose": "taken",
     "louis": "taken",
     "lunarpvp": "taken",
     "mall": "taken",
@@ -234,13 +255,16 @@
     "mexico": "taken",
     "miami": "taken",
     "minded": "available",
+    "minds": "taken",
     "mine": "taken",
+    "moral": "taken",
     "mount": "taken",
     "mouth": "taken",
     "nearby": "taken",
     "neonkits": "taken",
     "nope": "taken",
     "note": "taken",
+    "notes": "taken",
     "noticed": "available",
     "novagens": "taken",
     "novamines": "taken",
@@ -251,6 +275,7 @@
     "ones": "deleting",
     "ongoing": "deleting",
     "opening": "taken",
+    "opens": "deleting",
     "opinion": "taken",
     "ordered": "available",
     "orders": "deleting",
@@ -262,19 +287,23 @@
     "park": "taken",
     "parks": "taken",
     "partial": "available",
+    "pass": "taken",
     "patents": "deleting",
     "patterns": "available",
     "paul": "taken",
     "paying": "taken",
     "phoenix": "taken",
+    "pipe": "taken",
     "pixelhub": "taken",
     "pixelsmp": "taken",
     "placing": "available",
     "pleased": "available",
+    "poem": "taken",
     "posts": "deleting",
     "presents": "available",
     "pride": "taken",
     "printed": "available",
+    "prior": "taken",
     "prison": "taken",
     "prisonescape": "taken",
     "prisonrp": "taken",
@@ -298,6 +327,7 @@
     "ravensmp": "taken",
     "readers": "available",
     "rear": "deleting",
+    "refer": "taken",
     "relate": "available",
     "related": "available",
     "remained": "available",
@@ -306,10 +336,12 @@
     "reports": "available",
     "ridge": "deleting",
     "risks": "taken",
+    "rocky": "taken",
     "roleplay": "taken",
     "roman": "taken",
     "rough": "taken",
     "rubygens": "taken",
+    "rude": "taken",
     "ruin": "deleting",
     "santa": "taken",
     "sarah": "taken",
@@ -336,6 +368,7 @@
     "solarcraft": "taken",
     "solarrealm": "taken",
     "sole": "taken",
+    "songs": "deleting",
     "sort": "taken",
     "sounded": "available",
     "soviet": "taken",
@@ -351,16 +384,22 @@
     "surgeon": "available",
     "swear": "taken",
     "tale": "taken",
+    "tasksmp": "taken",
     "tears": "taken",
     "telling": "available",
     "texts": "taken",
+    "thinks": "taken",
+    "threw": "taken",
     "throw": "taken",
     "titankits": "taken",
     "topic": "deleting",
     "tower": "taken",
     "toys": "deleting",
+    "trail": "taken",
     "trend": "taken",
     "tune": "taken",
+    "twice": "taken",
+    "uncle": "taken",
     "unlike": "suspended",
     "users": "taken",
     "usual": "deleting",
@@ -389,270 +428,6 @@
     "yield": "deleting"
   },
   "items": [
-    {
-      "first_checked_at": "2026-07-29T04:26:05.792588+00:00",
-      "name": "Jason",
-      "retry_after": "2026-07-30T04:26:05.792588+00:00",
-      "score": 12.044,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:26:19.567398+00:00",
-      "name": "FakeSMP",
-      "retry_after": "2026-07-30T04:26:19.567398+00:00",
-      "score": 12.95,
-      "source": "fake + SMP",
-      "style": "SMP server"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:26:32.950969+00:00",
-      "name": "Loose",
-      "retry_after": "2026-07-30T04:26:32.950969+00:00",
-      "score": 12.044,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:26:46.377930+00:00",
-      "name": "Moral",
-      "retry_after": "2026-07-30T04:26:46.377930+00:00",
-      "score": 12.044,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:26:59.909003+00:00",
-      "name": "Notes",
-      "retry_after": "2026-07-30T04:26:59.909003+00:00",
-      "score": 12.044,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:27:13.317286+00:00",
-      "name": "Songs",
-      "retry_after": "2026-07-30T04:27:13.317286+00:00",
-      "score": 12.044,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:27:40.265526+00:00",
-      "name": "Threw",
-      "retry_after": "2026-07-30T04:27:40.265526+00:00",
-      "score": 12.044,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:27:53.799987+00:00",
-      "name": "Twice",
-      "retry_after": "2026-07-30T04:27:53.799987+00:00",
-      "score": 12.044,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:28:07.351827+00:00",
-      "name": "Aids",
-      "retry_after": "2026-07-30T04:28:07.351827+00:00",
-      "score": 12.04,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:28:20.851569+00:00",
-      "name": "Base",
-      "retry_after": "2026-07-30T04:28:20.851569+00:00",
-      "score": 12.04,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:28:47.726317+00:00",
-      "name": "Deep",
-      "retry_after": "2026-07-30T04:28:47.726317+00:00",
-      "score": 12.04,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:29:02.599980+00:00",
-      "name": "Lion",
-      "retry_after": "2026-07-30T04:29:02.599980+00:00",
-      "score": 12.04,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:29:16.128550+00:00",
-      "name": "Pass",
-      "retry_after": "2026-07-30T04:29:16.128550+00:00",
-      "score": 12.04,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:29:29.459920+00:00",
-      "name": "Pipe",
-      "retry_after": "2026-07-30T04:29:29.459920+00:00",
-      "score": 12.04,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:29:42.813073+00:00",
-      "name": "TaskSMP",
-      "retry_after": "2026-07-30T04:29:42.813073+00:00",
-      "score": 12.95,
-      "source": "task + SMP",
-      "style": "SMP server"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:29:56.221892+00:00",
-      "name": "Poem",
-      "retry_after": "2026-07-30T04:29:56.221892+00:00",
-      "score": 12.04,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:30:09.608234+00:00",
-      "name": "Rude",
-      "retry_after": "2026-07-30T04:30:09.608234+00:00",
-      "score": 12.04,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:30:23.417686+00:00",
-      "name": "Thinks",
-      "retry_after": "2026-07-30T04:30:23.417686+00:00",
-      "score": 12.038,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:30:36.908077+00:00",
-      "name": "Grave",
-      "retry_after": "2026-07-30T04:30:36.908077+00:00",
-      "score": 12.034,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:30:50.409047+00:00",
-      "name": "CrystalMines",
-      "retry_after": "2026-07-30T04:30:50.409047+00:00",
-      "score": 12.95,
-      "source": "semantic compound",
-      "style": "Mining brand"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:31:03.800774+00:00",
-      "name": "Knew",
-      "retry_after": "2026-07-30T04:31:03.800774+00:00",
-      "score": 12.03,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:31:17.150286+00:00",
-      "name": "Rocky",
-      "retry_after": "2026-07-30T04:31:17.150286+00:00",
-      "score": 12.024,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:31:30.620905+00:00",
-      "name": "Angel",
-      "retry_after": "2026-07-30T04:31:30.620905+00:00",
-      "score": 12.02,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:31:43.995097+00:00",
-      "name": "Bonus",
-      "retry_after": "2026-07-30T04:31:43.995097+00:00",
-      "score": 12.02,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:32:10.972789+00:00",
-      "name": "Flash",
-      "retry_after": "2026-07-30T04:32:10.972789+00:00",
-      "score": 12.02,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:32:25.558529+00:00",
-      "name": "Glass",
-      "retry_after": "2026-07-30T04:32:25.558529+00:00",
-      "score": 12.02,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:32:39.096452+00:00",
-      "name": "Gross",
-      "retry_after": "2026-07-30T04:32:39.096452+00:00",
-      "score": 12.02,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:32:52.631085+00:00",
-      "name": "Minds",
-      "retry_after": "2026-07-30T04:32:52.631085+00:00",
-      "score": 12.02,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:33:19.896755+00:00",
-      "name": "Prior",
-      "retry_after": "2026-07-30T04:33:19.896755+00:00",
-      "score": 12.02,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:33:33.555017+00:00",
-      "name": "Refer",
-      "retry_after": "2026-07-30T04:33:33.555017+00:00",
-      "score": 12.02,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:33:47.633377+00:00",
-      "name": "Trail",
-      "retry_after": "2026-07-30T04:33:47.633377+00:00",
-      "score": 12.02,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:34:00.992512+00:00",
-      "name": "Uncle",
-      "retry_after": "2026-07-30T04:34:00.992512+00:00",
-      "score": 12.02,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:34:14.331491+00:00",
-      "name": "GunsPvP",
-      "retry_after": "2026-07-30T04:34:14.331491+00:00",
-      "score": 12.926,
-      "source": "guns + PvP",
-      "style": "PvP server"
-    },
     {
       "first_checked_at": "2026-07-29T05:45:31.673595+00:00",
       "name": "Ember",
@@ -29934,27 +29709,9 @@
       "style": "Brand word"
     },
     {
-      "first_checked_at": "2026-07-30T01:31:01.056517+00:00",
-      "name": "Actions",
-      "pending_deletion": true,
-      "retry_after": "2026-07-30T04:31:01.056517+00:00",
-      "score": 9.192,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
       "first_checked_at": "2026-07-30T01:31:14.770251+00:00",
       "name": "African",
       "retry_after": "2026-07-31T01:31:14.770251+00:00",
-      "score": 9.192,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:31:28.124279+00:00",
-      "name": "Benefit",
-      "pending_deletion": true,
-      "retry_after": "2026-07-30T04:31:28.124279+00:00",
       "score": 9.192,
       "source": "common English",
       "style": "Brand word"
@@ -30024,28 +29781,10 @@
       "style": "Brand word"
     },
     {
-      "first_checked_at": "2026-07-30T01:37:15.018853+00:00",
-      "name": "Opens",
-      "pending_deletion": true,
-      "retry_after": "2026-07-30T04:37:15.018853+00:00",
-      "score": 11.972,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
       "first_checked_at": "2026-07-30T01:38:48.498474+00:00",
       "name": "Harvard",
       "retry_after": "2026-07-31T01:38:48.498474+00:00",
       "score": 8.966,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:39:01.810764+00:00",
-      "name": "Category",
-      "pending_deletion": true,
-      "retry_after": "2026-07-30T04:39:01.810764+00:00",
-      "score": 8.958,
       "source": "common English",
       "style": "Brand word"
     },
@@ -30082,15 +29821,6 @@
       "style": "Brand word"
     },
     {
-      "first_checked_at": "2026-07-30T01:51:44.981645+00:00",
-      "name": "Dancer",
-      "pending_deletion": true,
-      "retry_after": "2026-07-30T04:51:44.981645+00:00",
-      "score": 18.14,
-      "source": "owner-preferred word",
-      "style": "Word"
-    },
-    {
       "first_checked_at": "2026-07-30T01:52:25.287452+00:00",
       "name": "Females",
       "retry_after": "2026-07-31T01:52:25.287452+00:00",
@@ -30111,15 +29841,6 @@
       "name": "Protect",
       "retry_after": "2026-07-31T01:53:05.442409+00:00",
       "score": 8.952,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:53:32.579381+00:00",
-      "name": "Aims",
-      "pending_deletion": true,
-      "retry_after": "2026-07-30T04:53:32.579381+00:00",
-      "score": 11.944,
       "source": "common English",
       "style": "Brand word"
     },
@@ -30699,6 +30420,69 @@
       "score": 9.23,
       "source": "common English",
       "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-30T05:16:15.687259+00:00",
+      "name": "Songs",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T08:16:15.687259+00:00",
+      "score": 12.044,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-30T05:19:35.415585+00:00",
+      "name": "Actions",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T08:19:35.415585+00:00",
+      "score": 9.192,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-30T05:20:15.376998+00:00",
+      "name": "Benefit",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T08:20:15.376998+00:00",
+      "score": 9.192,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-30T05:22:55.158973+00:00",
+      "name": "Opens",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T08:22:55.158973+00:00",
+      "score": 11.972,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-30T05:23:08.470706+00:00",
+      "name": "Category",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T08:23:08.470706+00:00",
+      "score": 8.958,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-30T05:23:21.860481+00:00",
+      "name": "Dancer",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T08:23:21.860481+00:00",
+      "score": 18.14,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-07-30T05:23:35.173016+00:00",
+      "name": "Aims",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T08:23:35.173016+00:00",
+      "score": 11.944,
+      "source": "common English",
+      "style": "Brand word"
     }
   ],
   "version": 1,
@@ -30715,6 +30499,6 @@
     "raidrise": "2026-07-30T04:58:03.999821+00:00",
     "roleplay": "2026-07-30T04:57:37.732583+00:00",
     "sete": "2026-07-30T04:36:02.365184+00:00",
-    "state": "2026-07-30T04:15:05.928072+00:00"
+    "state": "2026-07-30T05:15:09.563008+00:00"
   }
 }
