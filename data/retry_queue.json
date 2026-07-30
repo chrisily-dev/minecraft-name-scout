@@ -48,6 +48,7 @@
   "announced_status": {
     "adult": "taken",
     "agent": "taken",
+    "amazon": "taken",
     "anti": "taken",
     "anytime": "available",
     "appeared": "available",
@@ -58,6 +59,7 @@
     "bearing": "available",
     "beat": "taken",
     "beaten": "available",
+    "beauty": "taken",
     "became": "available",
     "becomes": "available",
     "beef": "taken",
@@ -66,8 +68,10 @@
     "blazesmp": "taken",
     "bloompvp": "taken",
     "boards": "deleting",
+    "boxes": "taken",
     "bread": "taken",
     "butt": "taken",
+    "buying": "suspended",
     "cannot": "available",
     "cape": "taken",
     "chasing": "available",
@@ -80,18 +84,25 @@
     "committed": "available",
     "concerns": "available",
     "consent": "taken",
+    "corp": "taken",
+    "crowncraft": "taken",
+    "crownmines": "taken",
     "crying": "suspended",
     "cultural": "available",
     "cuts": "deleting",
     "daddy": "suspended",
+    "dawn": "taken",
     "decided": "available",
     "decides": "available",
     "demands": "available",
+    "deputy": "suspended",
     "dining": "available",
     "dozen": "taken",
     "dozens": "available",
     "drag": "taken",
+    "dragonkits": "taken",
     "drawn": "taken",
+    "driver": "taken",
     "drove": "suspended",
     "drugs": "taken",
     "dual": "taken",
@@ -116,12 +127,15 @@
     "extended": "available",
     "extensive": "available",
     "faced": "suspended",
+    "faith": "taken",
     "fancy": "deleting",
+    "fans": "taken",
     "figured": "available",
     "filed": "suspended",
     "filling": "available",
     "films": "deleting",
     "fiscal": "available",
+    "fits": "taken",
     "fool": "taken",
     "forcing": "available",
     "forming": "available",
@@ -146,14 +160,22 @@
     "inner": "taken",
     "involved": "available",
     "involving": "available",
+    "isis": "taken",
     "jadekits": "taken",
     "january": "taken",
     "join": "taken",
+    "july": "taken",
+    "keen": "taken",
     "keeping": "available",
+    "kills": "taken",
     "kinds": "deleting",
+    "king": "taken",
+    "latin": "taken",
     "laughed": "available",
     "legally": "available",
     "lessons": "available",
+    "lewis": "taken",
+    "lips": "deleting",
     "lisa": "taken",
     "lived": "deleting",
     "loans": "deleting",
@@ -161,12 +183,17 @@
     "location": "available",
     "logo": "taken",
     "loop": "taken",
+    "louis": "taken",
     "lunarpvp": "taken",
     "mall": "taken",
     "managers": "available",
+    "mars": "taken",
     "matches": "available",
     "medium": "deleting",
+    "metal": "taken",
+    "mexico": "taken",
     "minded": "available",
+    "nearby": "taken",
     "neonkits": "taken",
     "noticed": "available",
     "novagens": "taken",
@@ -179,10 +206,13 @@
     "ordered": "available",
     "orders": "deleting",
     "pakistan": "taken",
+    "pants": "taken",
+    "paris": "taken",
     "park": "taken",
     "partial": "available",
     "patents": "deleting",
     "patterns": "available",
+    "paying": "taken",
     "phoenix": "taken",
     "pixelhub": "taken",
     "pixelsmp": "taken",
@@ -207,6 +237,7 @@
     "quote": "taken",
     "quoted": "available",
     "raidrise": "taken",
+    "rally": "suspended",
     "ranging": "available",
     "rapidly": "available",
     "ravenhub": "taken",
@@ -224,7 +255,9 @@
     "roleplay": "taken",
     "roman": "taken",
     "rough": "taken",
+    "rubygens": "taken",
     "santa": "taken",
+    "sarah": "taken",
     "save": "taken",
     "sciences": "available",
     "scoring": "taken",
@@ -232,9 +265,11 @@
     "seeing": "available",
     "sete": "taken",
     "severe": "taken",
+    "sharp": "taken",
     "shoot": "deleting",
     "showing": "available",
     "shown": "deleting",
+    "simon": "taken",
     "slightly": "taken",
     "slip": "taken",
     "smell": "taken",
@@ -247,10 +282,12 @@
     "stepped": "available",
     "stone": "taken",
     "studied": "available",
+    "surely": "taken",
     "surgeon": "available",
     "swear": "taken",
     "tale": "taken",
     "telling": "available",
+    "texts": "taken",
     "topic": "deleting",
     "tower": "taken",
     "toys": "deleting",
@@ -258,9 +295,11 @@
     "unlike": "suspended",
     "users": "taken",
     "usual": "deleting",
+    "valorsmp": "taken",
     "veteran": "taken",
     "victim": "taken",
     "violence": "suspended",
+    "visa": "taken",
     "visitors": "available",
     "waste": "taken",
     "waves": "taken",
@@ -270,322 +309,11 @@
     "wheel": "taken",
     "whereas": "available",
     "willing": "available",
+    "winterkits": "taken",
     "wore": "suspended",
     "yield": "deleting"
   },
   "items": [
-    {
-      "first_checked_at": "2026-07-29T03:53:34.022009+00:00",
-      "name": "Amazon",
-      "retry_after": "2026-07-30T03:53:34.022009+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:53:47.443623+00:00",
-      "name": "Beauty",
-      "retry_after": "2026-07-30T03:53:47.443623+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:54:00.823226+00:00",
-      "name": "Buying",
-      "retry_after": "2026-07-30T03:54:00.823226+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:54:14.180798+00:00",
-      "name": "RubyGens",
-      "retry_after": "2026-07-30T03:54:14.180798+00:00",
-      "score": 13.09,
-      "source": "curated brand parts",
-      "style": "Server brand"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:54:27.537514+00:00",
-      "name": "Deputy",
-      "retry_after": "2026-07-30T03:54:27.537514+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:54:40.957441+00:00",
-      "name": "Driver",
-      "retry_after": "2026-07-30T03:54:40.957441+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:54:54.383666+00:00",
-      "name": "Mexico",
-      "retry_after": "2026-07-30T03:54:54.383666+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:55:07.854278+00:00",
-      "name": "Nearby",
-      "retry_after": "2026-07-30T03:55:07.854278+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:55:34.600520+00:00",
-      "name": "Paying",
-      "retry_after": "2026-07-30T03:55:34.600520+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:55:47.994372+00:00",
-      "name": "Surely",
-      "retry_after": "2026-07-30T03:55:47.994372+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:56:01.470938+00:00",
-      "name": "Boxes",
-      "retry_after": "2026-07-30T03:56:01.470938+00:00",
-      "score": 12.106,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:56:14.875534+00:00",
-      "name": "Kills",
-      "retry_after": "2026-07-30T03:56:14.875534+00:00",
-      "score": 12.106,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:56:28.370709+00:00",
-      "name": "ValorSMP",
-      "retry_after": "2026-07-30T03:56:28.370709+00:00",
-      "score": 13.09,
-      "source": "curated brand parts",
-      "style": "Server brand"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:56:41.686537+00:00",
-      "name": "Rally",
-      "retry_after": "2026-07-30T03:56:41.686537+00:00",
-      "score": 12.106,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:56:55.039974+00:00",
-      "name": "Texts",
-      "retry_after": "2026-07-30T03:56:55.039974+00:00",
-      "score": 12.106,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:57:08.464357+00:00",
-      "name": "July",
-      "retry_after": "2026-07-30T03:57:08.464357+00:00",
-      "score": 12.102,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:57:21.822301+00:00",
-      "name": "Keen",
-      "retry_after": "2026-07-30T03:57:21.822301+00:00",
-      "score": 12.102,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:57:35.215546+00:00",
-      "name": "CrownCraft",
-      "retry_after": "2026-07-30T03:57:35.215546+00:00",
-      "score": 13.084,
-      "source": "curated brand parts",
-      "style": "Server brand"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:57:48.684227+00:00",
-      "name": "King",
-      "retry_after": "2026-07-30T03:57:48.684227+00:00",
-      "score": 12.102,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:58:02.034705+00:00",
-      "name": "Visa",
-      "retry_after": "2026-07-30T03:58:02.034705+00:00",
-      "score": 12.102,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:58:15.364371+00:00",
-      "name": "Faith",
-      "retry_after": "2026-07-30T03:58:15.364371+00:00",
-      "score": 12.092,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:58:28.800011+00:00",
-      "name": "Latin",
-      "retry_after": "2026-07-30T03:58:28.800011+00:00",
-      "score": 12.092,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:58:42.181088+00:00",
-      "name": "CrownMines",
-      "retry_after": "2026-07-30T03:58:42.181088+00:00",
-      "score": 13.084,
-      "source": "curated brand parts",
-      "style": "Server brand"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:58:55.514717+00:00",
-      "name": "Lewis",
-      "retry_after": "2026-07-30T03:58:55.514717+00:00",
-      "score": 12.092,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:59:08.863160+00:00",
-      "name": "Louis",
-      "retry_after": "2026-07-30T03:59:08.863160+00:00",
-      "score": 12.092,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:59:22.280850+00:00",
-      "name": "Metal",
-      "retry_after": "2026-07-30T03:59:22.280850+00:00",
-      "score": 12.092,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T03:59:35.706033+00:00",
-      "name": "Pants",
-      "retry_after": "2026-07-30T03:59:35.706033+00:00",
-      "score": 12.092,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:00:02.512268+00:00",
-      "name": "Paris",
-      "retry_after": "2026-07-30T04:00:02.512268+00:00",
-      "score": 12.092,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:00:15.999705+00:00",
-      "name": "Sarah",
-      "retry_after": "2026-07-30T04:00:15.999705+00:00",
-      "score": 12.092,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:00:29.592977+00:00",
-      "name": "Sharp",
-      "retry_after": "2026-07-30T04:00:29.592977+00:00",
-      "score": 12.092,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:00:43.030308+00:00",
-      "name": "Simon",
-      "retry_after": "2026-07-30T04:00:43.030308+00:00",
-      "score": 12.092,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:00:56.374662+00:00",
-      "name": "DragonKits",
-      "retry_after": "2026-07-30T04:00:56.374662+00:00",
-      "score": 13.074,
-      "source": "curated brand parts",
-      "style": "Server brand"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:01:09.868230+00:00",
-      "name": "Corp",
-      "retry_after": "2026-07-30T04:01:09.868230+00:00",
-      "score": 12.088,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:01:23.189976+00:00",
-      "name": "Dawn",
-      "retry_after": "2026-07-30T04:01:23.189976+00:00",
-      "score": 12.088,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:01:36.865129+00:00",
-      "name": "Fans",
-      "retry_after": "2026-07-30T04:01:36.865129+00:00",
-      "score": 12.088,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:01:50.298628+00:00",
-      "name": "Fits",
-      "retry_after": "2026-07-30T04:01:50.298628+00:00",
-      "score": 12.088,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:02:03.649650+00:00",
-      "name": "WinterKits",
-      "retry_after": "2026-07-30T04:02:03.649650+00:00",
-      "score": 13.074,
-      "source": "curated brand parts",
-      "style": "Server brand"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:02:17.016278+00:00",
-      "name": "Isis",
-      "retry_after": "2026-07-30T04:02:17.016278+00:00",
-      "score": 12.088,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-29T04:02:30.445679+00:00",
-      "name": "Mars",
-      "retry_after": "2026-07-30T04:02:30.445679+00:00",
-      "score": 12.088,
-      "source": "common English",
-      "style": "Brand word"
-    },
     {
       "first_checked_at": "2026-07-29T04:02:43.782309+00:00",
       "name": "Pain",
@@ -30195,15 +29923,6 @@
       "style": "Brand word"
     },
     {
-      "first_checked_at": "2026-07-30T00:59:26.935448+00:00",
-      "name": "Lips",
-      "pending_deletion": true,
-      "retry_after": "2026-07-30T03:59:26.935448+00:00",
-      "score": 12.28,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
       "first_checked_at": "2026-07-30T01:09:41.778897+00:00",
       "name": "Regions",
       "retry_after": "2026-07-31T01:09:41.778897+00:00",
@@ -31439,6 +31158,15 @@
       "score": 12.116,
       "source": "common English",
       "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-30T04:27:17.209723+00:00",
+      "name": "Lips",
+      "pending_deletion": true,
+      "retry_after": "2026-07-30T07:27:17.209723+00:00",
+      "score": 12.28,
+      "source": "common English",
+      "style": "Brand word"
     }
   ],
   "version": 1,
@@ -31455,6 +31183,6 @@
     "raidrise": "2026-07-30T03:58:01.240238+00:00",
     "roleplay": "2026-07-30T03:57:34.983253+00:00",
     "sete": "2026-07-30T03:36:00.707094+00:00",
-    "state": "2026-07-30T03:14:56.054751+00:00"
+    "state": "2026-07-30T04:15:05.928072+00:00"
   }
 }
