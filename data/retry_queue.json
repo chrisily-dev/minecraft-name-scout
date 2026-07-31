@@ -95,7 +95,7 @@
     "activist": "deleting",
     "activists": "suspended",
     "activities": "taken",
-    "activity": "taken",
+    "activity": "deleting",
     "actor": "taken",
     "actors": "taken",
     "actress": "suspended",
@@ -120,6 +120,7 @@
     "admit": "deleting",
     "admitted": "suspended",
     "adopt": "taken",
+    "adopted": "taken",
     "adoption": "taken",
     "adult": "taken",
     "adults": "taken",
@@ -239,6 +240,7 @@
     "antonio": "taken",
     "anxiety": "taken",
     "anybody": "taken",
+    "anymore": "suspended",
     "anyone": "taken",
     "anything": "taken",
     "anytime": "available",
@@ -320,6 +322,7 @@
     "asks": "taken",
     "asleep": "taken",
     "aspect": "taken",
+    "aspects": "deleting",
     "assault": "taken",
     "assembly": "deleting",
     "assessment": "taken",
@@ -642,6 +645,7 @@
     "buried": "taken",
     "burn": "taken",
     "burned": "taken",
+    "burning": "taken",
     "burns": "taken",
     "burst": "taken",
     "bush": "taken",
@@ -767,6 +771,7 @@
     "champions": "taken",
     "championship": "deleting",
     "chance": "taken",
+    "chances": "taken",
     "change": "taken",
     "changed": "taken",
     "changes": "taken",
@@ -1034,6 +1039,7 @@
     "consumption": "suspended",
     "contact": "taken",
     "contacts": "suspended",
+    "contain": "taken",
     "contained": "taken",
     "containing": "available",
     "contains": "suspended",
@@ -1087,6 +1093,7 @@
     "corporate": "taken",
     "corporation": "taken",
     "corps": "suspended",
+    "correct": "taken",
     "correctly": "available",
     "corrupt": "taken",
     "corruption": "taken",
@@ -1194,6 +1201,7 @@
     "damages": "suspended",
     "dance": "taken",
     "dancer": "deleting",
+    "dancing": "taken",
     "danger": "taken",
     "dangerous": "taken",
     "dare": "taken",
@@ -1248,6 +1256,7 @@
     "default": "taken",
     "defeat": "taken",
     "defeated": "suspended",
+    "defence": "taken",
     "defend": "taken",
     "defender": "deleting",
     "defending": "taken",
@@ -1396,6 +1405,7 @@
     "divine": "taken",
     "division": "taken",
     "divisions": "deleting",
+    "divorce": "taken",
     "doctor": "taken",
     "doctors": "suspended",
     "document": "deleting",
@@ -1499,6 +1509,7 @@
     "edit": "taken",
     "edited": "suspended",
     "editing": "taken",
+    "edition": "taken",
     "editor": "taken",
     "editorial": "taken",
     "educated": "suspended",
@@ -1835,6 +1846,7 @@
     "fine": "taken",
     "finest": "suspended",
     "finger": "taken",
+    "fingers": "taken",
     "finish": "taken",
     "finished": "taken",
     "finishing": "suspended",
@@ -1923,6 +1935,7 @@
     "fought": "taken",
     "found": "taken",
     "foundation": "taken",
+    "founded": "suspended",
     "founder": "deleting",
     "four": "taken",
     "fourth": "taken",
@@ -2074,6 +2087,7 @@
     "grass": "taken",
     "grateful": "taken",
     "grave": "taken",
+    "gravity": "taken",
     "gray": "taken",
     "greater": "taken",
     "greatest": "taken",
@@ -2131,6 +2145,7 @@
     "hands": "taken",
     "handsome": "taken",
     "hang": "taken",
+    "hanging": "taken",
     "happen": "deleting",
     "happened": "taken",
     "happening": "suspended",
@@ -2357,6 +2372,7 @@
     "initial": "taken",
     "initially": "suspended",
     "initiative": "taken",
+    "injured": "taken",
     "injuries": "taken",
     "injury": "taken",
     "inner": "taken",
@@ -2435,6 +2451,7 @@
     "islam": "taken",
     "islamic": "suspended",
     "island": "taken",
+    "islands": "taken",
     "isolated": "taken",
     "israel": "taken",
     "israeli": "suspended",
@@ -2639,6 +2656,7 @@
     "liberals": "available",
     "libraries": "taken",
     "library": "taken",
+    "license": "taken",
     "licensed": "taken",
     "lied": "taken",
     "lies": "taken",
@@ -2977,6 +2995,7 @@
     "muscles": "taken",
     "museum": "taken",
     "music": "taken",
+    "musical": "taken",
     "muslim": "taken",
     "muslims": "taken",
     "mutual": "taken",
@@ -2995,6 +3014,7 @@
     "nathan": "taken",
     "nation": "taken",
     "national": "taken",
+    "nations": "taken",
     "native": "taken",
     "natural": "taken",
     "naturally": "suspended",
@@ -3078,6 +3098,7 @@
     "obama": "taken",
     "object": "taken",
     "objective": "taken",
+    "objects": "suspended",
     "observed": "deleting",
     "obtain": "suspended",
     "obtained": "taken",
@@ -3128,6 +3149,7 @@
     "openly": "suspended",
     "opens": "deleting",
     "opera": "taken",
+    "operate": "taken",
     "operated": "available",
     "operates": "suspended",
     "operating": "taken",
@@ -3140,6 +3162,7 @@
     "opponent": "suspended",
     "opponents": "suspended",
     "opportunity": "taken",
+    "opposed": "taken",
     "opposite": "taken",
     "opposition": "taken",
     "option": "taken",
@@ -3343,6 +3366,7 @@
     "plans": "taken",
     "plant": "taken",
     "plants": "taken",
+    "plastic": "taken",
     "plate": "taken",
     "plates": "taken",
     "platform": "taken",
@@ -3495,6 +3519,7 @@
     "process": "taken",
     "processes": "taken",
     "processing": "taken",
+    "produce": "taken",
     "produced": "taken",
     "producer": "taken",
     "producers": "suspended",
@@ -3751,6 +3776,7 @@
     "remain": "taken",
     "remained": "available",
     "remaining": "suspended",
+    "remains": "suspended",
     "remarkable": "available",
     "remarks": "available",
     "remember": "taken",
@@ -3790,6 +3816,7 @@
     "request": "taken",
     "requested": "taken",
     "requests": "taken",
+    "require": "suspended",
     "required": "taken",
     "requirements": "taken",
     "requires": "suspended",
@@ -3843,6 +3870,7 @@
     "revealed": "deleting",
     "revenge": "taken",
     "revenue": "taken",
+    "reverse": "taken",
     "review": "taken",
     "reviewed": "available",
     "reviews": "suspended",
@@ -3898,6 +3926,7 @@
     "rose": "taken",
     "ross": "taken",
     "rough": "taken",
+    "roughly": "suspended",
     "round": "taken",
     "rounds": "taken",
     "route": "taken",
@@ -3995,6 +4024,7 @@
     "search": "taken",
     "searching": "taken",
     "season": "taken",
+    "seasons": "taken",
     "seat": "taken",
     "seats": "taken",
     "seattle": "taken",
@@ -4168,6 +4198,7 @@
     "skip": "taken",
     "skyblock": "taken",
     "skydives": "available",
+    "slavery": "taken",
     "slaves": "taken",
     "sleep": "taken",
     "sleeping": "taken",
@@ -4466,6 +4497,7 @@
     "survive": "taken",
     "survived": "taken",
     "susan": "taken",
+    "suspect": "taken",
     "suspected": "deleting",
     "suspended": "taken",
     "suspension": "taken",
@@ -4574,6 +4606,7 @@
     "thanks": "taken",
     "thats": "taken",
     "theater": "taken",
+    "theatre": "taken",
     "theft": "taken",
     "theme": "taken",
     "themes": "taken",
@@ -4728,6 +4761,7 @@
     "troops": "taken",
     "trophy": "taken",
     "tropical": "taken",
+    "trouble": "taken",
     "truck": "taken",
     "trucks": "suspended",
     "true": "taken",
@@ -4947,6 +4981,7 @@
     "wedding": "taken",
     "wednesday": "taken",
     "week": "taken",
+    "weekend": "taken",
     "weekly": "taken",
     "weeks": "taken",
     "weight": "taken",
@@ -5004,6 +5039,7 @@
     "wishes": "deleting",
     "within": "taken",
     "without": "taken",
+    "witness": "suspended",
     "witnesses": "taken",
     "woke": "taken",
     "wolf": "taken",
@@ -5075,294 +5111,6 @@
     "zones": "taken"
   },
   "items": [
-    {
-      "first_checked_at": "2026-07-30T01:12:21.698779+00:00",
-      "name": "License",
-      "retry_after": "2026-07-31T01:12:21.698779+00:00",
-      "score": 9.288,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:12:34.968666+00:00",
-      "name": "Produce",
-      "retry_after": "2026-07-31T01:12:34.968666+00:00",
-      "score": 9.288,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:12:48.307848+00:00",
-      "name": "Require",
-      "retry_after": "2026-07-31T01:12:48.307848+00:00",
-      "score": 9.288,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:13:01.603729+00:00",
-      "name": "Seasons",
-      "retry_after": "2026-07-31T01:13:01.603729+00:00",
-      "score": 9.288,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:13:54.687297+00:00",
-      "name": "Theatre",
-      "retry_after": "2026-07-31T01:13:54.687297+00:00",
-      "score": 9.288,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:14:08.069270+00:00",
-      "name": "Witness",
-      "retry_after": "2026-07-31T01:14:08.069270+00:00",
-      "score": 9.288,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:14:21.369525+00:00",
-      "name": "Reverse",
-      "retry_after": "2026-07-31T01:14:21.369525+00:00",
-      "score": 9.278,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:15:01.265051+00:00",
-      "name": "Weekend",
-      "retry_after": "2026-07-31T01:15:01.265051+00:00",
-      "score": 9.278,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:15:14.663477+00:00",
-      "name": "Adopted",
-      "retry_after": "2026-07-31T01:15:14.663477+00:00",
-      "score": 9.264,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:15:27.972596+00:00",
-      "name": "Chances",
-      "retry_after": "2026-07-31T01:15:27.972596+00:00",
-      "score": 9.264,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:15:41.219589+00:00",
-      "name": "Correct",
-      "retry_after": "2026-07-31T01:15:41.219589+00:00",
-      "score": 9.264,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:15:54.521224+00:00",
-      "name": "Defence",
-      "retry_after": "2026-07-31T01:15:54.521224+00:00",
-      "score": 9.264,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:16:07.916632+00:00",
-      "name": "Injured",
-      "retry_after": "2026-07-31T01:16:07.916632+00:00",
-      "score": 9.264,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:16:21.181554+00:00",
-      "name": "Musical",
-      "retry_after": "2026-07-31T01:16:21.181554+00:00",
-      "score": 9.264,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:16:34.478670+00:00",
-      "name": "Objects",
-      "retry_after": "2026-07-31T01:16:34.478670+00:00",
-      "score": 9.264,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:16:47.993077+00:00",
-      "name": "Opposed",
-      "retry_after": "2026-07-31T01:16:47.993077+00:00",
-      "score": 9.264,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:17:01.420951+00:00",
-      "name": "Plastic",
-      "retry_after": "2026-07-31T01:17:01.420951+00:00",
-      "score": 9.264,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:17:14.703669+00:00",
-      "name": "Suspect",
-      "retry_after": "2026-07-31T01:17:14.703669+00:00",
-      "score": 9.264,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:17:27.944317+00:00",
-      "name": "Trouble",
-      "retry_after": "2026-07-31T01:17:27.944317+00:00",
-      "score": 9.264,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:17:54.463992+00:00",
-      "name": "Anymore",
-      "retry_after": "2026-07-31T01:17:54.463992+00:00",
-      "score": 9.254,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:18:07.747124+00:00",
-      "name": "Divorce",
-      "retry_after": "2026-07-31T01:18:07.747124+00:00",
-      "score": 9.254,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:18:20.988896+00:00",
-      "name": "Roughly",
-      "retry_after": "2026-07-31T01:18:20.988896+00:00",
-      "score": 9.254,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:18:34.333932+00:00",
-      "name": "Gravity",
-      "retry_after": "2026-07-31T01:18:34.333932+00:00",
-      "score": 9.244,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:18:47.592919+00:00",
-      "name": "Slavery",
-      "retry_after": "2026-07-31T01:18:47.592919+00:00",
-      "score": 9.244,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:19:00.939846+00:00",
-      "name": "Aspects",
-      "retry_after": "2026-07-31T01:19:00.939846+00:00",
-      "score": 9.24,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:19:14.198804+00:00",
-      "name": "Burning",
-      "retry_after": "2026-07-31T01:19:14.198804+00:00",
-      "score": 9.24,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:19:27.501372+00:00",
-      "name": "Contain",
-      "retry_after": "2026-07-31T01:19:27.501372+00:00",
-      "score": 9.24,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:19:40.840807+00:00",
-      "name": "Dancing",
-      "retry_after": "2026-07-31T01:19:40.840807+00:00",
-      "score": 9.24,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:19:54.352843+00:00",
-      "name": "Edition",
-      "retry_after": "2026-07-31T01:19:54.352843+00:00",
-      "score": 9.24,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:20:07.642562+00:00",
-      "name": "Fingers",
-      "retry_after": "2026-07-31T01:20:07.642562+00:00",
-      "score": 9.24,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:20:21.495542+00:00",
-      "name": "Founded",
-      "retry_after": "2026-07-31T01:20:21.495542+00:00",
-      "score": 9.24,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:20:34.748296+00:00",
-      "name": "Hanging",
-      "retry_after": "2026-07-31T01:20:34.748296+00:00",
-      "score": 9.24,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:20:48.046113+00:00",
-      "name": "Islands",
-      "retry_after": "2026-07-31T01:20:48.046113+00:00",
-      "score": 9.24,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:21:01.488039+00:00",
-      "name": "Nations",
-      "retry_after": "2026-07-31T01:21:01.488039+00:00",
-      "score": 9.24,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:21:14.731005+00:00",
-      "name": "Operate",
-      "retry_after": "2026-07-31T01:21:14.731005+00:00",
-      "score": 9.24,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T01:21:28.026646+00:00",
-      "name": "Remains",
-      "retry_after": "2026-07-31T01:21:28.026646+00:00",
-      "score": 9.24,
-      "source": "common English",
-      "style": "Brand word"
-    },
     {
       "first_checked_at": "2026-07-30T01:21:41.395765+00:00",
       "name": "Smaller",
@@ -16368,42 +16116,6 @@
       "name": "Parties",
       "retry_after": "2026-07-31T22:15:01.380753+00:00",
       "score": 9.024,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T22:16:21.644602+00:00",
-      "name": "Mounted",
-      "pending_deletion": true,
-      "retry_after": "2026-07-31T01:16:21.644602+00:00",
-      "score": 8.664,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T22:16:35.148894+00:00",
-      "name": "Offense",
-      "pending_deletion": true,
-      "retry_after": "2026-07-31T01:16:35.148894+00:00",
-      "score": 8.664,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T22:18:22.643556+00:00",
-      "name": "Deeper",
-      "pending_deletion": true,
-      "retry_after": "2026-07-31T01:18:22.643556+00:00",
-      "score": 11.16,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-07-30T22:20:51.047896+00:00",
-      "name": "Convert",
-      "pending_deletion": true,
-      "retry_after": "2026-07-31T01:20:51.047896+00:00",
-      "score": 8.654,
       "source": "common English",
       "style": "Brand word"
     },
@@ -28583,6 +28295,276 @@
       "pending_deletion": true,
       "retry_after": "2026-07-31T17:23:37.500726+00:00",
       "score": 8.688,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:27:48.426716+00:00",
+      "name": "Android",
+      "retry_after": "2026-08-01T14:27:48.426716+00:00",
+      "score": 9.048,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:28:01.672526+00:00",
+      "name": "Capture",
+      "retry_after": "2026-08-01T14:28:01.672526+00:00",
+      "score": 9.048,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:29:07.932924+00:00",
+      "name": "Venture",
+      "retry_after": "2026-08-01T14:29:07.932924+00:00",
+      "score": 9.014,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:29:21.209768+00:00",
+      "name": "Kentucky",
+      "retry_after": "2026-08-01T14:29:21.209768+00:00",
+      "score": 9.01,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:29:34.486710+00:00",
+      "name": "Advanced",
+      "retry_after": "2026-08-01T14:29:34.486710+00:00",
+      "score": 9.006,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:29:47.783853+00:00",
+      "name": "Anywhere",
+      "retry_after": "2026-08-01T14:29:47.783853+00:00",
+      "score": 9.006,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:30:01.028438+00:00",
+      "name": "Capacity",
+      "retry_after": "2026-08-01T14:30:01.028438+00:00",
+      "score": 9.006,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:30:14.282255+00:00",
+      "name": "Drinking",
+      "retry_after": "2026-08-01T14:30:14.282255+00:00",
+      "score": 9.006,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:30:27.553579+00:00",
+      "name": "Governor",
+      "retry_after": "2026-08-01T14:30:27.553579+00:00",
+      "score": 9.006,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:30:40.861190+00:00",
+      "name": "Realized",
+      "retry_after": "2026-08-01T14:30:40.861190+00:00",
+      "score": 9.006,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:30:54.105015+00:00",
+      "name": "Universe",
+      "retry_after": "2026-08-01T14:30:54.105015+00:00",
+      "score": 9.006,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:31:07.353397+00:00",
+      "name": "Confirm",
+      "retry_after": "2026-08-01T14:31:07.353397+00:00",
+      "score": 9.0,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:31:20.605282+00:00",
+      "name": "Decline",
+      "retry_after": "2026-08-01T14:31:20.605282+00:00",
+      "score": 9.0,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:31:33.895319+00:00",
+      "name": "Disease",
+      "retry_after": "2026-08-01T14:31:33.895319+00:00",
+      "score": 9.0,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:31:47.205765+00:00",
+      "name": "Enemies",
+      "retry_after": "2026-08-01T14:31:47.205765+00:00",
+      "score": 9.0,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:32:00.466849+00:00",
+      "name": "Greater",
+      "retry_after": "2026-08-01T14:32:00.466849+00:00",
+      "score": 9.0,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:32:13.711884+00:00",
+      "name": "Israeli",
+      "retry_after": "2026-08-01T14:32:13.711884+00:00",
+      "score": 9.0,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:32:26.977883+00:00",
+      "name": "Largest",
+      "retry_after": "2026-08-01T14:32:26.977883+00:00",
+      "score": 9.0,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:32:40.266375+00:00",
+      "name": "Machine",
+      "retry_after": "2026-08-01T14:32:40.266375+00:00",
+      "score": 9.0,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:32:53.523981+00:00",
+      "name": "Nowhere",
+      "retry_after": "2026-08-01T14:32:53.523981+00:00",
+      "score": 9.0,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:33:06.811963+00:00",
+      "name": "Organic",
+      "retry_after": "2026-08-01T14:33:06.811963+00:00",
+      "score": 9.0,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:33:33.317998+00:00",
+      "name": "Records",
+      "retry_after": "2026-08-01T14:33:33.317998+00:00",
+      "score": 9.0,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:33:59.820561+00:00",
+      "name": "Signing",
+      "retry_after": "2026-08-01T14:33:59.820561+00:00",
+      "score": 9.0,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:34:13.078249+00:00",
+      "name": "Activity",
+      "pending_deletion": true,
+      "retry_after": "2026-07-31T17:34:13.078249+00:00",
+      "score": 8.996,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:34:26.803096+00:00",
+      "name": "Forgive",
+      "retry_after": "2026-08-01T14:34:26.803096+00:00",
+      "score": 8.99,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:34:40.061956+00:00",
+      "name": "Inquiry",
+      "retry_after": "2026-08-01T14:34:40.061956+00:00",
+      "score": 8.99,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:34:53.304344+00:00",
+      "name": "Seventh",
+      "retry_after": "2026-08-01T14:34:53.304344+00:00",
+      "score": 8.99,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:35:06.576555+00:00",
+      "name": "Strikes",
+      "retry_after": "2026-08-01T14:35:06.576555+00:00",
+      "score": 8.99,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:38:31.988689+00:00",
+      "name": "Mounted",
+      "pending_deletion": true,
+      "retry_after": "2026-07-31T17:38:31.988689+00:00",
+      "score": 8.664,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:38:58.873533+00:00",
+      "name": "Offense",
+      "pending_deletion": true,
+      "retry_after": "2026-07-31T17:38:58.873533+00:00",
+      "score": 8.664,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:40:47.813801+00:00",
+      "name": "Deeper",
+      "pending_deletion": true,
+      "retry_after": "2026-07-31T17:40:47.813801+00:00",
+      "score": 11.16,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:41:28.299464+00:00",
+      "name": "Aspects",
+      "pending_deletion": true,
+      "retry_after": "2026-07-31T17:41:28.299464+00:00",
+      "score": 9.24,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-07-31T14:43:31.335430+00:00",
+      "name": "Convert",
+      "pending_deletion": true,
+      "retry_after": "2026-07-31T17:43:31.335430+00:00",
+      "score": 8.654,
       "source": "common English",
       "style": "Brand word"
     }
