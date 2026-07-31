@@ -310,40 +310,59 @@ def result_status(availability: AvailabilityResult) -> str:
     return "taken"
 
 
-def _announced(queue: dict[str, object]) -> dict[str, object]:
-    raw = queue.get("announced_status")
-    if not isinstance(raw, dict):
-        raw = {}
-        # Carry over the older available-only records so names already reported
-        # free do not all announce again on the first run after this change.
-        legacy = queue.get("announced_available")
-        if isinstance(legacy, dict):
-            for key in legacy:
-                raw[key] = "available"
-        queue["announced_status"] = raw
-    return raw
+def should_announce(name: str, status: str) -> bool:
+    """Whether this result gets its own embed.
 
+    Everything except a plain taken name does. Taken results are the bulk of
+    every run and say the same thing each time, so they are counted into the
+    end-of-run summary instead.
 
-def last_announced_status(queue: dict[str, object], name: str) -> str | None:
-    """What was last reported for this name, or None if never reported."""
-    value = _announced(queue).get(name.casefold())
-    return value if isinstance(value, str) else None
-
-
-def record_announced_status(
-    queue: dict[str, object], name: str, status: str
-) -> None:
-    _announced(queue)[name.casefold()] = status
-
-
-def should_announce(queue: dict[str, object], name: str, status: str) -> bool:
-    """Only speak when something actually changed.
-
-    A name that is still taken, still suspended, or still free is not news.
-    Repeating it every pass buries the transitions, which are the only part
-    anyone can act on.
+    Watched names are the exception: someone is waiting on those specifically,
+    and a silent pass is indistinguishable from a broken one, so they always
+    report even when nothing has changed.
     """
-    return last_announced_status(queue, name) != status
+    return status != "taken" or name.casefold() in watchlist_keys()
+
+
+def build_run_summary(counts: dict[str, int], checked: int) -> dict[str, object]:
+    """One message standing in for every taken result in a run."""
+    available = counts.get("available", 0)
+    taken = counts.get("taken", 0)
+    suspended = counts.get("suspended", 0)
+    deleting = counts.get("deleting", 0)
+
+    if available:
+        title = f"{available} name{'s' if available != 1 else ''} came free this run."
+        # Says outright that the detail is elsewhere, so a quiet taken channel
+        # never looks like a failed run.
+        note = "Their embeds are in the available channel."
+        color = DISCORD_COLOR
+    else:
+        title = "No new servers available."
+        note = "Everything checked this run is still in use."
+        color = DISCORD_ERROR_COLOR
+
+    breakdown = [f"{taken} taken"]
+    if suspended:
+        breakdown.append(f"{suspended} suspended")
+    if deleting:
+        breakdown.append(f"{deleting} pending deletion")
+
+    return {
+        "username": "Minecraft Name Scout",
+        "allowed_mentions": {"parse": []},
+        "embeds": [
+            {
+                "title": title,
+                "description": (
+                    f"{note}\nChecked {checked} name"
+                    f"{'s' if checked != 1 else ''}: " + ", ".join(breakdown) + "."
+                ),
+                "color": color,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        ],
+    }
 
 
 def record_watch_check(queue: dict[str, object], name: str, now: datetime) -> None:
@@ -904,6 +923,7 @@ def main() -> None:
     webhooks = resolve_webhooks(dict(os.environ))
 
     watch_used = 0
+    counts: dict[str, int] = {}
     for slot in range(checks_per_run):
         now = datetime.now(timezone.utc)
 
@@ -951,13 +971,10 @@ def main() -> None:
             is_retry=is_retry,
             now=now,
         )
-        # Every name keeps being checked on its normal schedule. Only the
-        # message is conditional: a result that says the same thing as last
-        # time is noise, and it buries the transitions worth acting on.
         status = result_status(availability)
-        previous = last_announced_status(queue, candidate.name)
+        counts[status] = counts.get(status, 0) + 1
 
-        if should_announce(queue, candidate.name, status):
+        if should_announce(candidate.name, status):
             payload = build_payload(
                 candidate,
                 availability,
@@ -966,11 +983,9 @@ def main() -> None:
             )
             webhook_url, webhook_env = select_webhook(availability, webhooks=webhooks)
             send_to_discord(webhook_url, payload, env_name=webhook_env)
-            change = "first sighting" if previous is None else f"{previous} -> {status}"
-            print(f"Sent {candidate.name} to the {status} channel ({change}).")
-            record_announced_status(queue, candidate.name, status)
+            print(f"Sent {candidate.name} to the {status} channel.")
         else:
-            print(f"{candidate.name} is still {status}. Nothing to report.")
+            print(f"{candidate.name} is taken. Counted into the run summary.")
 
         save_retry_queue(queue_path, queue)
 
@@ -978,7 +993,15 @@ def main() -> None:
         if not is_last_check:
             time.sleep(interval_seconds)
 
-    print(f"Completed {checks_per_run} paced availability checks.")
+    # Stands in for the taken embeds that were suppressed. Sent every run,
+    # including runs where nothing was taken, so a silent channel always means
+    # the scan ran rather than that it died.
+    send_to_discord(
+        webhooks.taken,
+        build_run_summary(counts, checks_per_run),
+        env_name=TAKEN_WEBHOOK_ENV,
+    )
+    print(f"Completed {checks_per_run} paced availability checks. {counts}")
 
 
 if __name__ == "__main__":

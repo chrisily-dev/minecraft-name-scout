@@ -9,6 +9,7 @@ from bot import (
     AVAILABLE_WEBHOOK_ENV,
     AvailabilityResult,
     DELETING_WEBHOOK_ENV,
+    DISCORD_COLOR,
     DISCORD_ERROR_COLOR,
     DISCORD_PENDING_COLOR,
     DISCORD_SUSPENDED_COLOR,
@@ -25,10 +26,9 @@ from bot import (
     build_payload,
     WATCH_REFRESH,
     check_name_availability,
+    build_run_summary,
     due_watchlist_names,
     is_retry_slot,
-    last_announced_status,
-    record_announced_status,
     result_status,
     should_announce,
     load_retry_queue,
@@ -672,10 +672,10 @@ def _quiet_watchlist(queue_path) -> None:
     )
 
 
-def test_an_available_name_is_announced_once_then_stays_quiet(
+def test_an_available_name_reports_on_every_pass(
     monkeypatch, tmp_path
 ) -> None:
-    """Still-free is not news. Only the transition is worth a message."""
+    """A name staying claimable is worth seeing, unlike one staying taken."""
     queue_path = tmp_path / "retry_queue.json"
     pool = [Candidate("Freeone", 10.0, "test", "test")]
     send = Mock()
@@ -702,13 +702,18 @@ def test_an_available_name_is_announced_once_then_stays_quiet(
         main()
 
     run_once()
-    assert send.call_count == 1, "the first sighting must be announced"
+    # One result embed plus the end-of-run summary.
+    assert send.call_count == 2, "the first sighting must be announced"
 
     run_once()
-    assert send.call_count == 1, "still free, so nothing new to say"
+    # Still free, and that is worth repeating: a name staying claimable is
+    # useful to see, unlike a name staying taken.
+    assert send.call_count == 4, "an available name reports on every pass"
 
-    saved = load_retry_queue(queue_path)
-    assert saved["announced_status"]["freeone"] == "available"
+    titles = [
+        call.args[1]["embeds"][0]["title"] for call in send.call_args_list
+    ]
+    assert titles.count("Available: Freeone") == 2
 
 
 def test_result_status_names_each_outcome() -> None:
@@ -728,62 +733,55 @@ def test_result_status_names_each_outcome() -> None:
     assert result_status(AvailabilityResult(False, "x", 200, _details())) == "taken"
 
 
-def test_only_a_change_of_status_is_worth_announcing() -> None:
-    queue: dict[str, object] = {"version": 1, "items": []}
+def test_everything_except_a_plain_taken_name_gets_its_own_embed() -> None:
+    # Repeats are fine for these: seeing a name still free or still suspended
+    # is useful, and they are rare enough not to drown the channel.
+    assert should_announce("Empire", "available")
+    assert should_announce("Empire", "suspended")
+    assert should_announce("Empire", "deleting")
 
-    # Never seen before, so the first sighting always speaks.
-    assert should_announce(queue, "Empire", "taken")
-    record_announced_status(queue, "Empire", "taken")
-
-    # Still taken on the next twenty passes: silence.
-    assert not should_announce(queue, "Empire", "taken")
-
-    # Suspended is a real change and must be reported.
-    assert should_announce(queue, "Empire", "suspended")
-    record_announced_status(queue, "Empire", "suspended")
-    assert not should_announce(queue, "Empire", "suspended")
-
-    # So is being scheduled for deletion, and then freeing up.
-    assert should_announce(queue, "Empire", "deleting")
-    record_announced_status(queue, "Empire", "deleting")
-    assert should_announce(queue, "Empire", "available")
+    # Taken is the bulk of every run and goes into the summary instead.
+    assert not should_announce("Empire", "taken")
 
 
-def test_a_claimed_name_announces_again_once_it_frees_up() -> None:
-    """Free, claimed, free again must speak twice, not once."""
-    queue: dict[str, object] = {"version": 1, "items": []}
-
-    assert should_announce(queue, "Freeone", "available")
-    record_announced_status(queue, "Freeone", "available")
-    assert not should_announce(queue, "Freeone", "available")
-
-    # Someone claims it. That is a change, so it is reported.
-    assert should_announce(queue, "Freeone", "taken")
-    record_announced_status(queue, "Freeone", "taken")
-
-    # Released again months later: announced a second time.
-    assert should_announce(queue, "Freeone", "available")
+def test_a_watched_name_reports_even_when_still_taken() -> None:
+    """Silence on a watched name is indistinguishable from a broken bot."""
+    assert should_announce("Harbor", "taken")
+    assert should_announce("PrisonEscape", "taken")
+    assert should_announce("harbour", "taken"), "casing must not matter"
 
 
-def test_status_tracking_ignores_casing() -> None:
-    queue: dict[str, object] = {"version": 1, "items": []}
+def test_the_summary_says_nothing_was_free_when_nothing_was() -> None:
+    payload = build_run_summary({"taken": 78, "suspended": 2}, checked=80)
+    embed = payload["embeds"][0]
 
-    record_announced_status(queue, "Freeone", "taken")
+    assert embed["title"] == "No new servers available."
+    assert "78 taken" in embed["description"]
+    assert "2 suspended" in embed["description"]
+    assert "Checked 80 names" in embed["description"]
+    assert embed["color"] == DISCORD_ERROR_COLOR
+    # A summary must never ping.
+    assert payload["allowed_mentions"] == {"parse": []}
 
-    assert last_announced_status(queue, "FREEONE") == "taken"
-    assert not should_announce(queue, "freeONE", "taken")
+
+def test_the_summary_points_at_the_available_channel_when_there_is_news() -> None:
+    payload = build_run_summary(
+        {"available": 2, "taken": 76, "deleting": 1}, checked=79
+    )
+    embed = payload["embeds"][0]
+
+    assert embed["title"] == "2 names came free this run."
+    # Reassures that a quiet taken channel is not a failed run.
+    assert "available channel" in embed["description"]
+    assert "1 pending deletion" in embed["description"]
+    assert embed["color"] == DISCORD_COLOR
 
 
-def test_older_available_records_are_carried_over() -> None:
-    """Names already reported free must not all re-announce after the change."""
-    queue: dict[str, object] = {
-        "version": 1,
-        "items": [],
-        "announced_available": {"freeone": "2026-07-30T00:00:00+00:00"},
-    }
+def test_the_summary_gets_the_singular_right() -> None:
+    embed = build_run_summary({"available": 1, "taken": 0}, checked=1)["embeds"][0]
 
-    assert last_announced_status(queue, "Freeone") == "available"
-    assert not should_announce(queue, "Freeone", "available")
+    assert embed["title"] == "1 name came free this run."
+    assert "Checked 1 name:" in embed["description"]
 
 
 def test_a_watched_name_comes_due_after_the_refresh_window() -> None:
@@ -1120,7 +1118,7 @@ def test_main_sends_one_embed_for_each_of_twenty_unique_names(
     checked_names = [call.args[0] for call in check.call_args_list]
     assert len(checked_names) == 20
     assert len(set(checked_names)) == 20
-    assert send.call_count == 20
+    assert send.call_count == 20 + 1, "twenty results plus the run summary"
     assert all(len(call.args[1]["embeds"]) == 1 for call in send.call_args_list)
     assert sleep.call_count == 19
     sleep.assert_called_with(13.0)
@@ -1190,7 +1188,7 @@ def test_main_places_a_due_retry_in_the_final_slot(
     assert checked_names[2] == "Tycoon"
 
 
-def test_main_sends_taken_names_to_the_second_webhook(
+def test_available_names_get_embeds_and_taken_ones_get_a_summary(
     monkeypatch,
     tmp_path,
 ) -> None:
@@ -1233,10 +1231,13 @@ def test_main_sends_taken_names_to_the_second_webhook(
     used_urls = [call.args[0] for call in send.call_args_list]
     titles = [call.args[1]["embeds"][0]["title"] for call in send.call_args_list]
 
-    assert used_urls == [AVAILABLE_URL, TAKEN_URL, AVAILABLE_URL, TAKEN_URL]
-    assert [title.split(":")[0] for title in titles] == [
-        "Available",
-        "Taken",
-        "Available",
-        "Taken",
-    ]
+    # Available names get their own embed; taken ones are counted instead.
+    assert used_urls == [AVAILABLE_URL, AVAILABLE_URL, TAKEN_URL]
+    assert [t.split(":")[0] for t in titles[:2]] == ["Available", "Available"]
+
+    # The single message in the taken channel is the run summary, and it
+    # accounts for the two taken names that were not posted individually.
+    summary = titles[-1]
+    assert summary == "2 names came free this run."
+    description = send.call_args_list[-1].args[1]["embeds"][0]["description"]
+    assert "2 taken" in description
