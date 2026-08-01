@@ -324,12 +324,54 @@ def should_announce(name: str, status: str) -> bool:
     return status != "taken" or name.casefold() in watchlist_keys()
 
 
-def build_run_summary(counts: dict[str, int], checked: int) -> dict[str, object]:
+# Discord renders ANSI escapes inside an ```ansi block, which is the only way
+# to get more than the two colours a ```diff block offers. 32 green, 33 yellow,
+# 35 pink, 31 red.
+_ANSI = {
+    "available": "[1;32m",
+    "deleting": "[1;33m",
+    "suspended": "[1;35m",
+    "taken": "[1;31m",
+}
+_ANSI_RESET = "[0m"
+_SUMMARY_LABELS = {
+    "available": "AVAILABLE",
+    "deleting": "DELETING",
+    "suspended": "SUSPENDED",
+    "taken": "TAKEN",
+}
+# Discord caps an embed description at 4096 characters, and a run can check 80
+# names. Listing every taken one would blow past that and re-create the noise
+# this summary exists to remove.
+MAX_LISTED_PER_STATUS = 12
+
+
+def build_status_block(seen: dict[str, list[str]]) -> str:
+    """Render the run breakdown as a coloured ANSI code block."""
+    lines = []
+    for status in ("available", "deleting", "suspended", "taken"):
+        names = seen.get(status, [])
+        if not names:
+            continue
+
+        header = f"{_ANSI[status]}{_SUMMARY_LABELS[status]:<10}{len(names):>3}{_ANSI_RESET}"
+        lines.append(header)
+
+        # Taken names are counted, not listed. Naming all of them is exactly
+        # the noise the summary replaced.
+        if status == "taken":
+            continue
+        for name in names[:MAX_LISTED_PER_STATUS]:
+            lines.append(f"  {name}")
+        if len(names) > MAX_LISTED_PER_STATUS:
+            lines.append(f"  ... and {len(names) - MAX_LISTED_PER_STATUS} more")
+
+    return "```ansi\n" + "\n".join(lines) + "\n```"
+
+
+def build_run_summary(seen: dict[str, list[str]], checked: int) -> dict[str, object]:
     """One message standing in for every taken result in a run."""
-    available = counts.get("available", 0)
-    taken = counts.get("taken", 0)
-    suspended = counts.get("suspended", 0)
-    deleting = counts.get("deleting", 0)
+    available = len(seen.get("available", []))
 
     if available:
         title = f"{available} name{'s' if available != 1 else ''} came free this run."
@@ -342,11 +384,10 @@ def build_run_summary(counts: dict[str, int], checked: int) -> dict[str, object]
         note = "Everything checked this run is still in use."
         color = DISCORD_ERROR_COLOR
 
-    breakdown = [f"{taken} taken"]
-    if suspended:
-        breakdown.append(f"{suspended} suspended")
-    if deleting:
-        breakdown.append(f"{deleting} pending deletion")
+    description = (
+        f"{note}\nChecked {checked} name{'s' if checked != 1 else ''}.\n"
+        + build_status_block(seen)
+    )
 
     return {
         "username": "Minecraft Name Scout",
@@ -354,10 +395,7 @@ def build_run_summary(counts: dict[str, int], checked: int) -> dict[str, object]
         "embeds": [
             {
                 "title": title,
-                "description": (
-                    f"{note}\nChecked {checked} name"
-                    f"{'s' if checked != 1 else ''}: " + ", ".join(breakdown) + "."
-                ),
+                "description": description,
                 "color": color,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
@@ -923,7 +961,7 @@ def main() -> None:
     webhooks = resolve_webhooks(dict(os.environ))
 
     watch_used = 0
-    counts: dict[str, int] = {}
+    seen: dict[str, list[str]] = {}
     for slot in range(checks_per_run):
         now = datetime.now(timezone.utc)
 
@@ -972,7 +1010,7 @@ def main() -> None:
             now=now,
         )
         status = result_status(availability)
-        counts[status] = counts.get(status, 0) + 1
+        seen.setdefault(status, []).append(candidate.name)
 
         if should_announce(candidate.name, status):
             payload = build_payload(
@@ -998,10 +1036,11 @@ def main() -> None:
     # the scan ran rather than that it died.
     send_to_discord(
         webhooks.taken,
-        build_run_summary(counts, checks_per_run),
+        build_run_summary(seen, checks_per_run),
         env_name=TAKEN_WEBHOOK_ENV,
     )
-    print(f"Completed {checks_per_run} paced availability checks. {counts}")
+    tally = {status: len(names) for status, names in seen.items()}
+    print(f"Completed {checks_per_run} paced availability checks. {tally}")
 
 
 if __name__ == "__main__":

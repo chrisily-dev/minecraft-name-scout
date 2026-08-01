@@ -26,7 +26,9 @@ from bot import (
     build_payload,
     WATCH_REFRESH,
     check_name_availability,
+    MAX_LISTED_PER_STATUS,
     build_run_summary,
+    build_status_block,
     due_watchlist_names,
     is_retry_slot,
     result_status,
@@ -752,36 +754,90 @@ def test_a_watched_name_reports_even_when_still_taken() -> None:
 
 
 def test_the_summary_says_nothing_was_free_when_nothing_was() -> None:
-    payload = build_run_summary({"taken": 78, "suspended": 2}, checked=80)
+    seen = {
+        "taken": [f"Name{i:02d}" for i in range(78)],
+        "suspended": ["Zyptrik", "Nexus"],
+    }
+    payload = build_run_summary(seen, checked=80)
     embed = payload["embeds"][0]
 
     assert embed["title"] == "No new servers available."
-    assert "78 taken" in embed["description"]
-    assert "2 suspended" in embed["description"]
     assert "Checked 80 names" in embed["description"]
+    assert "TAKEN      78" in embed["description"]
+    assert "SUSPENDED   2" in embed["description"]
     assert embed["color"] == DISCORD_ERROR_COLOR
     # A summary must never ping.
     assert payload["allowed_mentions"] == {"parse": []}
 
 
 def test_the_summary_points_at_the_available_channel_when_there_is_news() -> None:
-    payload = build_run_summary(
-        {"available": 2, "taken": 76, "deleting": 1}, checked=79
-    )
+    seen = {
+        "available": ["Harbour", "Freeone"],
+        "taken": [f"Name{i:02d}" for i in range(76)],
+        "deleting": ["Complex"],
+    }
+    payload = build_run_summary(seen, checked=79)
     embed = payload["embeds"][0]
 
     assert embed["title"] == "2 names came free this run."
     # Reassures that a quiet taken channel is not a failed run.
     assert "available channel" in embed["description"]
-    assert "1 pending deletion" in embed["description"]
     assert embed["color"] == DISCORD_COLOR
 
 
 def test_the_summary_gets_the_singular_right() -> None:
-    embed = build_run_summary({"available": 1, "taken": 0}, checked=1)["embeds"][0]
+    embed = build_run_summary({"available": ["Harbour"]}, checked=1)["embeds"][0]
 
     assert embed["title"] == "1 name came free this run."
-    assert "Checked 1 name:" in embed["description"]
+    assert "Checked 1 name." in embed["description"]
+
+
+def test_the_status_block_colours_each_group_and_names_the_useful_ones() -> None:
+    seen = {
+        "available": ["Harbour"],
+        "deleting": ["Complex"],
+        "suspended": ["Zyptrik"],
+        "taken": ["Empire", "Legacy", "Nova"],
+    }
+
+    block = build_status_block(seen)
+
+    assert block.startswith("```ansi\n") and block.endswith("\n```")
+    # 32 green, 33 yellow, 35 pink, 31 red.
+    assert "[1;32mAVAILABLE" in block
+    assert "[1;33mDELETING" in block
+    assert "[1;35mSUSPENDED" in block
+    assert "[1;31mTAKEN" in block
+
+    # The three worth acting on are named.
+    assert "  Harbour" in block and "  Complex" in block and "  Zyptrik" in block
+    # Taken names are counted only. Listing them is the noise this replaced.
+    assert "Empire" not in block and "Legacy" not in block
+
+
+def test_the_status_block_truncates_rather_than_blowing_the_embed_limit() -> None:
+    seen = {"suspended": [f"Susp{i:02d}" for i in range(40)]}
+
+    block = build_status_block(seen)
+
+    assert "Susp00" in block
+    assert f"... and {40 - MAX_LISTED_PER_STATUS} more" in block
+    assert "Susp39" not in block
+    # Even a worst case has to fit Discord's 4096 character description limit.
+    worst = build_run_summary(
+        {status: [f"Name{i:03d}" for i in range(80)] for status in
+         ("available", "deleting", "suspended", "taken")},
+        checked=320,
+    )
+    assert len(worst["embeds"][0]["description"]) < 4096
+
+
+def test_an_empty_group_is_omitted_entirely() -> None:
+    block = build_status_block({"taken": ["Empire"]})
+
+    assert "AVAILABLE" not in block
+    assert "SUSPENDED" not in block
+    assert "TAKEN" in block
 
 
 def test_a_watched_name_comes_due_after_the_refresh_window() -> None:
@@ -1240,4 +1296,4 @@ def test_available_names_get_embeds_and_taken_ones_get_a_summary(
     summary = titles[-1]
     assert summary == "2 names came free this run."
     description = send.call_args_list[-1].args[1]["embeds"][0]["description"]
-    assert "2 taken" in description
+    assert "TAKEN       2" in description
