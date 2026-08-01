@@ -32,6 +32,7 @@ AVAILABLE_WEBHOOK_ENV = "DISCORD_WEBHOOK"
 TAKEN_WEBHOOK_ENV = "DISCORD_WEBHOOK_TAKEN"
 DELETING_WEBHOOK_ENV = "DISCORD_WEBHOOK_DELETING"
 SUSPENDED_WEBHOOK_ENV = "DISCORD_WEBHOOK_SUSPENDED"
+SUMMARY_WEBHOOK_ENV = "DISCORD_WEBHOOK_SUMMARY"
 MINEHUT_CREATE_URL = "https://dashboard.minehut.com/servers/create"
 MINEHUT_LOOKUP_URL = "https://api.minehut.com/server/{name}?byName=true"
 USER_AGENT = "MinecraftNameScout/3.0 (+GitHub Actions; paced availability checks)"
@@ -724,6 +725,9 @@ class Webhooks:
     taken: str
     deleting: str
     suspended: str
+    # The end-of-run summary, which is about the run rather than about any one
+    # name, so it does not belong in a results channel.
+    summary: str
 
 
 def select_webhook(
@@ -786,8 +790,22 @@ def resolve_webhooks(environ: dict[str, str]) -> Webhooks:
     else:
         validate_webhook_url(suspended, env_name=SUSPENDED_WEBHOOK_ENV)
 
+    summary = environ.get(SUMMARY_WEBHOOK_ENV, "")
+    if not summary:
+        print(
+            f"WARNING: {SUMMARY_WEBHOOK_ENV} is not set, so the run summary "
+            f"stays in the {TAKEN_WEBHOOK_ENV} channel."
+        )
+        summary = taken
+    else:
+        validate_webhook_url(summary, env_name=SUMMARY_WEBHOOK_ENV)
+
     return Webhooks(
-        available=available, taken=taken, deleting=deleting, suspended=suspended
+        available=available,
+        taken=taken,
+        deleting=deleting,
+        suspended=suspended,
+        summary=summary,
     )
 
 
@@ -1032,9 +1050,9 @@ def main() -> None:
     # including runs where nothing was taken, so a silent channel always means
     # the scan ran rather than that it died.
     send_to_discord(
-        webhooks.taken,
+        webhooks.summary,
         build_run_summary(seen, total_checks),
-        env_name=TAKEN_WEBHOOK_ENV,
+        env_name=SUMMARY_WEBHOOK_ENV,
     )
     tally = {status: len(names) for status, names in seen.items()}
     print(f"Completed {total_checks} paced availability checks. {tally}")

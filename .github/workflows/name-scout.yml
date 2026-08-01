@@ -53,6 +53,7 @@ jobs:
           DISCORD_WEBHOOK_TAKEN: ${{ secrets.DISCORD_WEBHOOK_TAKEN }}
           DISCORD_WEBHOOK_DELETING: ${{ secrets.DISCORD_WEBHOOK_DELETING }}
           DISCORD_WEBHOOK_SUSPENDED: ${{ secrets.DISCORD_WEBHOOK_SUSPENDED }}
+          DISCORD_WEBHOOK_SUMMARY: ${{ secrets.DISCORD_WEBHOOK_SUMMARY }}
           CHECKS_PER_RUN: ${{ inputs.checks_per_run || '80' }}
           REQUEST_INTERVAL_SECONDS: "13"
         run: python bot.py

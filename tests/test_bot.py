@@ -13,6 +13,7 @@ from bot import (
     DISCORD_ERROR_COLOR,
     DISCORD_PENDING_COLOR,
     DISCORD_SUSPENDED_COLOR,
+    SUMMARY_WEBHOOK_ENV,
     SUSPENDED_WEBHOOK_ENV,
     MAX_CHECKS_PER_RUN,
     ServerDetails,
@@ -265,12 +266,14 @@ TAKEN_URL = "https://discord.com/api/webhooks/example/taken"
 DELETING_URL = "https://discord.com/api/webhooks/example/deleting"
 
 SUSPENDED_URL = "https://discord.com/api/webhooks/example/suspended"
+SUMMARY_URL = "https://discord.com/api/webhooks/example/summary"
 
 ALL_WEBHOOKS = Webhooks(
     available=AVAILABLE_URL,
     taken=TAKEN_URL,
     deleting=DELETING_URL,
     suspended=SUSPENDED_URL,
+    summary=SUMMARY_URL,
 )
 
 
@@ -408,17 +411,27 @@ def test_the_embed_states_both_flags_and_the_deletion_reason() -> None:
     assert "Reason:" not in cold["Deletion Status"]
 
 
-def test_resolve_webhooks_reads_all_four_channels() -> None:
+def test_resolve_webhooks_reads_all_five_channels() -> None:
     resolved = resolve_webhooks(
         {
             AVAILABLE_WEBHOOK_ENV: AVAILABLE_URL,
             TAKEN_WEBHOOK_ENV: TAKEN_URL,
             DELETING_WEBHOOK_ENV: DELETING_URL,
             SUSPENDED_WEBHOOK_ENV: SUSPENDED_URL,
+            SUMMARY_WEBHOOK_ENV: SUMMARY_URL,
         }
     )
 
     assert resolved == ALL_WEBHOOKS
+
+
+def test_the_summary_falls_back_to_the_taken_channel(capsys) -> None:
+    resolved = resolve_webhooks(
+        {AVAILABLE_WEBHOOK_ENV: AVAILABLE_URL, TAKEN_WEBHOOK_ENV: TAKEN_URL}
+    )
+
+    assert resolved.summary == TAKEN_URL
+    assert SUMMARY_WEBHOOK_ENV in capsys.readouterr().out
 
 
 def test_suspended_falls_back_to_the_taken_channel(capsys) -> None:
@@ -451,7 +464,7 @@ def test_resolve_webhooks_falls_back_when_the_split_is_unset(capsys) -> None:
     resolved = resolve_webhooks({AVAILABLE_WEBHOOK_ENV: AVAILABLE_URL})
 
     assert resolved == Webhooks(
-        AVAILABLE_URL, AVAILABLE_URL, AVAILABLE_URL, AVAILABLE_URL
+        AVAILABLE_URL, AVAILABLE_URL, AVAILABLE_URL, AVAILABLE_URL, AVAILABLE_URL
     )
     assert TAKEN_WEBHOOK_ENV in capsys.readouterr().out
 
