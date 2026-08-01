@@ -27,6 +27,7 @@ from bot import (
     WATCH_REFRESH,
     check_name_availability,
     MAX_LISTED_PER_STATUS,
+    MAX_WATCH_CHECKS_PER_RUN,
     build_run_summary,
     build_status_block,
     due_watchlist_names,
@@ -44,7 +45,6 @@ from bot import (
     send_to_discord,
     update_retry_queue,
     validate_rate_settings,
-    watch_slots,
 )
 from name_generator import WATCHLIST_NAMES, Candidate
 
@@ -888,12 +888,11 @@ def test_a_watched_name_is_never_parked_in_the_retry_queue() -> None:
     assert "Watched name" in status
 
 
-def test_watched_names_cannot_swallow_a_whole_batch() -> None:
-    # Six watched names must not starve the ordinary rotation.
-    assert watch_slots(80) == 20
-    assert watch_slots(8) == 2
-    assert watch_slots(3) == 1
-    assert watch_slots(1) == 1
+def test_watched_names_are_capped_so_a_run_cannot_grow_without_bound() -> None:
+    # They no longer compete with the batch, so the cap is purely a ceiling on
+    # how long a run may stretch: 25 extra checks is about 5 minutes at 13s.
+    assert MAX_WATCH_CHECKS_PER_RUN == 25
+    assert (MAX_WATCH_CHECKS_PER_RUN + MAX_CHECKS_PER_RUN) * 13 / 60 < 30
 
 
 def test_main_checks_due_watched_names_first(monkeypatch, tmp_path) -> None:
@@ -920,21 +919,19 @@ def test_main_checks_due_watched_names_first(monkeypatch, tmp_path) -> None:
 
     checked = [call.args[0] for call in check.call_args_list]
     watched = {name.casefold() for name in WATCHLIST_NAMES}
-    leading = [name for name in checked[:5] if name.casefold() in watched]
 
-    # Every watched name is due on a fresh queue, so they lead the batch.
-    assert len(leading) == 5
-    # And the cap leaves room for ordinary names.
-    assert any(name.casefold() not in watched for name in checked)
+    # Watched names run in addition to the batch, not out of it, so the batch
+    # still covers its full twenty names.
+    assert len(checked) == len(watched) + 20
+    assert [name.casefold() for name in checked[: len(watched)]] == [
+        name.casefold() for name in checked[: len(watched)]
+    ]
+    assert {name.casefold() for name in checked[: len(watched)]} == watched
+    assert all(name.casefold() not in watched for name in checked[len(watched) :])
 
-    # The cap admits five of the six, and the leftover rolls into the next
-    # batch rather than being dropped.
+    # Every watched name was recorded, so none rolls over to the next run.
     saved = load_retry_queue(queue_path)
-    assert set(saved["watch_checks"]) == {
-        name for name in watched if name in saved["watch_checks"]
-    }
-    assert len(saved["watch_checks"]) == watch_slots(20)
-    assert set(saved["watch_checks"]) < watched
+    assert set(saved["watch_checks"]) == watched
 
 
 def test_404_means_available_with_exactly_one_lookup() -> None:
@@ -1146,6 +1143,8 @@ def test_main_sends_one_embed_for_each_of_twenty_unique_names(
     )
     send = Mock()
     sleep = Mock()
+    # Watched names run on top of the batch; this test counts the batch alone.
+    _quiet_watchlist(tmp_path / "retry_queue.json")
 
     monkeypatch.setattr("bot.build_candidate_pool", lambda: pool)
     monkeypatch.setattr("bot.check_name_availability", check)
@@ -1261,6 +1260,8 @@ def test_available_names_get_embeds_and_taken_ones_get_a_summary(
         ]
     )
     send = Mock()
+    # Watched names now run on top of the batch and would eat these results.
+    _quiet_watchlist(tmp_path / "retry_queue.json")
 
     monkeypatch.setattr("bot.build_candidate_pool", lambda: pool)
     monkeypatch.setattr("bot.check_name_availability", check)

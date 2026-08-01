@@ -53,6 +53,10 @@ MIN_REQUEST_INTERVAL_SECONDS = 13.0
 # needs one retry to leave the queue, so in a steady state roughly half of all
 # checks are retries.
 RETRY_SLOT_SHARE = 0.5
+# Watched names run on top of the batch, so this is the ceiling on how far a
+# run may stretch. At 13 seconds a check, 25 extra names is about 5 minutes on
+# top of the batch, comfortably inside the workflow timeout.
+MAX_WATCH_CHECKS_PER_RUN = 25
 
 # Discord user IDs to ping when a specific name is checked, keyed by the
 # casefolded name. Every name here also lives in
@@ -270,16 +274,6 @@ def select_check_target(
 def watchlist_keys() -> set[str]:
     """Casefolded names that are on the hourly watch cadence."""
     return {name.casefold() for name in WATCHLIST_NAMES}
-
-
-def watch_slots(checks_per_run: int) -> int:
-    """How many slots in one batch may go to watched names.
-
-    Capped so a backlog of watched names cannot swallow a whole batch and stall
-    the ordinary rotation. At the usual batch size this is far more than the
-    handful of names that actually come due each hour.
-    """
-    return max(1, checks_per_run // 4)
 
 
 def due_watchlist_names(queue: dict[str, object], now: datetime) -> list[str]:
@@ -960,22 +954,24 @@ def main() -> None:
     queue = load_retry_queue(queue_path)
     webhooks = resolve_webhooks(dict(os.environ))
 
-    watch_used = 0
+    # Watched names are checked in addition to the batch, not out of it. They
+    # are a handful of specific requests, and spending the batch on them would
+    # quietly shrink how much of the pool each run actually covers.
+    watch_targets = due_watchlist_names(queue, datetime.now(timezone.utc))[
+        :MAX_WATCH_CHECKS_PER_RUN
+    ]
+    total_checks = len(watch_targets) + checks_per_run
+    print(
+        f"Checking {len(watch_targets)} watched name(s) plus a batch of "
+        f"{checks_per_run}."
+    )
+
     seen: dict[str, list[str]] = {}
-    for slot in range(checks_per_run):
+    for index in range(total_checks):
         now = datetime.now(timezone.utc)
 
-        # Watched names come first and are never held back by the retry queue,
-        # so someone waiting on a name hears within the refresh window rather
-        # than whenever the rotation happens to reach it.
-        due_watch = [
-            name
-            for name in due_watchlist_names(queue, now)
-            if name.casefold() not in checked_names
-        ]
-        if due_watch and watch_used < watch_slots(checks_per_run):
-            watch_used += 1
-            name = due_watch[0]
+        if index < len(watch_targets):
+            name = watch_targets[index]
             candidate = next(
                 (item for item in pool if item.name.casefold() == name.casefold()),
                 Candidate(name, 0.0, "Watchlist", "watched name"),
@@ -983,20 +979,21 @@ def main() -> None:
             is_retry = False
             kind = "watch"
         else:
+            slot = index - len(watch_targets)
             candidate, is_retry = select_check_target(
                 selection_number(run_number, checks_per_run, slot),
                 pool,
                 queue,
                 now,
-                # Watched names are handled above; letting the ordinary
-                # rotation pick one too would waste a slot on a duplicate.
+                # Watched names ran above; letting the rotation pick one too
+                # would spend a batch slot re-checking it.
                 excluded_names=checked_names | watchlist_keys(),
                 allow_due_retry=is_retry_slot(slot, checks_per_run),
             )
             kind = "retry" if is_retry else "new"
 
         checked_names.add(candidate.name.casefold())
-        print(f"Checking {slot + 1}/{checks_per_run} ({kind}): {candidate.name}")
+        print(f"Checking {index + 1}/{total_checks} ({kind}): {candidate.name}")
 
         availability = check_name_availability(candidate.name)
         print(availability.reason)
@@ -1027,7 +1024,7 @@ def main() -> None:
 
         save_retry_queue(queue_path, queue)
 
-        is_last_check = slot == checks_per_run - 1
+        is_last_check = index == total_checks - 1
         if not is_last_check:
             time.sleep(interval_seconds)
 
@@ -1036,11 +1033,11 @@ def main() -> None:
     # the scan ran rather than that it died.
     send_to_discord(
         webhooks.taken,
-        build_run_summary(seen, checks_per_run),
+        build_run_summary(seen, total_checks),
         env_name=TAKEN_WEBHOOK_ENV,
     )
     tally = {status: len(names) for status, names in seen.items()}
-    print(f"Completed {checks_per_run} paced availability checks. {tally}")
+    print(f"Completed {total_checks} paced availability checks. {tally}")
 
 
 if __name__ == "__main__":
