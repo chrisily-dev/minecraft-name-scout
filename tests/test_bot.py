@@ -30,6 +30,9 @@ from bot import (
     MAX_LISTED_PER_STATUS,
     MAX_WATCH_CHECKS_PER_RUN,
     build_run_summary,
+    clear_deletion_pinged,
+    mark_deletion_pinged,
+    was_deletion_pinged,
     build_status_block,
     due_watchlist_names,
     is_retry_slot,
@@ -104,18 +107,48 @@ def test_a_taken_name_never_pings_a_watcher_either() -> None:
     assert payload["allowed_mentions"] == {"parse": []}
 
 
-def test_a_watcher_hears_when_their_name_is_marked_for_deletion() -> None:
+def test_a_watcher_hears_once_when_their_name_is_marked_for_deletion() -> None:
     """The advance warning is the whole point of watching a name."""
     watcher = NAME_WATCHERS["harbor"][0]
     pending = AvailabilityResult(
         False, "Already registered.", 200, _details(deleting=True)
     )
+    candidate = Candidate("Harbor", 12.0, "Watchlist", "test")
 
-    payload = build_payload(Candidate("Harbor", 12.0, "Watchlist", "test"), pending)
+    first = build_payload(candidate, pending, ping_deletion=True)
+    assert first["content"] == f"<@{watcher}>"
+    assert first["allowed_mentions"] == {"parse": [], "users": [watcher]}
 
-    assert payload["content"] == f"<@{watcher}>"
-    # The role is not pinged: it only hears about names that are open now.
-    assert payload["allowed_mentions"] == {"parse": [], "users": [watcher]}
+    # The name is rechecked every three hours while it stays flagged, and the
+    # embed still posts, but pinging on each one would be a ping every three
+    # hours for as long as the deletion is pending.
+    repeat = build_payload(candidate, pending, ping_deletion=False)
+    assert "content" not in repeat
+    assert repeat["allowed_mentions"] == {"parse": []}
+    assert repeat["embeds"][0]["title"] == "Taken: Harbor"
+
+
+def test_the_deletion_ping_is_remembered_and_forgotten() -> None:
+    now = datetime(2026, 8, 1, 12, 0, tzinfo=timezone.utc)
+    queue: dict[str, object] = {"version": 1, "items": []}
+
+    assert not was_deletion_pinged(queue, "Harbor")
+    mark_deletion_pinged(queue, "Harbor", now)
+    assert was_deletion_pinged(queue, "HARBOR"), "casing must not matter"
+
+    # Deletion called off, or the name freed up: a later re-flag pings again.
+    clear_deletion_pinged(queue, "harbor")
+    assert not was_deletion_pinged(queue, "Harbor")
+
+
+def test_availability_still_pings_every_time(available: AvailabilityResult) -> None:
+    """Only the deletion ping is once. Free is worth hearing every pass."""
+    watcher = NAME_WATCHERS["harbor"][0]
+    candidate = Candidate("Harbor", 12.0, "Watchlist", "test")
+
+    for _ in range(3):
+        payload = build_payload(candidate, available)
+        assert payload["content"] == f"<@{watcher}>"
 
 
 def test_an_unwatched_name_marked_for_deletion_pings_nobody() -> None:

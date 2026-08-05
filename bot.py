@@ -400,6 +400,32 @@ def build_run_summary(seen: dict[str, list[str]], checked: int) -> dict[str, obj
     }
 
 
+def _deletion_pings(queue: dict[str, object]) -> dict[str, object]:
+    raw = queue.get("deletion_pinged")
+    if not isinstance(raw, dict):
+        raw = {}
+        queue["deletion_pinged"] = raw
+    return raw
+
+
+def was_deletion_pinged(queue: dict[str, object], name: str) -> bool:
+    """Whether the watcher has already been told this name is being deleted."""
+    return name.casefold() in _deletion_pings(queue)
+
+
+def mark_deletion_pinged(queue: dict[str, object], name: str, now: datetime) -> None:
+    _deletion_pings(queue)[name.casefold()] = now.isoformat()
+
+
+def clear_deletion_pinged(queue: dict[str, object], name: str) -> None:
+    """Forget the ping so a name flagged again later pings again.
+
+    Called whenever a name is not currently marked for deletion, including
+    when the deletion is called off.
+    """
+    _deletion_pings(queue).pop(name.casefold(), None)
+
+
 def record_watch_check(queue: dict[str, object], name: str, now: datetime) -> None:
     raw = queue.get("watch_checks")
     if not isinstance(raw, dict):
@@ -669,11 +695,16 @@ def build_payload(
     *,
     is_retry: bool = False,
     queue_status: str = "No retry needed.",
+    ping_deletion: bool = False,
 ) -> dict[str, object]:
+    # A deletion-marked name is rechecked every three hours and posts an embed
+    # each time. Pinging on all of them would be a ping every three hours for
+    # as long as the deletion is pending, so the caller decides and only says
+    # yes the first time.
     content, allowed_mentions = build_mentions(
         candidate.name,
         available=availability.available,
-        pending_deletion=is_pending_deletion(availability),
+        pending_deletion=ping_deletion,
     )
     payload: dict[str, object] = {
         "username": "Minecraft Name Scout",
@@ -1029,12 +1060,24 @@ def main() -> None:
         status = result_status(availability)
         seen.setdefault(status, []).append(candidate.name)
 
+        # Ping a watcher once when their name starts being deleted, not on
+        # every three-hourly recheck while it stays that way. Availability is
+        # unaffected and still pings each time it is seen free.
+        pending = is_pending_deletion(availability)
+        ping_deletion = pending and not was_deletion_pinged(queue, candidate.name)
+        if pending:
+            if ping_deletion:
+                mark_deletion_pinged(queue, candidate.name, now)
+        else:
+            clear_deletion_pinged(queue, candidate.name)
+
         if should_announce(candidate.name, status):
             payload = build_payload(
                 candidate,
                 availability,
                 is_retry=is_retry,
                 queue_status=queue_status,
+                ping_deletion=ping_deletion,
             )
             webhook_url, webhook_env = select_webhook(availability, webhooks=webhooks)
             send_to_discord(webhook_url, payload, env_name=webhook_env)
