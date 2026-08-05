@@ -69,12 +69,19 @@ def test_payload_uses_one_embed(
     assert len(payload["embeds"]) == 1
     assert "`Tycoon`" in payload["embeds"][0]["description"]
     assert payload["embeds"][0]["title"] == "Available: Tycoon"
-    # An unwatched but available name pings the role, and nothing else.
-    assert payload["content"] == f"<@&{ALWAYS_NOTIFY_ROLE}>"
-    assert payload["allowed_mentions"] == {
-        "parse": [],
-        "roles": [ALWAYS_NOTIFY_ROLE],
-    }
+    # The role ping is off, and nobody watches Tycoon, so nothing is pinged.
+    assert "content" not in payload
+    assert payload["allowed_mentions"] == {"parse": []}
+
+
+def test_the_role_ping_is_off() -> None:
+    """It fired on every available name, which is noise rather than a signal."""
+    assert ALWAYS_NOTIFY_ROLE == ""
+
+    content, allowed = build_mentions("Tycoon", available=True)
+
+    assert content == ""
+    assert "roles" not in allowed
 
 
 def test_a_taken_name_never_pings_the_role(candidate: Candidate) -> None:
@@ -135,19 +142,17 @@ def test_no_embed_carries_a_footer() -> None:
         assert "timestamp" in embed
 
 
-def test_available_watched_name_pings_the_role_and_the_watcher(
+def test_an_available_watched_name_pings_only_its_watcher(
     available: AvailabilityResult,
 ) -> None:
     watcher = NAME_WATCHERS["harbor"][0]
 
     payload = build_payload(Candidate("Harbor", 12.0, "Watchlist", "test"), available)
 
-    assert payload["content"] == f"<@&{ALWAYS_NOTIFY_ROLE}> <@{watcher}>"
-    assert payload["allowed_mentions"] == {
-        "parse": [],
-        "roles": [ALWAYS_NOTIFY_ROLE],
-        "users": [watcher],
-    }
+    # Watchers still hear about their own names; the role no longer hears
+    # about everyone else's.
+    assert payload["content"] == f"<@{watcher}>"
+    assert payload["allowed_mentions"] == {"parse": [], "users": [watcher]}
 
 
 def test_watchers_are_matched_regardless_of_casing() -> None:

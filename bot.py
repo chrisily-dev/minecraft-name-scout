@@ -78,8 +78,10 @@ NAME_WATCHERS: dict[str, tuple[str, ...]] = {
     "state": ("615580983881760787",),
 }
 
-# Pinged on every result. Set to "" to stop the per-message role ping.
-ALWAYS_NOTIFY_ROLE = "1531794005107671081"
+# Off. It fired on every available name, which is a ping per result rather than
+# a ping worth reading. Individual watchers in NAME_WATCHERS still get theirs.
+# Put the role ID back here to turn it on again.
+ALWAYS_NOTIFY_ROLE = ""
 
 
 @dataclass(frozen=True, slots=True)
