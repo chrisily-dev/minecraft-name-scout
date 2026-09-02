@@ -5250,7 +5250,6 @@
     "pension": "2026-08-05T09:18:42.821060+00:00",
     "perception": "2026-08-05T11:40:37.079989+00:00",
     "permission": "2026-08-05T10:27:02.670292+00:00",
-    "points": "2026-08-05T16:01:48.048791+00:00",
     "possession": "2026-08-05T14:44:53.562397+00:00",
     "prices": "2026-08-05T08:39:07.108983+00:00",
     "priority": "2026-08-05T09:03:01.867198+00:00",
@@ -5293,246 +5292,6 @@
     "yards": "2026-08-05T11:09:14.187823+00:00"
   },
   "items": [
-    {
-      "first_checked_at": "2026-09-01T12:25:24.278560+00:00",
-      "name": "Waste",
-      "retry_after": "2026-09-02T12:25:24.278560+00:00",
-      "score": 12.116,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:25:37.432273+00:00",
-      "name": "Weird",
-      "retry_after": "2026-09-02T12:25:37.432273+00:00",
-      "score": 12.116,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:25:50.600905+00:00",
-      "name": "Bass",
-      "retry_after": "2026-09-02T12:25:50.600905+00:00",
-      "score": 12.112,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:26:03.767924+00:00",
-      "name": "Butt",
-      "retry_after": "2026-09-02T12:26:03.767924+00:00",
-      "score": 12.112,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:26:16.914064+00:00",
-      "name": "Cold",
-      "retry_after": "2026-09-02T12:26:16.914064+00:00",
-      "score": 12.112,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:26:30.145302+00:00",
-      "name": "Dual",
-      "retry_after": "2026-09-02T12:26:30.145302+00:00",
-      "score": 12.112,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:26:43.345605+00:00",
-      "name": "Gulf",
-      "retry_after": "2026-09-02T12:26:43.345605+00:00",
-      "score": 12.112,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:26:56.538530+00:00",
-      "name": "Logo",
-      "retry_after": "2026-09-02T12:26:56.538530+00:00",
-      "score": 12.112,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:27:09.694168+00:00",
-      "name": "Odds",
-      "retry_after": "2026-09-02T12:27:09.694168+00:00",
-      "score": 12.112,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:27:22.881544+00:00",
-      "name": "Pump",
-      "retry_after": "2026-09-02T12:27:22.881544+00:00",
-      "score": 12.112,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:27:36.071371+00:00",
-      "name": "Slip",
-      "retry_after": "2026-09-02T12:27:36.071371+00:00",
-      "score": 12.112,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:27:49.418958+00:00",
-      "name": "Amazon",
-      "retry_after": "2026-09-02T12:27:49.418958+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:28:02.585349+00:00",
-      "name": "Beauty",
-      "retry_after": "2026-09-02T12:28:02.585349+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:28:15.785745+00:00",
-      "name": "Buying",
-      "retry_after": "2026-09-02T12:28:15.785745+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:28:29.214735+00:00",
-      "name": "Deputy",
-      "retry_after": "2026-09-02T12:28:29.214735+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:28:42.736480+00:00",
-      "name": "Driver",
-      "retry_after": "2026-09-02T12:28:42.736480+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:28:55.930610+00:00",
-      "name": "Mexico",
-      "retry_after": "2026-09-02T12:28:55.930610+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:29:09.093634+00:00",
-      "name": "Paying",
-      "retry_after": "2026-09-02T12:29:09.093634+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:29:22.240977+00:00",
-      "name": "Surely",
-      "retry_after": "2026-09-02T12:29:22.240977+00:00",
-      "score": 12.11,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:29:35.395626+00:00",
-      "name": "Boxes",
-      "retry_after": "2026-09-02T12:29:35.395626+00:00",
-      "score": 12.106,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:29:48.556282+00:00",
-      "name": "Kills",
-      "retry_after": "2026-09-02T12:29:48.556282+00:00",
-      "score": 12.106,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:30:01.723935+00:00",
-      "name": "Rally",
-      "retry_after": "2026-09-02T12:30:01.723935+00:00",
-      "score": 12.106,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:30:15.314645+00:00",
-      "name": "Texts",
-      "retry_after": "2026-09-02T12:30:15.314645+00:00",
-      "score": 12.106,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:30:28.465648+00:00",
-      "name": "July",
-      "retry_after": "2026-09-02T12:30:28.465648+00:00",
-      "score": 12.102,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:30:41.648601+00:00",
-      "name": "Keen",
-      "retry_after": "2026-09-02T12:30:41.648601+00:00",
-      "score": 12.102,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:30:54.822345+00:00",
-      "name": "King",
-      "retry_after": "2026-09-02T12:30:54.822345+00:00",
-      "score": 12.102,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:31:07.972403+00:00",
-      "name": "Visa",
-      "retry_after": "2026-09-02T12:31:07.972403+00:00",
-      "score": 12.102,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:31:21.141527+00:00",
-      "name": "Fits",
-      "retry_after": "2026-09-02T12:31:21.141527+00:00",
-      "score": 12.088,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:31:34.304943+00:00",
-      "name": "Isis",
-      "retry_after": "2026-09-02T12:31:34.304943+00:00",
-      "score": 12.088,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-01T12:31:47.452785+00:00",
-      "name": "Mars",
-      "retry_after": "2026-09-02T12:31:47.452785+00:00",
-      "score": 12.088,
-      "source": "common English",
-      "style": "Brand word"
-    },
     {
       "first_checked_at": "2026-09-01T12:32:00.603441+00:00",
       "name": "Pain",
@@ -24446,96 +24205,6 @@
       "style": "Brand word"
     },
     {
-      "first_checked_at": "2026-09-02T09:28:51.508751+00:00",
-      "name": "Owns",
-      "pending_deletion": true,
-      "retry_after": "2026-09-02T12:28:51.508751+00:00",
-      "score": 11.944,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-02T09:29:44.752589+00:00",
-      "name": "Slowly",
-      "pending_deletion": true,
-      "retry_after": "2026-09-02T12:29:44.752589+00:00",
-      "score": 12.302,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-02T09:30:11.411247+00:00",
-      "name": "Points",
-      "pending_deletion": true,
-      "retry_after": "2026-09-02T12:30:11.411247+00:00",
-      "score": 10.608,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-02T09:30:38.052015+00:00",
-      "name": "Convince",
-      "pending_deletion": true,
-      "retry_after": "2026-09-02T12:30:38.052015+00:00",
-      "score": 8.214,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-02T09:30:51.487587+00:00",
-      "name": "Display",
-      "pending_deletion": true,
-      "retry_after": "2026-09-02T12:30:51.487587+00:00",
-      "score": 9.902,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-02T09:31:05.035177+00:00",
-      "name": "Surgery",
-      "pending_deletion": true,
-      "retry_after": "2026-09-02T12:31:05.035177+00:00",
-      "score": 9.902,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-02T09:31:18.624614+00:00",
-      "name": "Markets",
-      "pending_deletion": true,
-      "retry_after": "2026-09-02T12:31:18.624614+00:00",
-      "score": 9.854,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-02T09:31:32.231382+00:00",
-      "name": "Estimate",
-      "pending_deletion": true,
-      "retry_after": "2026-09-02T12:31:32.231382+00:00",
-      "score": 7.936,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-02T09:31:45.930349+00:00",
-      "name": "Discuss",
-      "pending_deletion": true,
-      "retry_after": "2026-09-02T12:31:45.930349+00:00",
-      "score": 9.576,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-09-02T09:31:59.382474+00:00",
-      "name": "Methods",
-      "pending_deletion": true,
-      "retry_after": "2026-09-02T12:31:59.382474+00:00",
-      "score": 9.528,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
       "first_checked_at": "2026-09-02T09:32:12.792066+00:00",
       "name": "Options",
       "pending_deletion": true,
@@ -31063,6 +30732,311 @@
       "pending_deletion": true,
       "retry_after": "2026-09-02T21:02:28.623944+00:00",
       "score": 11.568,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:11:54.104785+00:00",
+      "name": "Brother",
+      "retry_after": "2026-09-03T18:11:54.104785+00:00",
+      "score": 8.496,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:12:07.251297+00:00",
+      "name": "Coastal",
+      "retry_after": "2026-09-03T18:12:07.251297+00:00",
+      "score": 8.496,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:12:20.345046+00:00",
+      "name": "Colored",
+      "retry_after": "2026-09-03T18:12:20.345046+00:00",
+      "score": 8.496,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:12:33.441058+00:00",
+      "name": "Customs",
+      "retry_after": "2026-09-03T18:12:33.441058+00:00",
+      "score": 8.496,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:12:46.540169+00:00",
+      "name": "Distant",
+      "retry_after": "2026-09-03T18:12:46.540169+00:00",
+      "score": 8.496,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:12:59.636097+00:00",
+      "name": "Emotion",
+      "retry_after": "2026-09-03T18:12:59.636097+00:00",
+      "score": 8.496,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:13:25.995496+00:00",
+      "name": "Filming",
+      "retry_after": "2026-09-03T18:13:25.995496+00:00",
+      "score": 8.496,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:13:39.104837+00:00",
+      "name": "Glasgow",
+      "retry_after": "2026-09-03T18:13:39.104837+00:00",
+      "score": 8.496,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:14:05.563797+00:00",
+      "name": "Natural",
+      "retry_after": "2026-09-03T18:14:05.563797+00:00",
+      "score": 8.496,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:14:18.663843+00:00",
+      "name": "October",
+      "retry_after": "2026-09-03T18:14:18.663843+00:00",
+      "score": 8.496,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:14:45.096086+00:00",
+      "name": "Spotted",
+      "retry_after": "2026-09-03T18:14:45.096086+00:00",
+      "score": 8.496,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:14:58.200862+00:00",
+      "name": "Tobacco",
+      "retry_after": "2026-09-03T18:14:58.200862+00:00",
+      "score": 8.496,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:15:11.500601+00:00",
+      "name": "Trapped",
+      "retry_after": "2026-09-03T18:15:11.500601+00:00",
+      "score": 8.496,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:15:24.785685+00:00",
+      "name": "Actively",
+      "retry_after": "2026-09-03T18:15:24.785685+00:00",
+      "score": 8.492,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:15:51.330543+00:00",
+      "name": "Attached",
+      "retry_after": "2026-09-03T18:15:51.330543+00:00",
+      "score": 8.488,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:16:04.667480+00:00",
+      "name": "Carolina",
+      "retry_after": "2026-09-03T18:16:04.667480+00:00",
+      "score": 8.488,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:16:17.754143+00:00",
+      "name": "Function",
+      "retry_after": "2026-09-03T18:16:17.754143+00:00",
+      "score": 8.488,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:16:30.878627+00:00",
+      "name": "Progress",
+      "retry_after": "2026-09-03T18:16:30.878627+00:00",
+      "score": 8.488,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:16:43.969678+00:00",
+      "name": "Shipping",
+      "retry_after": "2026-09-03T18:16:43.969678+00:00",
+      "score": 8.488,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:16:57.294753+00:00",
+      "name": "Shooting",
+      "retry_after": "2026-09-03T18:16:57.294753+00:00",
+      "score": 8.488,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:17:10.410593+00:00",
+      "name": "Suffered",
+      "retry_after": "2026-09-03T18:17:10.410593+00:00",
+      "score": 8.488,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:17:23.531388+00:00",
+      "name": "Currency",
+      "retry_after": "2026-09-03T18:17:23.531388+00:00",
+      "score": 8.478,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:17:36.633211+00:00",
+      "name": "Delivered",
+      "retry_after": "2026-09-03T18:17:36.633211+00:00",
+      "score": 8.478,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:18:43.172231+00:00",
+      "name": "Placing",
+      "retry_after": "2026-09-03T18:18:43.172231+00:00",
+      "score": 8.448,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:19:09.653845+00:00",
+      "name": "Engineer",
+      "retry_after": "2026-09-03T18:19:09.653845+00:00",
+      "score": 8.44,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:19:22.773053+00:00",
+      "name": "Graduate",
+      "retry_after": "2026-09-03T18:19:22.773053+00:00",
+      "score": 8.44,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:19:35.887787+00:00",
+      "name": "Memories",
+      "retry_after": "2026-09-03T18:19:35.887787+00:00",
+      "score": 8.44,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:19:48.981485+00:00",
+      "name": "Shoulder",
+      "retry_after": "2026-09-03T18:19:48.981485+00:00",
+      "score": 8.44,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:23:32.618482+00:00",
+      "name": "Owns",
+      "pending_deletion": true,
+      "retry_after": "2026-09-02T21:23:32.618482+00:00",
+      "score": 11.944,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:24:39.151778+00:00",
+      "name": "Slowly",
+      "pending_deletion": true,
+      "retry_after": "2026-09-02T21:24:39.151778+00:00",
+      "score": 12.302,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:25:58.305263+00:00",
+      "name": "Convince",
+      "pending_deletion": true,
+      "retry_after": "2026-09-02T21:25:58.305263+00:00",
+      "score": 8.214,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:26:24.735820+00:00",
+      "name": "Display",
+      "pending_deletion": true,
+      "retry_after": "2026-09-02T21:26:24.735820+00:00",
+      "score": 9.902,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:26:51.297371+00:00",
+      "name": "Surgery",
+      "pending_deletion": true,
+      "retry_after": "2026-09-02T21:26:51.297371+00:00",
+      "score": 9.902,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:27:17.876409+00:00",
+      "name": "Markets",
+      "pending_deletion": true,
+      "retry_after": "2026-09-02T21:27:17.876409+00:00",
+      "score": 9.854,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:27:44.399228+00:00",
+      "name": "Estimate",
+      "pending_deletion": true,
+      "retry_after": "2026-09-02T21:27:44.399228+00:00",
+      "score": 7.936,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:28:11.032341+00:00",
+      "name": "Discuss",
+      "pending_deletion": true,
+      "retry_after": "2026-09-02T21:28:11.032341+00:00",
+      "score": 9.576,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-02T18:28:37.435039+00:00",
+      "name": "Methods",
+      "pending_deletion": true,
+      "retry_after": "2026-09-02T21:28:37.435039+00:00",
+      "score": 9.528,
       "source": "common English",
       "style": "Brand word"
     }
