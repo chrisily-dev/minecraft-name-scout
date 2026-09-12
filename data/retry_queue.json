@@ -27637,22 +27637,374 @@
       "score": 6.672,
       "source": "common English",
       "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:29:29.311838+00:00",
+      "name": "Unnecessary",
+      "retry_after": "2026-09-13T14:29:29.311838+00:00",
+      "score": 6.622,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:29:42.418752+00:00",
+      "name": "Business",
+      "retry_after": "2026-09-13T14:29:42.418752+00:00",
+      "score": 6.616,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:29:55.530086+00:00",
+      "name": "Intervention",
+      "retry_after": "2026-09-13T14:29:55.530086+00:00",
+      "score": 6.614,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:30:08.921146+00:00",
+      "name": "Connections",
+      "retry_after": "2026-09-13T14:30:08.921146+00:00",
+      "score": 6.608,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:30:22.050621+00:00",
+      "name": "Instruments",
+      "retry_after": "2026-09-13T14:30:22.050621+00:00",
+      "score": 6.608,
+      "source": "common English",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:30:35.202753+00:00",
+      "name": "Nova",
+      "retry_after": "2026-09-13T14:30:35.202753+00:00",
+      "score": 27.29,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:30:48.307304+00:00",
+      "name": "Empire",
+      "retry_after": "2026-09-13T14:30:48.307304+00:00",
+      "score": 27.236,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:31:01.425721+00:00",
+      "name": "Legacy",
+      "retry_after": "2026-09-13T14:31:01.425721+00:00",
+      "score": 27.178,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:31:14.528550+00:00",
+      "name": "Haven",
+      "retry_after": "2026-09-13T14:31:14.528550+00:00",
+      "score": 27.102,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:31:27.630402+00:00",
+      "name": "BoxPvP",
+      "retry_after": "2026-09-13T14:31:27.630402+00:00",
+      "score": 22.64,
+      "source": "established category",
+      "style": "Category name"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:31:40.728892+00:00",
+      "name": "Quest",
+      "retry_after": "2026-09-13T14:31:40.728892+00:00",
+      "score": 27.088,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:31:53.849701+00:00",
+      "name": "Nexus",
+      "retry_after": "2026-09-13T14:31:53.849701+00:00",
+      "score": 26.79,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:32:06.956914+00:00",
+      "name": "Vortex",
+      "retry_after": "2026-09-13T14:32:06.956914+00:00",
+      "score": 26.64,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:32:20.150044+00:00",
+      "name": "Realm",
+      "retry_after": "2026-09-13T14:32:20.150044+00:00",
+      "score": 26.584,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:32:33.243681+00:00",
+      "name": "GenPvP",
+      "retry_after": "2026-09-13T14:32:33.243681+00:00",
+      "score": 22.29,
+      "source": "established category",
+      "style": "Category name"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:32:46.389212+00:00",
+      "name": "Titan",
+      "retry_after": "2026-09-13T14:32:46.389212+00:00",
+      "score": 26.44,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:32:59.492840+00:00",
+      "name": "Tycoon",
+      "retry_after": "2026-09-13T14:32:59.492840+00:00",
+      "score": 26.29,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:33:12.645627+00:00",
+      "name": "Gmini",
+      "retry_after": "2026-09-13T14:33:12.645627+00:00",
+      "score": 21.94,
+      "source": "owner-provided example",
+      "style": "Requested example"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:33:25.745612+00:00",
+      "name": "Flat",
+      "retry_after": "2026-09-13T14:33:25.745612+00:00",
+      "score": 23.332,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:33:38.892161+00:00",
+      "name": "Mayor",
+      "retry_after": "2026-09-13T14:33:38.892161+00:00",
+      "score": 23.278,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:33:51.995712+00:00",
+      "name": "Valknet",
+      "retry_after": "2026-09-13T14:33:51.995712+00:00",
+      "score": 19.74,
+      "source": "owner-provided example",
+      "style": "Requested example"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:34:05.118466+00:00",
+      "name": "Random",
+      "retry_after": "2026-09-13T14:34:05.118466+00:00",
+      "score": 22.332,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:34:18.218451+00:00",
+      "name": "Kits",
+      "retry_after": "2026-09-13T14:34:18.218451+00:00",
+      "score": 22.29,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:34:31.344337+00:00",
+      "name": "Mining",
+      "retry_after": "2026-09-13T14:34:31.344337+00:00",
+      "score": 22.284,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:34:44.447689+00:00",
+      "name": "NylonGN",
+      "retry_after": "2026-09-13T14:34:44.447689+00:00",
+      "score": 19.39,
+      "source": "owner-provided example",
+      "style": "Requested example"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:34:57.569260+00:00",
+      "name": "Beans",
+      "retry_after": "2026-09-13T14:34:57.569260+00:00",
+      "score": 22.276,
+      "source": "owner-provided example",
+      "style": "Requested example"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:35:10.666342+00:00",
+      "name": "Sales",
+      "retry_after": "2026-09-13T14:35:10.666342+00:00",
+      "score": 22.112,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:35:23.792185+00:00",
+      "name": "RandomKits",
+      "retry_after": "2026-09-13T14:35:23.792185+00:00",
+      "score": 18.09,
+      "source": "established category",
+      "style": "Category name"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:35:37.225139+00:00",
+      "name": "Flee",
+      "retry_after": "2026-09-13T14:35:37.225139+00:00",
+      "score": 21.94,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:35:50.341408+00:00",
+      "name": "Gens",
+      "retry_after": "2026-09-13T14:35:50.341408+00:00",
+      "score": 21.94,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:36:03.483381+00:00",
+      "name": "Open",
+      "retry_after": "2026-09-13T14:36:03.483381+00:00",
+      "score": 21.508,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:36:16.611638+00:00",
+      "name": "Major",
+      "retry_after": "2026-09-13T14:36:16.611638+00:00",
+      "score": 21.44,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:36:29.738868+00:00",
+      "name": "Zombie",
+      "retry_after": "2026-09-13T14:36:29.738868+00:00",
+      "score": 21.29,
+      "source": "owner-preferred word",
+      "style": "Word"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:38:43.458783+00:00",
+      "name": "Oilskin",
+      "retry_after": "2026-09-13T14:38:43.458783+00:00",
+      "score": 14.89,
+      "source": "filtered owner archive",
+      "style": "Archive inspiration"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:38:56.558203+00:00",
+      "name": "Fixtures",
+      "retry_after": "2026-09-13T14:38:56.558203+00:00",
+      "score": 14.84,
+      "source": "filtered newer owner archive",
+      "style": "Archive pick"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:39:23.350572+00:00",
+      "name": "Steadily",
+      "retry_after": "2026-09-13T14:39:23.350572+00:00",
+      "score": 14.84,
+      "source": "filtered newer owner archive",
+      "style": "Archive pick"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:39:50.146578+00:00",
+      "name": "Coheres",
+      "retry_after": "2026-09-13T14:39:50.146578+00:00",
+      "score": 14.54,
+      "source": "filtered owner archive",
+      "style": "Archive inspiration"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:40:03.444984+00:00",
+      "name": "Scruple",
+      "retry_after": "2026-09-13T14:40:03.444984+00:00",
+      "score": 14.54,
+      "source": "filtered owner archive",
+      "style": "Archive inspiration"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:40:16.876215+00:00",
+      "name": "Compiled",
+      "retry_after": "2026-09-13T14:40:16.876215+00:00",
+      "score": 14.49,
+      "source": "filtered newer owner archive",
+      "style": "Archive pick"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:40:43.570542+00:00",
+      "name": "Feasible",
+      "retry_after": "2026-09-13T14:40:43.570542+00:00",
+      "score": 14.49,
+      "source": "filtered newer owner archive",
+      "style": "Archive pick"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:40:56.699933+00:00",
+      "name": "Specialty",
+      "retry_after": "2026-09-13T14:40:56.699933+00:00",
+      "score": 14.24,
+      "source": "filtered newer owner archive",
+      "style": "Archive pick"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:41:25.674349+00:00",
+      "name": "Editorial",
+      "retry_after": "2026-09-13T14:41:25.674349+00:00",
+      "score": 14.154,
+      "source": "filtered newer owner archive",
+      "style": "Archive pick"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:41:38.773418+00:00",
+      "name": "Backseat",
+      "retry_after": "2026-09-13T14:41:38.773418+00:00",
+      "score": 14.09,
+      "source": "filtered owner archive",
+      "style": "Archive inspiration"
+    },
+    {
+      "first_checked_at": "2026-09-12T14:42:05.215479+00:00",
+      "name": "Formwork",
+      "retry_after": "2026-09-13T14:42:05.215479+00:00",
+      "score": 14.09,
+      "source": "filtered owner archive",
+      "style": "Archive inspiration"
     }
   ],
   "version": 1,
   "watch_checks": {
-    "dungeon": "2026-09-12T13:08:14.471611+00:00",
-    "dungeons": "2026-09-12T13:08:29.601270+00:00",
-    "dunheon": "2026-09-12T13:08:43.029333+00:00",
-    "harbor": "2026-09-12T13:10:31.566879+00:00",
-    "harbour": "2026-09-12T13:07:47.262007+00:00",
-    "horizon": "2026-09-12T13:09:36.785157+00:00",
-    "prison": "2026-09-12T13:08:56.470915+00:00",
-    "prisonescape": "2026-09-12T13:10:03.695970+00:00",
-    "prisonrp": "2026-09-12T13:09:09.890288+00:00",
-    "raidrise": "2026-09-12T13:09:50.262563+00:00",
-    "roleplay": "2026-09-12T13:09:23.354179+00:00",
-    "sete": "2026-09-12T13:08:00.738420+00:00",
-    "state": "2026-09-12T13:10:17.168323+00:00"
+    "dungeon": "2026-09-12T14:22:17.932309+00:00",
+    "dungeons": "2026-09-12T14:22:31.580446+00:00",
+    "dunheon": "2026-09-12T14:22:45.041049+00:00",
+    "harbor": "2026-09-12T14:24:31.989195+00:00",
+    "harbour": "2026-09-12T14:21:51.254827+00:00",
+    "horizon": "2026-09-12T14:23:38.480037+00:00",
+    "prison": "2026-09-12T14:22:58.334226+00:00",
+    "prisonescape": "2026-09-12T14:24:05.124451+00:00",
+    "prisonrp": "2026-09-12T14:23:11.736810+00:00",
+    "raidrise": "2026-09-12T14:23:51.835406+00:00",
+    "roleplay": "2026-09-12T14:23:25.158537+00:00",
+    "sete": "2026-09-12T14:22:04.614346+00:00",
+    "state": "2026-09-12T14:24:18.478816+00:00"
   }
 }
