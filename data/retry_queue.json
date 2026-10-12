@@ -5167,142 +5167,6 @@
   "deletion_pinged": {},
   "items": [
     {
-      "first_checked_at": "2026-10-11T16:55:51.691716+00:00",
-      "name": "Hero",
-      "retry_after": "2026-10-12T16:55:51.691716+00:00",
-      "score": 20.928,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T16:56:04.866034+00:00",
-      "name": "Royal",
-      "retry_after": "2026-10-12T16:56:04.866034+00:00",
-      "score": 20.37,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T16:59:29.132516+00:00",
-      "name": "Grove",
-      "retry_after": "2026-10-12T16:59:29.132516+00:00",
-      "score": 20.29,
-      "source": "reference screenshot",
-      "style": "Strong word"
-    },
-    {
-      "first_checked_at": "2026-10-11T16:59:42.317759+00:00",
-      "name": "Crown",
-      "retry_after": "2026-10-12T16:59:42.317759+00:00",
-      "score": 20.284,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T17:00:08.652766+00:00",
-      "name": "Summit",
-      "retry_after": "2026-10-12T17:00:08.652766+00:00",
-      "score": 19.16,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T17:01:28.375814+00:00",
-      "name": "Kingdom",
-      "retry_after": "2026-10-12T17:01:28.375814+00:00",
-      "score": 17.878,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T17:02:08.729075+00:00",
-      "name": "Champion",
-      "retry_after": "2026-10-12T17:02:08.729075+00:00",
-      "score": 16.728,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T17:18:22.235104+00:00",
-      "name": "Peak",
-      "retry_after": "2026-10-12T17:18:22.235104+00:00",
-      "score": 13.062,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T17:20:46.910357+00:00",
-      "name": "Snow",
-      "retry_after": "2026-10-12T17:20:46.910357+00:00",
-      "score": 12.976,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T17:40:38.598797+00:00",
-      "name": "Loud",
-      "retry_after": "2026-10-12T17:40:38.598797+00:00",
-      "score": 12.712,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T17:59:22.541348+00:00",
-      "name": "Valley",
-      "retry_after": "2026-10-12T17:59:22.541348+00:00",
-      "score": 12.532,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T18:14:29.980469+00:00",
-      "name": "Urban",
-      "retry_after": "2026-10-12T18:14:29.980469+00:00",
-      "score": 12.5,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T18:20:12.117276+00:00",
-      "name": "Giant",
-      "retry_after": "2026-10-12T18:20:12.117276+00:00",
-      "score": 12.428,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T18:30:07.794998+00:00",
-      "name": "Steel",
-      "retry_after": "2026-10-12T18:30:07.794998+00:00",
-      "score": 12.356,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T18:45:15.436289+00:00",
-      "name": "Grace",
-      "retry_after": "2026-10-12T18:45:15.436289+00:00",
-      "score": 12.284,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T18:49:05.038437+00:00",
-      "name": "Wolf",
-      "retry_after": "2026-10-12T18:49:05.038437+00:00",
-      "score": 12.28,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-11T18:51:43.220176+00:00",
-      "name": "Cells",
-      "retry_after": "2026-10-12T18:51:43.220176+00:00",
-      "score": 12.26,
-      "source": "common English",
-      "style": "Brand word"
-    },
-    {
       "first_checked_at": "2026-10-11T19:06:48.076924+00:00",
       "name": "Solar",
       "retry_after": "2026-10-12T19:06:48.076924+00:00",
@@ -7577,18 +7441,18 @@
   ],
   "version": 1,
   "watch_checks": {
-    "dungeon": "2026-10-12T15:04:28.904969+00:00",
-    "dungeons": "2026-10-12T15:04:42.309748+00:00",
-    "dunheon": "2026-10-12T15:04:55.787190+00:00",
-    "harbor": "2026-10-12T15:03:48.291475+00:00",
-    "harbour": "2026-10-12T15:04:01.703309+00:00",
+    "dungeon": "2026-10-12T18:54:39.658180+00:00",
+    "dungeons": "2026-10-12T18:54:53.020592+00:00",
+    "dunheon": "2026-10-12T18:55:06.516648+00:00",
+    "harbor": "2026-10-12T18:54:12.613887+00:00",
+    "harbour": "2026-10-12T18:54:26.238977+00:00",
     "horizon": "2026-10-12T15:02:54.413285+00:00",
-    "prison": "2026-10-12T15:05:09.334752+00:00",
-    "prisonescape": "2026-10-12T15:03:21.429949+00:00",
-    "prisonrp": "2026-10-12T15:05:23.415572+00:00",
+    "prison": "2026-10-12T18:55:20.041922+00:00",
+    "prisonescape": "2026-10-12T18:53:45.658510+00:00",
+    "prisonrp": "2026-10-12T18:55:33.499991+00:00",
     "raidrise": "2026-10-12T15:03:07.855713+00:00",
-    "roleplay": "2026-10-12T15:02:40.851669+00:00",
+    "roleplay": "2026-10-12T18:53:32.167437+00:00",
     "sete": "2026-10-12T15:04:15.222780+00:00",
-    "state": "2026-10-12T15:03:34.865953+00:00"
+    "state": "2026-10-12T18:53:59.184709+00:00"
   }
 }
