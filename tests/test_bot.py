@@ -21,6 +21,7 @@ from bot import (
     MIN_REQUEST_INTERVAL_SECONDS,
     MINEHUT_LOOKUP_URL,
     NAME_WATCHERS,
+    NoCandidatesDue,
     PENDING_DELETION_REFRESH,
     TAKEN_WEBHOOK_ENV,
     build_mentions,
@@ -40,6 +41,7 @@ from bot import (
     should_announce,
     load_retry_queue,
     main,
+    prune_retry_queue,
     resolve_webhooks,
     record_watch_check,
     save_retry_queue,
@@ -1194,6 +1196,8 @@ def test_main_sends_one_embed_for_each_of_twenty_unique_names(
     )
     send = Mock()
     sleep = Mock()
+    output_path = tmp_path / "github_output"
+    monkeypatch.setenv("GITHUB_OUTPUT", str(output_path))
     # Watched names run on top of the batch; this test counts the batch alone.
     _quiet_watchlist(tmp_path / "retry_queue.json")
 
@@ -1228,6 +1232,7 @@ def test_main_sends_one_embed_for_each_of_twenty_unique_names(
     assert all(len(call.args[1]["embeds"]) == 1 for call in send.call_args_list)
     assert sleep.call_count == 19
     sleep.assert_called_with(13.0)
+    assert output_path.read_text(encoding="utf-8") == "continue_chain=true\n"
 
 
 def test_main_places_a_due_retry_in_the_final_slot(
@@ -1260,6 +1265,7 @@ def test_main_places_a_due_retry_in_the_final_slot(
         Candidate("FreshOne", 10.0, "test", "test"),
         Candidate("FreshTwo", 9.9, "test", "test"),
         Candidate("FreshThree", 9.8, "test", "test"),
+        candidate,
     ]
     check = Mock(
         return_value=AvailabilityResult(True, "No registered server found.", 404)
@@ -1349,3 +1355,157 @@ def test_available_names_get_embeds_and_taken_ones_get_a_summary(
     assert summary == "2 names came free this run."
     description = send.call_args_list[-1].args[1]["embeds"][0]["description"]
     assert "TAKEN       2" in description
+
+
+def test_retry_queue_drops_names_outside_the_shortlist() -> None:
+    pool = [
+        Candidate("Escape", 60.0, "PrisonEscape word", "curated"),
+        Candidate("PrisonEscape", 100.0, "Watchlist", "requested"),
+    ]
+    retained = [
+        {"name": "eSCape", "pending_deletion": True, "retry_after": "2026-07-30T10:00:00Z"},
+        {"name": "PrisonEscape", "retry_after": "2026-07-30T10:00:00Z"},
+    ]
+    queue = {
+        "version": 1,
+        "items": retained + [
+            {"name": "Notably", "retry_after": "2026-07-29T10:00:00Z"},
+            {"name": "Valuation", "pending_deletion": True},
+        ],
+        "watch_checks": {"prison": "2026-07-30T09:00:00Z"},
+        "deletion_pinged": {"escape": "2026-07-30T09:00:00Z"},
+    }
+
+    assert prune_retry_queue(queue, pool) == 2
+    assert queue["items"] == retained
+    assert queue["watch_checks"] == {"prison": "2026-07-30T09:00:00Z"}
+    assert queue["deletion_pinged"] == {"escape": "2026-07-30T09:00:00Z"}
+
+
+def test_a_shortlist_waiting_on_retries_has_no_due_candidates() -> None:
+    now = datetime.now(timezone.utc)
+    pool = [Candidate("Escape", 60.0, "PrisonEscape word", "curated")]
+    queue = {
+        "version": 1,
+        "items": [{
+            "name": "Escape",
+            "retry_after": (now + timedelta(days=1)).isoformat(),
+        }],
+    }
+
+    with pytest.raises(NoCandidatesDue):
+        select_check_target(1, pool, queue, now, allow_due_retry=True)
+
+
+@pytest.mark.parametrize("new_checks", [0, 1])
+def test_main_finishes_an_idle_or_partial_batch_and_stops_chaining(
+    new_checks, monkeypatch, tmp_path, capsys
+) -> None:
+    now = datetime.now(timezone.utc)
+    pool = [Candidate("Escape", 60.0, "PrisonEscape word", "curated")]
+    queue_path = tmp_path / "retry_queue.json"
+    old_item = {
+        "name": "Notably",
+        "retry_after": (now - timedelta(days=1)).isoformat(),
+    }
+    items = [old_item]
+    if not new_checks:
+        items.append({
+            "name": "Escape",
+            "retry_after": (now + timedelta(days=1)).isoformat(),
+        })
+    save_retry_queue(queue_path, {
+        "version": 1,
+        "items": items,
+        "watch_checks": {name.casefold(): now.isoformat() for name in WATCHLIST_NAMES},
+    })
+    output_path = tmp_path / "github_output"
+    output_path.write_text("existing_output=true\n", encoding="utf-8")
+    check = Mock(return_value=AvailabilityResult(False, "Already registered.", 200))
+    send = Mock()
+    sleep = Mock()
+    monkeypatch.setattr("bot.build_candidate_pool", lambda: pool)
+    monkeypatch.setattr("bot.check_name_availability", check)
+    monkeypatch.setattr("bot.send_to_discord", send)
+    monkeypatch.setattr("bot.time.sleep", sleep)
+    monkeypatch.setenv(AVAILABLE_WEBHOOK_ENV, AVAILABLE_URL)
+    monkeypatch.setenv("RETRY_QUEUE_PATH", str(queue_path))
+    monkeypatch.setenv("GITHUB_OUTPUT", str(output_path))
+    monkeypatch.setattr("sys.argv", [
+        "bot.py", "--run-number", "1", "--checks-per-run", "20",
+        "--request-interval-seconds", "13",
+    ])
+
+    main()
+
+    assert check.call_count == new_checks
+    if new_checks:
+        check.assert_called_once_with("Escape")
+        summary = send.call_args.args[1]["embeds"][0]["description"]
+        assert "TAKEN       1" in summary
+    assert send.call_count == new_checks
+    sleep.assert_not_called()
+    assert [item["name"] for item in load_retry_queue(queue_path)["items"]] == ["Escape"]
+    assert output_path.read_text(encoding="utf-8") == (
+        "existing_output=true\ncontinue_chain=false\n"
+    )
+    assert f"Completed {new_checks} paced availability checks." in capsys.readouterr().out
+
+
+def test_dry_run_handles_a_pool_smaller_than_the_batch(monkeypatch, capsys) -> None:
+    pool = [Candidate("Escape", 60.0, "PrisonEscape word", "curated")]
+    check = Mock()
+    send = Mock()
+    monkeypatch.setattr("bot.build_candidate_pool", lambda: pool)
+    monkeypatch.setattr("bot.check_name_availability", check)
+    monkeypatch.setattr("bot.send_to_discord", send)
+    monkeypatch.setattr("sys.argv", [
+        "bot.py", "--dry-run", "--run-number", "1", "--checks-per-run", "80",
+    ])
+
+    main()
+
+    output = capsys.readouterr().out
+    payload = json.loads(output[output.index("{"):])
+    assert [candidate["name"] for candidate in payload["candidates"]] == ["Escape"]
+    assert payload["api_lookups_performed"] == 0
+    check.assert_not_called()
+    send.assert_not_called()
+
+
+def test_hourly_watches_still_run_when_the_shortlist_is_waiting(
+    monkeypatch, tmp_path
+) -> None:
+    now = datetime.now(timezone.utc)
+    queue_path = tmp_path / "retry_queue.json"
+    pool = [Candidate("Escape", 60.0, "PrisonEscape word", "curated")]
+    save_retry_queue(queue_path, {
+        "version": 1,
+        "items": [{
+            "name": "Escape",
+            "retry_after": (now + timedelta(days=1)).isoformat(),
+        }],
+    })
+    output_path = tmp_path / "github_output"
+    check = Mock(return_value=AvailabilityResult(False, "Already registered.", 200))
+    send = Mock()
+    sleep = Mock()
+    monkeypatch.setattr("bot.build_candidate_pool", lambda: pool)
+    monkeypatch.setattr("bot.check_name_availability", check)
+    monkeypatch.setattr("bot.send_to_discord", send)
+    monkeypatch.setattr("bot.time.sleep", sleep)
+    monkeypatch.setenv(AVAILABLE_WEBHOOK_ENV, AVAILABLE_URL)
+    monkeypatch.setenv("RETRY_QUEUE_PATH", str(queue_path))
+    monkeypatch.setenv("GITHUB_OUTPUT", str(output_path))
+    monkeypatch.setattr("sys.argv", [
+        "bot.py", "--run-number", "1", "--checks-per-run", "80",
+    ])
+
+    main()
+
+    assert {call.args[0] for call in check.call_args_list} == set(WATCHLIST_NAMES)
+    assert check.call_count == len(WATCHLIST_NAMES)
+    assert send.call_count == len(WATCHLIST_NAMES) + 1  # Watch results plus the summary.
+    assert sleep.call_count == len(WATCHLIST_NAMES) - 1
+    assert due_watchlist_names(load_retry_queue(queue_path), datetime.now(timezone.utc)) == []
+    assert output_path.read_text(encoding="utf-8") == "continue_chain=false\n"
