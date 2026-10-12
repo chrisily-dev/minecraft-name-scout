@@ -14,22 +14,19 @@ MIN_LENGTH = 4
 MAX_LENGTH = 12
 WORD_RE = re.compile(r"^[A-Za-z]+$")
 
-# Keep every exact request, including intentional spellings and compounds.
+# Preserve the active wishlist's exact spellings and explicit compounds.
 # bot.NAME_WATCHERS uses these names for the existing hourly checks and pings.
-# They also set the style: recognizable words such as Harbor, Horizon, State,
+# They also set the style: recognizable words such as Harbor, State,
 # and Dungeon, with PrisonEscape as the main use case.
 WATCHLIST_NAMES = (
     "Harbor",
     "Harbour",
-    "Sete",
     "Dungeon",
     "Dungeons",
     "Dunheon",
     "Prison",
     "PrisonRP",
     "Roleplay",
-    "Horizon",
-    "RaidRise",
     "PrisonEscape",
     "State",
 )

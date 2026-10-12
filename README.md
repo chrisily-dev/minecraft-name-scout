@@ -10,8 +10,8 @@ rank higher within each group.
 
 Names are added individually in `name_generator.py`. English word frequency
 helps rank those names; it does not add arbitrary dictionary words. No suffixes
-or compounds are generated. Explicit wishlist names such as PrisonRP, RaidRise,
-and PrisonEscape are retained.
+or compounds are generated. Explicit wishlist names such as PrisonRP and
+PrisonEscape are retained.
 
 The bot filters the saved retry queue against the current shortlist on startup.
 Wishlist checks and watcher pings keep their hourly cadence. Ordinary taken

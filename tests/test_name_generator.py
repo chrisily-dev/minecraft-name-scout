@@ -74,7 +74,7 @@ def test_no_game_mode_suffixes_or_unrequested_compounds_are_added() -> None:
         "emberpvp", "amberhub", "fillpvp", "openkits", "woolgens", "gensfood",
         "minetycoon", "frosthaven", "pixelcove", "prisonhub", "escapepvp",
     }.isdisjoint(names)
-    assert {"prisonrp", "prisonescape", "raidrise"} <= names
+    assert {"prisonrp", "prisonescape"} <= names
     assert not any(name.endswith(("mc", "pvp", "gens", "hub", "kits", "smp")) for name in names)
 
 
