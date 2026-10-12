@@ -1,4 +1,4 @@
-﻿"""Check a paced batch of Minecraft server-name candidates."""
+"""Check a paced batch of Minecraft server-name candidates."""
 
 from __future__ import annotations
 
@@ -38,9 +38,8 @@ MINEHUT_LOOKUP_URL = "https://api.minehut.com/server/{name}?byName=true"
 USER_AGENT = "MinecraftNameScout/3.0 (+GitHub Actions; paced availability checks)"
 DEFAULT_QUEUE_PATH = Path("data/retry_queue.json")
 RETRY_DELAY = timedelta(days=1)
-# Watched names get their own cadence. Left to the ordinary rotation they would
-# only come round once the whole pool cycles, roughly a day, which is far too
-# slow for a name someone is actively waiting to claim.
+# Watched names get their own cadence, independently of the candidate rotation
+# and ordinary taken names' next-day retries.
 WATCH_REFRESH = timedelta(hours=1)
 # A name whose holder is being deleted is the closest thing to a lead this bot
 # produces, so it is revisited far sooner than an ordinary taken name, and kept
@@ -212,6 +211,23 @@ def _parse_timestamp(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00"))
 
 
+def prune_retry_queue(queue: dict[str, object], pool: list[Candidate]) -> int:
+    """Drop old candidates that no longer belong to the reviewed shortlist."""
+    allowed = {candidate.name.casefold() for candidate in pool}
+    items = queue["items"]
+    retained = [
+        item
+        for item in items
+        if isinstance(item, dict) and str(item.get("name", "")).casefold() in allowed
+    ]
+    queue["items"] = retained
+    return len(items) - len(retained)
+
+
+class NoCandidatesDue(RuntimeError):
+    """The shortlist has no unchecked names or due retries for this batch."""
+
+
 def select_check_target(
     run_number: int,
     pool: list[Candidate],
@@ -271,7 +287,7 @@ def select_check_target(
             True,
         )
 
-    raise RuntimeError("Every generated candidate is already in the retry queue.")
+    raise NoCandidatesDue("No shortlisted names or retries are due for this batch.")
 
 
 def watchlist_keys() -> set[str]:
@@ -969,14 +985,17 @@ def main() -> None:
         candidates: list[Candidate] = []
         now = datetime.now(timezone.utc)
         for slot in range(checks_per_run):
-            candidate, _ = select_check_target(
-                selection_number(run_number, checks_per_run, slot),
-                pool,
-                dry_queue,
-                now,
-                excluded_names=checked_names,
-                allow_due_retry=is_retry_slot(slot, checks_per_run),
-            )
+            try:
+                candidate, _ = select_check_target(
+                    selection_number(run_number, checks_per_run, slot),
+                    pool,
+                    dry_queue,
+                    now,
+                    excluded_names=checked_names,
+                    allow_due_retry=is_retry_slot(slot, checks_per_run),
+                )
+            except NoCandidatesDue:
+                break
             checked_names.add(candidate.name.casefold())
             candidates.append(candidate)
 
@@ -1003,6 +1022,10 @@ def main() -> None:
 
     queue_path = Path(os.environ.get("RETRY_QUEUE_PATH", DEFAULT_QUEUE_PATH))
     queue = load_retry_queue(queue_path)
+    removed = prune_retry_queue(queue, pool)
+    if removed:
+        save_retry_queue(queue_path, queue)
+        print(f"Dropped {removed} retry entries outside the reviewed shortlist.")
     webhooks = resolve_webhooks(dict(os.environ))
 
     # Watched names are checked in addition to the batch, not out of it. They
@@ -1018,6 +1041,7 @@ def main() -> None:
     )
 
     seen: dict[str, list[str]] = {}
+    continue_chain = True
     for index in range(total_checks):
         now = datetime.now(timezone.utc)
 
@@ -1031,18 +1055,25 @@ def main() -> None:
             kind = "watch"
         else:
             slot = index - len(watch_targets)
-            candidate, is_retry = select_check_target(
-                selection_number(run_number, checks_per_run, slot),
-                pool,
-                queue,
-                now,
-                # Watched names ran above; letting the rotation pick one too
-                # would spend a batch slot re-checking it.
-                excluded_names=checked_names | watchlist_keys(),
-                allow_due_retry=is_retry_slot(slot, checks_per_run),
-            )
+            try:
+                candidate, is_retry = select_check_target(
+                    selection_number(run_number, checks_per_run, slot),
+                    pool,
+                    queue,
+                    now,
+                    # Watched names have their own hourly cadence.
+                    excluded_names=checked_names | watchlist_keys(),
+                    allow_due_retry=is_retry_slot(slot, checks_per_run),
+                )
+            except NoCandidatesDue:
+                print("Shortlist is waiting on retries. The scheduled run will check again.")
+                continue_chain = False
+                break
             kind = "retry" if is_retry else "new"
 
+        if seen:
+            time.sleep(interval_seconds)
+        now = datetime.now(timezone.utc)
         checked_names.add(candidate.name.casefold())
         print(f"Checking {index + 1}/{total_checks} ({kind}): {candidate.name}")
 
@@ -1087,20 +1118,23 @@ def main() -> None:
 
         save_retry_queue(queue_path, queue)
 
-        is_last_check = index == total_checks - 1
-        if not is_last_check:
-            time.sleep(interval_seconds)
-
     # Stands in for the taken embeds that were suppressed. Sent every run,
-    # including runs where nothing was taken, so a silent channel always means
-    # the scan ran rather than that it died.
-    send_to_discord(
-        webhooks.summary,
-        build_run_summary(seen, total_checks),
-        env_name=SUMMARY_WEBHOOK_ENV,
-    )
+    # including runs where nothing was taken. An idle shortlist stays quiet.
+    completed_checks = sum(len(names) for names in seen.values())
+    if completed_checks:
+        send_to_discord(
+            webhooks.summary,
+            build_run_summary(seen, completed_checks),
+            env_name=SUMMARY_WEBHOOK_ENV,
+        )
+    # Stop immediate workflow chaining when the smaller pool is waiting. Cron
+    # still wakes the bot for hourly watches and next-day/three-hour retries.
+    output_path = os.environ.get("GITHUB_OUTPUT")
+    if output_path:
+        with Path(output_path).open("a", encoding="utf-8") as output:
+            output.write(f"continue_chain={str(continue_chain).lower()}\n")
     tally = {status: len(names) for status, names in seen.items()}
-    print(f"Completed {total_checks} paced availability checks. {tally}")
+    print(f"Completed {completed_checks} paced availability checks. {tally}")
 
 
 if __name__ == "__main__":

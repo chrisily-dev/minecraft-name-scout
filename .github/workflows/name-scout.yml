@@ -97,8 +97,9 @@ jobs:
       # scan itself failed, the chain stops and the cron fallback restarts it
       # later. Otherwise a fast, repeatable failure would spin in a tight loop
       # and burn the whole Actions allowance in minutes.
+      # A shortlist waiting on retries also stops chaining; cron resumes it.
       - name: Chain the next run
-        if: ${{ steps.scan.outcome == 'success' && inputs.chain != 'false' }}
+        if: ${{ steps.scan.outcome == 'success' && steps.scan.outputs.continue_chain == 'true' && inputs.chain != 'false' }}
         env:
           GH_TOKEN: ${{ secrets.CHAIN_TOKEN }}
         run: |
