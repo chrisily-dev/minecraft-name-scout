@@ -5167,78 +5167,6 @@
   "deletion_pinged": {},
   "items": [
     {
-      "first_checked_at": "2026-10-16T00:15:32.689386+00:00",
-      "name": "Omega",
-      "retry_after": "2026-10-17T00:15:32.689386+00:00",
-      "score": 10.94,
-      "source": "curated wishlist-style word",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-16T00:15:45.845872+00:00",
-      "name": "Raven",
-      "retry_after": "2026-10-17T00:15:45.845872+00:00",
-      "score": 10.94,
-      "source": "curated wishlist-style word",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-16T00:15:58.996301+00:00",
-      "name": "Relic",
-      "retry_after": "2026-10-17T00:15:58.996301+00:00",
-      "score": 10.94,
-      "source": "curated wishlist-style word",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-16T00:16:12.129470+00:00",
-      "name": "Roost",
-      "retry_after": "2026-10-17T00:16:12.129470+00:00",
-      "score": 10.94,
-      "source": "curated wishlist-style word",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-16T00:16:25.290822+00:00",
-      "name": "Slate",
-      "retry_after": "2026-10-17T00:16:25.290822+00:00",
-      "score": 10.94,
-      "source": "curated wishlist-style word",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-16T00:16:38.426277+00:00",
-      "name": "Spark",
-      "retry_after": "2026-10-17T00:16:38.426277+00:00",
-      "score": 10.94,
-      "source": "curated wishlist-style word",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-16T00:16:51.630057+00:00",
-      "name": "Surge",
-      "retry_after": "2026-10-17T00:16:51.630057+00:00",
-      "score": 10.94,
-      "source": "curated wishlist-style word",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-16T00:17:04.767850+00:00",
-      "name": "Thorn",
-      "retry_after": "2026-10-17T00:17:04.767850+00:00",
-      "score": 10.94,
-      "source": "curated wishlist-style word",
-      "style": "Brand word"
-    },
-    {
-      "first_checked_at": "2026-10-16T00:17:17.907656+00:00",
-      "name": "Tides",
-      "retry_after": "2026-10-17T00:17:17.907656+00:00",
-      "score": 10.94,
-      "source": "curated wishlist-style word",
-      "style": "Brand word"
-    },
-    {
       "first_checked_at": "2026-10-16T20:56:06.471579+00:00",
       "name": "Kingdom",
       "retry_after": "2026-10-17T20:56:06.471579+00:00",
@@ -6899,6 +6827,534 @@
       "name": "Glacier",
       "retry_after": "2026-10-18T01:07:58.402848+00:00",
       "score": 8.04,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:16:57.463638+00:00",
+      "name": "Coral",
+      "retry_after": "2026-10-18T01:16:57.463638+00:00",
+      "score": 10.94,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:17:10.618513+00:00",
+      "name": "Fable",
+      "retry_after": "2026-10-18T01:17:10.618513+00:00",
+      "score": 10.94,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:17:23.696694+00:00",
+      "name": "Flora",
+      "retry_after": "2026-10-18T01:17:23.696694+00:00",
+      "score": 10.94,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:17:36.770911+00:00",
+      "name": "Forge",
+      "retry_after": "2026-10-18T01:17:36.770911+00:00",
+      "score": 10.94,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:17:49.891554+00:00",
+      "name": "Frost",
+      "retry_after": "2026-10-18T01:17:49.891554+00:00",
+      "score": 10.94,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:18:02.981663+00:00",
+      "name": "Glade",
+      "retry_after": "2026-10-18T01:18:02.981663+00:00",
+      "score": 10.94,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:18:16.070969+00:00",
+      "name": "Guild",
+      "retry_after": "2026-10-18T01:18:16.070969+00:00",
+      "score": 10.94,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:18:29.150377+00:00",
+      "name": "Hydra",
+      "retry_after": "2026-10-18T01:18:29.150377+00:00",
+      "score": 10.94,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:18:42.250329+00:00",
+      "name": "Isles",
+      "retry_after": "2026-10-18T01:18:42.250329+00:00",
+      "score": 10.94,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:18:55.335898+00:00",
+      "name": "Lucid",
+      "retry_after": "2026-10-18T01:18:55.335898+00:00",
+      "score": 10.94,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:19:08.417379+00:00",
+      "name": "Lunar",
+      "retry_after": "2026-10-18T01:19:08.417379+00:00",
+      "score": 10.94,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:19:21.494831+00:00",
+      "name": "Manor",
+      "retry_after": "2026-10-18T01:19:21.494831+00:00",
+      "score": 10.94,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:19:34.572172+00:00",
+      "name": "Maple",
+      "retry_after": "2026-10-18T01:19:34.572172+00:00",
+      "score": 10.94,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:20:27.993522+00:00",
+      "name": "Granite",
+      "retry_after": "2026-10-18T01:20:27.993522+00:00",
+      "score": 8.04,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:20:41.113806+00:00",
+      "name": "Griffin",
+      "retry_after": "2026-10-18T01:20:41.113806+00:00",
+      "score": 8.04,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:20:54.202458+00:00",
+      "name": "Odyssey",
+      "retry_after": "2026-10-18T01:20:54.202458+00:00",
+      "score": 8.04,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:21:07.285350+00:00",
+      "name": "Paladin",
+      "retry_after": "2026-10-18T01:21:07.285350+00:00",
+      "score": 8.04,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:21:20.413236+00:00",
+      "name": "Phantom",
+      "retry_after": "2026-10-18T01:21:20.413236+00:00",
+      "score": 8.04,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:21:33.530810+00:00",
+      "name": "Pickaxe",
+      "retry_after": "2026-10-18T01:21:33.530810+00:00",
+      "score": 8.04,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:21:46.614530+00:00",
+      "name": "Prosper",
+      "retry_after": "2026-10-18T01:21:46.614530+00:00",
+      "score": 8.04,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:21:59.750237+00:00",
+      "name": "Specter",
+      "retry_after": "2026-10-18T01:21:59.750237+00:00",
+      "score": 8.04,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:22:12.885317+00:00",
+      "name": "Stellar",
+      "retry_after": "2026-10-18T01:22:12.885317+00:00",
+      "score": 8.04,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:22:26.005836+00:00",
+      "name": "Tempest",
+      "retry_after": "2026-10-18T01:22:26.005836+00:00",
+      "score": 8.04,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:22:39.089769+00:00",
+      "name": "Triumph",
+      "retry_after": "2026-10-18T01:22:39.089769+00:00",
+      "score": 8.04,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:22:52.164237+00:00",
+      "name": "Midnight",
+      "retry_after": "2026-10-18T01:22:52.164237+00:00",
+      "score": 7.984,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:23:05.311648+00:00",
+      "name": "Fortress",
+      "retry_after": "2026-10-18T01:23:05.311648+00:00",
+      "score": 7.24,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:23:18.420282+00:00",
+      "name": "Twilight",
+      "retry_after": "2026-10-18T01:23:18.420282+00:00",
+      "score": 7.24,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:23:31.508010+00:00",
+      "name": "Sovereign",
+      "retry_after": "2026-10-18T01:23:31.508010+00:00",
+      "score": 6.64,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:23:44.595483+00:00",
+      "name": "Stronghold",
+      "retry_after": "2026-10-18T01:23:44.595483+00:00",
+      "score": 6.24,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:23:57.705355+00:00",
+      "name": "Verdict",
+      "retry_after": "2026-10-18T01:23:57.705355+00:00",
+      "score": 58.112,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:24:11.283840+00:00",
+      "name": "Convict",
+      "retry_after": "2026-10-18T01:24:11.283840+00:00",
+      "score": 58.04,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:24:37.674255+00:00",
+      "name": "Gateway",
+      "retry_after": "2026-10-18T01:24:37.674255+00:00",
+      "score": 58.04,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:24:50.762271+00:00",
+      "name": "Hideout",
+      "retry_after": "2026-10-18T01:24:50.762271+00:00",
+      "score": 58.04,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:25:03.856420+00:00",
+      "name": "Outpost",
+      "retry_after": "2026-10-18T01:25:03.856420+00:00",
+      "score": 58.04,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:25:16.937072+00:00",
+      "name": "Runaway",
+      "retry_after": "2026-10-18T01:25:16.937072+00:00",
+      "score": 58.04,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:25:30.033988+00:00",
+      "name": "Tunnels",
+      "retry_after": "2026-10-18T01:25:30.033988+00:00",
+      "score": 58.04,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:27:40.951337+00:00",
+      "name": "Unbound",
+      "retry_after": "2026-10-18T01:27:40.951337+00:00",
+      "score": 58.04,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:27:54.035685+00:00",
+      "name": "Wardens",
+      "retry_after": "2026-10-18T01:27:54.035685+00:00",
+      "score": 58.04,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:28:07.113245+00:00",
+      "name": "Badlands",
+      "retry_after": "2026-10-18T01:28:07.113245+00:00",
+      "score": 57.24,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:28:20.214845+00:00",
+      "name": "Breakout",
+      "retry_after": "2026-10-18T01:28:20.214845+00:00",
+      "score": 57.24,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:28:33.301369+00:00",
+      "name": "Daybreak",
+      "retry_after": "2026-10-18T01:28:33.301369+00:00",
+      "score": 57.24,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:28:46.383813+00:00",
+      "name": "Defiance",
+      "retry_after": "2026-10-18T01:28:46.383813+00:00",
+      "score": 57.24,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:28:59.479896+00:00",
+      "name": "Shackles",
+      "retry_after": "2026-10-18T01:28:59.479896+00:00",
+      "score": 57.24,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:29:12.566222+00:00",
+      "name": "Unbroken",
+      "retry_after": "2026-10-18T01:29:12.566222+00:00",
+      "score": 57.24,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:29:25.683024+00:00",
+      "name": "Uprising",
+      "retry_after": "2026-10-18T01:29:25.683024+00:00",
+      "score": 57.24,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:29:38.775344+00:00",
+      "name": "Cellblock",
+      "retry_after": "2026-10-18T01:29:38.775344+00:00",
+      "score": 56.64,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:29:51.876241+00:00",
+      "name": "Sanctuary",
+      "retry_after": "2026-10-18T01:29:51.876241+00:00",
+      "score": 56.64,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:30:04.973953+00:00",
+      "name": "Unchained",
+      "retry_after": "2026-10-18T01:30:04.973953+00:00",
+      "score": 56.64,
+      "source": "curated prison and escape word",
+      "style": "PrisonEscape word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:30:18.276682+00:00",
+      "name": "Prime",
+      "retry_after": "2026-10-18T01:30:18.276682+00:00",
+      "score": 12.116,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:30:31.348954+00:00",
+      "name": "Cloud",
+      "retry_after": "2026-10-18T01:30:31.348954+00:00",
+      "score": 12.044,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:30:44.441142+00:00",
+      "name": "Coast",
+      "retry_after": "2026-10-18T01:30:44.441142+00:00",
+      "score": 11.972,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:30:57.542116+00:00",
+      "name": "Golden",
+      "retry_after": "2026-10-18T01:30:57.542116+00:00",
+      "score": 11.952,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:31:10.661053+00:00",
+      "name": "Ghost",
+      "retry_after": "2026-10-18T01:31:10.661053+00:00",
+      "score": 11.948,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:31:23.734457+00:00",
+      "name": "Elite",
+      "retry_after": "2026-10-18T01:31:23.734457+00:00",
+      "score": 11.9,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:31:36.876431+00:00",
+      "name": "Fields",
+      "retry_after": "2026-10-18T01:31:36.876431+00:00",
+      "score": 11.88,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:31:49.958023+00:00",
+      "name": "Forest",
+      "retry_after": "2026-10-18T01:31:49.958023+00:00",
+      "score": 11.88,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:32:03.049034+00:00",
+      "name": "Dream",
+      "retry_after": "2026-10-18T01:32:03.049034+00:00",
+      "score": 11.876,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:32:29.377051+00:00",
+      "name": "Mist",
+      "retry_after": "2026-10-18T01:32:29.377051+00:00",
+      "score": 11.44,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:32:42.450442+00:00",
+      "name": "Nova",
+      "retry_after": "2026-10-18T01:32:42.450442+00:00",
+      "score": 11.44,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:32:55.520731+00:00",
+      "name": "Onyx",
+      "retry_after": "2026-10-18T01:32:55.520731+00:00",
+      "score": 11.44,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:33:08.605667+00:00",
+      "name": "Reef",
+      "retry_after": "2026-10-18T01:33:08.605667+00:00",
+      "score": 11.44,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:33:21.708102+00:00",
+      "name": "Roam",
+      "retry_after": "2026-10-18T01:33:21.708102+00:00",
+      "score": 11.44,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:33:34.815061+00:00",
+      "name": "Rune",
+      "retry_after": "2026-10-18T01:33:34.815061+00:00",
+      "score": 11.44,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:33:47.892966+00:00",
+      "name": "Saga",
+      "retry_after": "2026-10-18T01:33:47.892966+00:00",
+      "score": 11.44,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:34:00.982047+00:00",
+      "name": "Soar",
+      "retry_after": "2026-10-18T01:34:00.982047+00:00",
+      "score": 11.44,
+      "source": "curated wishlist-style word",
+      "style": "Brand word"
+    },
+    {
+      "first_checked_at": "2026-10-17T01:34:14.107207+00:00",
+      "name": "Dragon",
+      "retry_after": "2026-10-18T01:34:14.107207+00:00",
+      "score": 11.424,
       "source": "curated wishlist-style word",
       "style": "Brand word"
     }
